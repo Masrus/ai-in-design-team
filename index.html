@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI в Design Team — Spotware</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="color-scheme" content="light">
+<style>
+  :root{
+    --bg:#fbfbfd;
+    --text:#1d1d1f;
+    --text-dim:#6e6e73;
+    --text-faint:#a1a1a6;
+    --hair: rgba(0,0,0,0.08);
+    --accent:#009345;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight:400;
+    letter-spacing:-0.022em;
+  }
+  section{
+    min-height:100vh;
+    width:100%;
+    padding:14vh 10vw;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+
+  .navdots{
+    position:fixed; right:34px; top:50%; transform:translateY(-50%);
+    display:flex; flex-direction:column; gap:20px; z-index:50;
+  }
+  .navdots a{
+    width:6px; height:6px; border-radius:50%;
+    background:rgba(0,0,0,0.15);
+    display:block; transition: all .4s ease;
+  }
+  .navdots a.active{ background:var(--text); transform:scale(1.6); }
+
+  .eyebrow{
+    font-weight:500;
+    font-size:14px;
+    letter-spacing:0.011em;
+    color:var(--text-faint);
+    margin-bottom:28px;
+  }
+
+  h1, h2, .serif{ font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+
+  /* ---------- HERO ---------- */
+  #hero h1{
+    font-weight:600; font-size:clamp(46px, 6.2vw, 104px);
+    line-height:1.07;
+    letter-spacing:-0.005em;
+    max-width:15ch;
+    background:linear-gradient(102deg, #000 -3.4%, #9295A0 86.63%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    color:transparent;
+  }
+  #hero p.lede{
+    font-size:20px; font-weight:400; letter-spacing:-0.012em;
+    color:var(--text-dim);
+    max-width:560px;
+    margin-top:36px;
+    line-height:1.65;
+  }
+  .hero-stats{ display:flex; gap:72px; margin-top:100px; flex-wrap:wrap; }
+  .hero-stat .num{
+    font-size:56px; font-weight:600;
+    background:linear-gradient(102deg, #000 -3.4%, #9295A0 86.63%);
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent;
+  }
+  .hero-stat .lbl{ font-size:13px; color:var(--text-faint); margin-top:10px; max-width:16ch; line-height:1.4; }
+
+  h2.section-title{
+    font-weight:600; font-size:clamp(34px,4vw,58px);
+    letter-spacing:-0.004em; line-height:1.1;
+    color:var(--text);
+    max-width:14ch;
+  }
+
+  /* ---------- OKR ---------- */
+  .okr-block{ margin-top:88px; }
+  .okr-pair{ display:flex; gap:120px; flex-wrap:wrap; }
+  .okr-col{ flex:1; min-width:280px; }
+  .okr-col .okr-label{ font-size:14px; color:var(--text-faint); letter-spacing:-0.006em; margin-bottom:14px; }
+  .okr-col h3{ font-weight:500; font-size:32px; letter-spacing:-0.003em; line-height:1.15; margin-bottom:34px; }
+  .kr-line{ padding:15px 0; font-size:16px; font-weight:400; letter-spacing:-0.011em; color:var(--text-dim); display:flex; gap:14px; align-items:baseline; }
+  .kr-line .mark{ font-size:11px; color:var(--text-faint); min-width:78px; letter-spacing:0.04em; }
+  .kr-line.done .mark{ color:var(--text); }
+  .kr-line a{ color:inherit; }
+  .kr-line .skill{ color:var(--text-faint); font-size:13px; }
+
+  /* ---------- PRODUCT SECTIONS ---------- */
+  .product-head{ margin-bottom:30px; }
+  .product-head h2{ font-weight:600; font-size:clamp(36px,4.4vw,60px); letter-spacing:-0.004em; line-height:1.1; }
+  .product-links{ margin-top:22px; display:flex; gap:32px; flex-wrap:wrap; }
+  .product-links a{ font-size:14px; color:var(--text); text-decoration:none; border-bottom:1px solid var(--hair); padding-bottom:3px; }
+  .product-links a:hover{ border-color:var(--text); }
+  .product-desc{ max-width:600px; color:var(--text-dim); font-size:18px; font-weight:400; letter-spacing:-0.012em; line-height:1.7; margin-top:28px; }
+  .creds{ margin-top:18px; font-size:13px; color:var(--text-faint); }
+
+  .simple-list{ margin-top:56px; max-width:640px; }
+  .simple-list .row{ padding:20px 0; border-top:1px solid var(--hair); display:flex; gap:28px; }
+  .simple-list .row:last-child{ border-bottom:1px solid var(--hair); }
+  .simple-list .k{ font-size:14px; color:var(--text); min-width:170px; }
+  .simple-list .v{ font-size:15px; color:var(--text-dim); font-weight:400; letter-spacing:-0.011em; }
+
+  .stat-row{ display:flex; gap:80px; margin-top:56px; flex-wrap:wrap; }
+  .stat-row .s{ }
+  .stat-row .s .n{
+    font-size:40px; font-weight:600;
+    background:linear-gradient(102deg, #000 -3.4%, #9295A0 86.63%);
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent;
+  }
+  .stat-row .s .l{ font-size:13px; color:var(--text-faint); margin-top:8px; }
+
+  .plain-grid{ display:flex; gap:52px; margin-top:56px; flex-wrap:wrap; }
+  .plain-grid .item{ max-width:200px; }
+  .plain-grid .item b{ display:block; font-size:20px; font-weight:500; letter-spacing:-0.003em; margin-bottom:6px; }
+  .plain-grid .item span{ font-size:13.5px; color:var(--text-dim); font-weight:400; letter-spacing:-0.01em; }
+
+  .palette-row{ display:flex; gap:28px; margin-top:52px; flex-wrap:wrap; }
+  .swatch .fill{ width:56px; height:56px; border-radius:50%; }
+  .swatch .lbl{ font-size:12px; color:var(--text-faint); margin-top:10px; }
+
+  #workflow .quote{
+    font-weight:400; letter-spacing:-0.006em;
+    font-size:clamp(24px,2.4vw,32px); color:var(--text); max-width:740px; line-height:1.4; margin-top:32px;
+  }
+  .status-line{ display:flex; align-items:center; gap:12px; margin-top:40px; font-size:13px; color:var(--text-faint); }
+  .status-line .dot{ width:6px; height:6px; border-radius:50%; background:var(--text); }
+
+  #roadmap .rm-list{ margin-top:52px; max-width:640px; }
+  .rm-item{ padding:18px 0; border-top:1px solid var(--hair); font-size:16px; font-weight:400; letter-spacing:-0.011em; color:var(--text-dim); }
+  .rm-item:last-child{ border-bottom:1px solid var(--hair); }
+  .rm-item a{ color:inherit; }
+
+  .footer-note{ margin-top:90px; font-size:12px; color:var(--text-faint); }
+
+  .reveal{ opacity:0; transform:translateY(14px); transition:opacity .8s ease, transform .8s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  /* ---------- PASSWORD GATE ---------- */
+  #gate{
+    position:fixed; inset:0; background:var(--bg); z-index:1000;
+    display:flex; align-items:center; justify-content:center;
+  }
+  #gate form{ display:flex; flex-direction:column; gap:16px; width:280px; }
+  #gate input{
+    font-family:inherit; font-size:16px; letter-spacing:-0.011em;
+    padding:12px 16px; border:1px solid var(--hair); border-radius:10px;
+    background:#fff; color:var(--text); outline:none;
+  }
+  #gate input:focus{ border-color:var(--text); }
+  #gate button{
+    font-family:inherit; font-size:15px; font-weight:500; letter-spacing:-0.006em;
+    padding:12px 16px; border:none; border-radius:10px;
+    background:var(--text); color:#fff; cursor:pointer;
+  }
+  #gate .err{ font-size:13px; color:#c0392b; letter-spacing:-0.01em; display:none; }
+
+  /* ---------- VIEW TOGGLE ---------- */
+  .view-toggle{
+    position:fixed; top:24px; left:50%; transform:translateX(-50%);
+    z-index:100; display:flex; gap:2px;
+    background:rgba(255,255,255,0.7); backdrop-filter:blur(20px);
+    border:1px solid var(--hair); border-radius:100px; padding:4px;
+  }
+  .view-toggle button{
+    font-family:inherit; font-size:13px; font-weight:500; letter-spacing:-0.006em;
+    padding:7px 18px; border-radius:100px; border:none; background:transparent;
+    color:var(--text-faint); cursor:pointer; transition:all .25s ease;
+  }
+  .view-toggle button.active{ background:var(--text); color:#fff; }
+
+  #view-projects{ display:none; }
+  #view-projects section{ min-height:auto; padding:16vh 10vw 10vh; }
+  .proj-list{ max-width:820px; }
+  .proj-item{ padding:32px 0; border-top:1px solid var(--hair); }
+  .proj-item:last-child{ border-bottom:1px solid var(--hair); }
+  .proj-status{ font-size:12px; color:var(--text-faint); letter-spacing:0.01em; margin-bottom:8px; }
+  .proj-name{ font-size:23px; font-weight:600; letter-spacing:-0.004em; }
+  .proj-name a{ color:var(--text); text-decoration:none; border-bottom:1px solid var(--hair); }
+  .proj-name a:hover{ border-color:var(--text); }
+  .proj-desc{ font-size:15px; color:var(--text-dim); letter-spacing:-0.011em; margin-top:8px; max-width:600px; line-height:1.55; }
+  .proj-tag{ font-size:13px; color:var(--text); margin-top:12px; padding:8px 12px; background:var(--hair); border-radius:8px; display:inline-block; }
+  .proj-tag a{ color:var(--text); text-decoration:underline; text-decoration-color:var(--text-faint); }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <form id="gate-form">
+    <input type="password" id="gate-input" placeholder="Пароль" autocomplete="off" autofocus>
+    <div class="err" id="gate-err">Неверный пароль</div>
+    <button type="submit">Войти</button>
+  </form>
+</div>
+
+<div class="view-toggle">
+  <button id="btn-landing" class="active">Лендинг</button>
+  <button id="btn-projects">Проекты</button>
+</div>
+
+<div id="view-landing">
+<div class="navdots" id="navdots">
+  <a href="#hero" class="active"></a>
+  <a href="#okr"></a>
+  <a href="#maestro"></a>
+  <a href="#assets"></a>
+  <a href="#illustr"></a>
+  <a href="#workflow"></a>
+</div>
+
+<section id="hero">
+  <div class="eyebrow reveal">Design Team · Q2 2026</div>
+  <h1 class="reveal">AI, который мы сделали и настроили</h1>
+  <p class="lede reveal">Два OKR, четыре работающих инициативы и понятный роадмап того, что дальше — обзор того, где AI уже часть повседневного пайплайна дизайн-команды cTrader, а не эксперимент.</p>
+  <div class="hero-stats reveal">
+    <div class="hero-stat"><div class="num">4</div><div class="lbl">инициативы работают</div></div>
+    <div class="hero-stat"><div class="num">4 / 11</div><div class="lbl">key results выполнено</div></div>
+    <div class="hero-stat"><div class="num">245</div><div class="lbl">ассетов — на каждого нового брокера, автоматически</div></div>
+  </div>
+</section>
+
+<section id="okr">
+  <div class="eyebrow reveal">Objectives &amp; Key Results</div>
+  <h2 class="section-title reveal">Куда двигаемся</h2>
+  <div class="okr-block reveal">
+    <div class="okr-pair">
+      <div class="okr-col">
+        <div class="okr-label">AI Transformation</div>
+        <h3>Внедрение AI в повседневную работу</h3>
+        <div class="kr-line done"><div class="mark">Done</div><div>AI-ресерч и постановка дизайн-задач <span class="skill">/research</span></div></div>
+        <div class="kr-line done"><div class="mark">Done · Q1</div><div><a href="https://chatgpt.com/agents/a/agt_69faf78b0b4481919b91fc494cc7032d" target="_blank">AI-генерация изображений в фирменном стиле</a></div></div>
+        <div class="kr-line done"><div class="mark">Done</div><div><a href="https://assets-generator-prod.swdesign.workers.dev/login" target="_blank">Материалы для Customer Success: нарезка графики</a> <span class="skill">design-team@spotware.com / 6GgfeeS8GB9fJynJ</span></div></div>
+        <div class="kr-line"><div class="mark">В работе</div><div>Материалы для Customer Success: <a href="https://assets-generator-prod.swdesign.workers.dev/login" target="_blank">презентация для новых брокеров</a> <span class="skill">Assets Generator /deck</span></div></div>
+        <div class="kr-line"><div class="mark">—</div><div>AI-подготовка спецификаций <span class="skill">/feature-shaping</span></div></div>
+      </div>
+      <div class="okr-col">
+        <div class="okr-label">AI-first Product Creation</div>
+        <h3>AI как часть производства продукта</h3>
+        <div class="kr-line done"><div class="mark">Done</div><div>Конвертация UI конкурентов в Design System <span class="skill">studio-product</span></div></div>
+        <div class="kr-line"><div class="mark">В работе</div><div>Генерация интерфейсов low-cost-of-error <span class="skill">studio-cadmin — пока только cTrader</span></div></div>
+        <div class="kr-line"><div class="mark">В работе</div><div>AI-платформа генерации лендингов</div></div>
+        <div class="kr-line"><div class="mark">В работе</div><div><a href="https://ctdsgn.pages.dev/#/figma-make" target="_blank">AI-ready Design System</a></div></div>
+        <div class="kr-line"><div class="mark">→ Q3</div><div>Генерация production Native / JS</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="maestro">
+  <div class="eyebrow reveal">Инициатива 1 · Наши агенты</div>
+  <div class="product-head reveal">
+    <h2>Maestro — AI Product Assistant</h2>
+    <div class="product-links">
+      <a href="https://ctrader-maestro.pages.dev/" target="_blank">ctrader-maestro.pages.dev</a>
+    </div>
+  </div>
+  <p class="product-desc reveal">Локальный CLI поверх Claude Code с интеграциями YouTrack, GitLab, Amplitude и Figma. Помогает бизнес-аналитикам, продактам и дизайнерам — от ресерча до публикации готовой спеки — держать AI в контексте реального продукта.</p>
+  <div class="simple-list reveal">
+    <div class="row"><div class="k">/cortana</div><div class="v">Быстрая проработка фичи в спеку — около 10 минут</div></div>
+    <div class="row"><div class="k">/feature-shaping</div><div class="v">Полный 8-шаговый разбор фичи с контролем на каждом шаге</div></div>
+    <div class="row"><div class="k">/wireframe-*</div><div class="v">Интерактивные wireframe'ы под Mobile / Desktop / Admin / Store</div></div>
+    <div class="row"><div class="k">/research</div><div class="v">Мультиисточниковый ресерч с цитатами: YouTrack, GitLab, конкуренты</div></div>
+    <div class="row"><div class="k">/publish</div><div class="v">Спека → задачи в YouTrack, под аудиторию: дизайнер / разработчик / тестировщик</div></div>
+  </div>
+</section>
+
+<section id="assets">
+  <div class="eyebrow reveal">Инициатива 2 · Генерация ассетов</div>
+  <div class="product-head reveal">
+    <h2>Broker Assets Generator</h2>
+    <div class="product-links">
+      <a href="https://assets-generator-prod.swdesign.workers.dev/login" target="_blank">генератор брендинга</a>
+      <a href="https://gitea.dev.spotwa.re/robukh/assets-generator" target="_blank">исходный код</a>
+    </div>
+    <div class="creds">design-team@spotware.com / 6GgfeeS8GB9fJynJ</div>
+  </div>
+  <p class="product-desc reveal">Один логотип брокера + брендовые цвета → полное дерево white-label ассетов под все платформы cTrader, плюс branded PDF-презентация для sales. AI опционально классифицирует логотип для более точной подгонки.</p>
+  <div class="stat-row reveal">
+    <div class="s"><div class="n">Часы → ~4 мин</div><div class="l">было / стало, с учётом загрузки</div></div>
+    <div class="s"><div class="n">245</div><div class="l">ассетов — заново на каждого брокера</div></div>
+  </div>
+  <div class="plain-grid reveal">
+    <div class="item"><b>Windows / macOS</b><span>иконки, splash, инсталлятор</span></div>
+    <div class="item"><b>iOS / Android</b><span>все плотности, adaptive icon</span></div>
+    <div class="item"><b>cBroker</b><span>splash, чат-аватар, about</span></div>
+    <div class="item"><b>CrossBroker</b><span>нормализованные бренд-марки</span></div>
+  </div>
+</section>
+
+<section id="illustr">
+  <div class="eyebrow reveal">Инициатива 3 · Иллюстрации</div>
+  <div class="product-head reveal">
+    <h2>cTrader Illustrations</h2>
+    <div class="product-links">
+      <a href="https://chatgpt.com/agents/a/agt_69faf78b0b4481919b91fc494cc7032d" target="_blank">Workspace-агент</a>
+      <a href="https://chatgpt.com/g/g-69f2fef054088191be660b04f8998dbb-sw-art-director" target="_blank">GPT (личный аккаунт)</a>
+    </div>
+  </div>
+  <p class="product-desc reveal">Два ChatGPT-агента генерируют 3D-иллюстрации в фирменном стиле «Soft Glass» — для продуктовых визуалов, empty states, онбординга и маркетинга. Всегда сначала light-вариант, потом — по согласованию — dark.</p>
+  <div class="palette-row reveal">
+    <div class="swatch"><div class="fill" style="background:#009345"></div><div class="lbl">Brand Green</div></div>
+    <div class="swatch"><div class="fill" style="background:#f05824"></div><div class="lbl">Brand Orange</div></div>
+    <div class="swatch"><div class="fill" style="background:#FFD700"></div><div class="lbl">Gold accent</div></div>
+    <div class="swatch"><div class="fill" style="background:#191919"></div><div class="lbl">Dark BG</div></div>
+  </div>
+  <div class="plain-grid reveal">
+    <div class="item"><b>Security</b><span>стеклянный щит, замок</span></div>
+    <div class="item"><b>Analytics</b><span>прозрачная диаграмма, радар</span></div>
+    <div class="item"><b>Automation</b><span>голова робота, command orb</span></div>
+    <div class="item"><b>Growth</b><span>стеклянный график, ракета</span></div>
+    <div class="item"><b>Finance</b><span>кошелёк, весы, сейф</span></div>
+  </div>
+</section>
+
+<section id="workflow">
+  <div class="eyebrow reveal">Инициатива 4 · Как мы работаем</div>
+  <div class="product-head reveal">
+    <h2>AI-first Design Workflow</h2>
+    <div class="product-links">
+      <a href="https://masrus.github.io/ai-first-design-workflow/" target="_blank">masrus.github.io/ai-first-design-workflow</a>
+    </div>
+  </div>
+  <p class="product-desc reveal">Внедрён и описан как стандарт работы дизайн-команды: структурированный процесс, который распределяет задачи и ожидания между дизайнерами и продуктовыми аналитиками — единый воркфлоу на весь цикл разработки фичи.</p>
+  <div class="quote reveal">«Структурированный процесс, который описывает задачи и ожидания для дизайнеров и продуктовых аналитиков, повышая эффективность команды.»</div>
+  <div class="status-line reveal"><div class="dot"></div>Внедрён как стандарт · Done · Q2 2026</div>
+  <div class="footer-note reveal">Источники: YouTrack DSGN-14 / DSGN-30 · Google Sheets Role Profile OKR · Monday board 5094815934</div>
+</section>
+
+</div><!-- /view-landing -->
+
+<div id="view-projects">
+<section>
+  <div class="eyebrow">Проекты</div>
+  <h2 class="section-title" style="margin-bottom:16px;">Все AI-инструменты в одном месте</h2>
+  <p class="product-desc" style="margin-top:0;">Список того, что уже работает или в планах — со ссылками и доступами, чтобы не искать заново.</p>
+
+  <div class="proj-list">
+    <div class="proj-item">
+      <div class="proj-status">Production</div>
+      <div class="proj-name"><a href="https://ctrader-maestro.pages.dev/" target="_blank">Maestro — AI Product Assistant</a></div>
+      <div class="proj-desc">CLI поверх Claude Code: ресерч → спецификация → wireframe → публикация в YouTrack. Команды: /cortana, /feature-shaping, /wireframe-*, /research, /publish.</div>
+    </div>
+
+    <div class="proj-item">
+      <div class="proj-status">Production</div>
+      <div class="proj-name"><a href="https://assets-generator-prod.swdesign.workers.dev/login" target="_blank">Broker Assets Generator</a></div>
+      <div class="proj-desc">Логотип + цвета → 245 white-label ассетов на все платформы cTrader + branded PDF-презентация (/deck) для sales/онбординга новых брокеров.</div>
+      <div class="proj-tag">design-team@spotware.com / 6GgfeeS8GB9fJynJ · <a href="https://gitea.dev.spotwa.re/robukh/assets-generator" target="_blank" style="color:inherit;">исходный код</a></div>
+    </div>
+
+    <div class="proj-item">
+      <div class="proj-status">Production</div>
+      <div class="proj-name">cTrader Illustrations</div>
+      <div class="proj-desc">Два ChatGPT-агента, генерируют 3D-иллюстрации в стиле «Soft Glass» для продуктовых визуалов, empty states, онбординга.</div>
+      <div class="proj-tag"><a href="https://chatgpt.com/agents/a/agt_69faf78b0b4481919b91fc494cc7032d" target="_blank" style="color:inherit;">Workspace-агент</a> · <a href="https://chatgpt.com/g/g-69f2fef054088191be660b04f8998dbb-sw-art-director" target="_blank" style="color:inherit;">GPT (личный аккаунт)</a></div>
+    </div>
+
+    <div class="proj-item">
+      <div class="proj-status">Внедрён как стандарт</div>
+      <div class="proj-name"><a href="https://masrus.github.io/ai-first-design-workflow/" target="_blank">AI-first Design Workflow</a></div>
+      <div class="proj-desc">Структурированный процесс, который распределяет задачи и ожидания между дизайнерами и продуктовыми аналитиками на весь цикл разработки фичи.</div>
+      <div class="proj-tag"><a href="https://masrus.github.io/ai-first-design-workflow/" target="_blank" style="color:inherit;">masrus.github.io/ai-first-design-workflow</a></div>
+    </div>
+
+    <div class="proj-item">
+      <div class="proj-status">Done</div>
+      <div class="proj-name">studio-product</div>
+      <div class="proj-desc">Конвертация UI конкурентов в Spotware Design System с генерацией рабочего фронтенда.</div>
+      <div class="proj-tag">/studio-product</div>
+    </div>
+
+    <div class="proj-item">
+      <div class="proj-status">В работе</div>
+      <div class="proj-name">Генерация интерфейсов для cAdmin</div>
+      <div class="proj-desc">Генерация интерфейсов для продуктов с низкой стоимостью UX/UI-ошибки. Пока стабильно работает только для одного продукта — cTrader.</div>
+      <div class="proj-tag">/studio-cadmin</div>
+    </div>
+
+    <div class="proj-item">
+      <div class="proj-status">В планах, инструмент ещё не готов</div>
+      <div class="proj-name">AI-платформа генерации лендингов</div>
+      <div class="proj-desc">Пока без выбранного инструмента.</div>
+    </div>
+
+    <div class="proj-item">
+      <div class="proj-status">В планах</div>
+      <div class="proj-name">AI-генерация production Native / production-ready JS</div>
+      <div class="proj-desc">Перенесено на Q3, инструмент ещё не определён.</div>
+    </div>
+  </div>
+</section>
+</div><!-- /view-projects -->
+
+
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
+  }, {threshold:0.12});
+  revealEls.forEach(el=>io.observe(el));
+
+  const sections = document.querySelectorAll('section[id]');
+  const dots = document.querySelectorAll('.navdots a');
+  const navObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        dots.forEach(d=>d.classList.remove('active'));
+        const match = document.querySelector('.navdots a[href="#'+entry.target.id+'"]');
+        if(match) match.classList.add('active');
+      }
+    });
+  }, {threshold:0.5});
+  sections.forEach(s=>navObserver.observe(s));
+
+  const btnLanding = document.getElementById('btn-landing');
+  const btnProjects = document.getElementById('btn-projects');
+  const viewLanding = document.getElementById('view-landing');
+  const viewProjects = document.getElementById('view-projects');
+  const navdots = document.getElementById('navdots');
+
+  btnLanding.addEventListener('click', ()=>{
+    viewLanding.style.display = 'block';
+    viewProjects.style.display = 'none';
+    if(navdots) navdots.style.display = 'flex';
+    btnLanding.classList.add('active');
+    btnProjects.classList.remove('active');
+  });
+  btnProjects.addEventListener('click', ()=>{
+    viewLanding.style.display = 'none';
+    viewProjects.style.display = 'block';
+    if(navdots) navdots.style.display = 'none';
+    btnProjects.classList.add('active');
+    btnLanding.classList.remove('active');
+  });
+
+  const gate = document.getElementById('gate');
+  const gateForm = document.getElementById('gate-form');
+  const gateInput = document.getElementById('gate-input');
+  const gateErr = document.getElementById('gate-err');
+  const PASSWORD = 'Spotware';
+
+  if(sessionStorage.getItem('gate-ok') === '1'){ gate.style.display = 'none'; }
+
+  gateForm.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    if(gateInput.value === PASSWORD){
+      sessionStorage.setItem('gate-ok', '1');
+      gate.style.display = 'none';
+    } else {
+      gateErr.style.display = 'block';
+      gateInput.value = '';
+    }
+  });
+</script>
+
+</body>
+</html>
