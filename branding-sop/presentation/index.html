@@ -452,9 +452,40 @@
     }
     if (dk) {
       if (dark) return { src: dark };
+      // A white silhouette only reads for flat logos. Rich colour logos stay as they are.
+      if (flatness(light) === false) return { src: light };
       return { src: light, sil: !!slot.sil, outline: !!slot.outline };
     }
     return { src: light || dark };
+  }
+  // Is the logo flat (a few colours)? Looked up once per image, then cached; render() runs again when it is known.
+  const flatCache = new Map();
+  function flatness(src) {
+    if (!src) return true;
+    if (flatCache.has(src)) return flatCache.get(src);
+    flatCache.set(src, true);
+    const i = new Image();
+    i.onload = () => {
+      try {
+        const n = 64, k = Math.min(1, n / Math.max(i.naturalWidth, i.naturalHeight, 1));
+        const w = Math.max(1, Math.round(i.naturalWidth * k)) || n, h = Math.max(1, Math.round(i.naturalHeight * k)) || n;
+        const c = document.createElement('canvas'); c.width = w; c.height = h;
+        const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(i, 0, 0, w, h);
+        const d = g.getImageData(0, 0, w, h).data, bins = new Map(); let solid = 0;
+        for (let p = 0; p < d.length; p += 4) {
+          if (d[p + 3] < 200) continue;
+          solid++;
+          const key = (d[p] >> 5) << 6 | (d[p + 1] >> 5) << 3 | (d[p + 2] >> 5);
+          bins.set(key, (bins.get(key) || 0) + 1);
+        }
+        let main = 0; for (const v of bins.values()) if (v > solid * 0.015) main++;
+        const flat = main <= 4;
+        flatCache.set(src, flat);
+        if (!flat) render();
+      } catch {}
+    };
+    i.src = src;
+    return true;
   }
   const brokerName = () => (state.name || '').trim() || DEFAULT_NAME;
   const heroName = () => (state.name || '').trim() || DEFAULT_HERO;
