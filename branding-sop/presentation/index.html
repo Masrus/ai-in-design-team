@@ -1,0 +1,921 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cTrader Branding Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@400;600;700&family=Roboto:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --surface: #0F0F0E;
+    --surface-2: #181817;
+    --surface-3: #232321;
+    --ink: #F2F2F0;
+    --ink-2: #A3A39C;
+    --ink-3: #75756E;
+    --paper: #FFFFFF;
+    --r-lg: 28px;
+    --r-md: 16px;
+    --gutter: 24px;
+    --max: 1440px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 16px/1.5 'Geist', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+
+  /* ---------- logo controls (in hero) ---------- */
+  .controls {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) auto auto;
+    gap: 12px; align-items: center;
+  }
+  .drop {
+    display: flex; align-items: center; gap: 12px;
+    height: 64px; padding: 8px 8px 8px 8px;
+    background: var(--surface-2); border-radius: var(--r-md);
+    cursor: pointer; position: relative; min-width: 0;
+    transition: background .15s;
+  }
+  .drop:hover, .drop.over { background: var(--surface-3); }
+  .drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .thumb {
+    width: 48px; height: 48px; border-radius: 10px; flex: none;
+    display: grid; place-items: center; overflow: hidden; background: #fff;
+  }
+  .thumb.dark { background: #000; }
+  .thumb img { max-width: 78%; max-height: 78%; object-fit: contain; }
+  .drop .txt { min-width: 0; display: flex; flex-direction: column; }
+  .drop .t { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .drop .s { font-size: 14px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .drop .clear {
+    position: relative; z-index: 2; width: 40px; height: 40px; margin-left: auto; flex: none;
+    display: grid; place-items: center; border: 0; border-radius: 10px; background: none;
+    color: var(--ink-3); cursor: pointer;
+  }
+  .drop .clear:hover { color: var(--ink); background: rgba(255,255,255,.08); }
+  .drop .clear[hidden] { display: none; }
+  .drop .clear svg { width: 20px; height: 20px; }
+
+  .name-field input {
+    width: 100%; height: 64px; padding: 0 16px;
+    border: 0; border-radius: var(--r-md); background: var(--surface-2);
+    font: 500 16px 'Geist', sans-serif; color: var(--ink); outline: none;
+  }
+  .name-field input::placeholder { color: var(--ink-3); font-weight: 400; }
+  .name-field input:hover, .name-field input:focus { background: var(--surface-3); }
+
+  .btn {
+    height: 64px; padding: 0 20px; border: 0; border-radius: var(--r-md);
+    font: 500 16px 'Geist', sans-serif; cursor: pointer; white-space: nowrap;
+    display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
+  }
+  .reset { background: transparent; color: var(--ink-2); }
+  .reset:hover { background: var(--surface-2); color: var(--ink); }
+  .primary { background: #fff; color: #000; }
+  .primary:hover { background: #E2E2DE; }
+  .pdf { min-width: 160px; }
+  .pdf:disabled { cursor: progress; opacity: .7; }
+
+  /* ---------- hero ---------- */
+  .hero { position: relative; padding: 120px 0 96px; }
+  .hero::before {
+    content: ''; position: absolute; inset: -120px 0 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(60% 55% at 78% 40%, rgba(255,255,255,.10), transparent 70%),
+      radial-gradient(40% 40% at 10% 0%, rgba(255,255,255,.05), transparent 70%);
+  }
+  .hero-grid { display: grid; grid-template-columns: 1fr auto; gap: 64px; align-items: center; }
+  .hero h1 {
+    margin: 0; font-weight: 600; letter-spacing: -.045em; line-height: .95;
+    font-size: clamp(56px, 9vw, 152px);
+    overflow-wrap: anywhere;
+  }
+  .hero h1 .sub { display: block; color: var(--ink-3); }
+  .hero .lead { margin: 32px 0 0; max-width: 620px; font-size: 20px; line-height: 1.5; color: var(--ink-2); }
+  .hero-icon {
+    width: clamp(160px, 20vw, 280px); aspect-ratio: 1; border-radius: 22.5%;
+    background: #000; position: relative; display: grid; place-items: center;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.06) inset, 0 40px 120px rgba(255,255,255,.10);
+  }
+  .hero-icon img { width: 72%; height: 72%; object-fit: contain; }
+
+  .index { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 56px; padding: 0; list-style: none; }
+  .index a {
+    display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 20px;
+    border-radius: 999px; background: var(--surface-2); text-decoration: none; font-weight: 500;
+    transition: background .15s;
+  }
+  .index a:hover { background: var(--surface-3); }
+  .index a span { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+  /* ---------- sections ---------- */
+  .sec { padding: 96px 0 0; }
+  .sec-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: end; margin-bottom: 48px; }
+  .sec-head .num { display: block; font-size: 16px; font-weight: 500; color: var(--ink-3); margin-bottom: 16px; font-variant-numeric: tabular-nums; }
+  .sec-head h2 { margin: 0; font-size: clamp(40px, 5.2vw, 80px); line-height: 1; letter-spacing: -.035em; font-weight: 600; }
+  .sec-head p { margin: 0; font-size: 20px; line-height: 1.5; color: var(--ink-2); max-width: 560px; }
+  .shots { display: grid; gap: 48px; }
+  figure { margin: 0; }
+  .panel {
+    position: relative; width: 100%; overflow: hidden;
+    border-radius: var(--r-lg); background: var(--paper);
+  }
+  .panel.dark { background: var(--surface-2); }
+  .stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; transform: scale(var(--k, .5)); }
+  .stage > .bgimg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  figcaption { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  figcaption span { font-size: 16px; color: var(--ink-2); }
+  figcaption span + span::before { content: '·'; margin-right: 8px; color: var(--ink-3); }
+
+  .ident { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+
+  .slot { position: absolute; }
+  .slot img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .slot.wide img { position: absolute; left: 0; top: 19.75%; height: 60.5%; }
+  .slot.sil img { filter: brightness(0) invert(1); }
+  .slot.outline img { filter: drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff); }
+  .slot.name { white-space: nowrap; overflow: visible; }
+  .slot.tile { background: #000; }
+
+  /* ---------- closing ---------- */
+  .close { padding: 160px 0 64px; }
+  .close h2 { margin: 0 0 32px; font-size: clamp(40px, 6vw, 96px); line-height: 1; letter-spacing: -.04em; font-weight: 600; max-width: 12ch; }
+  .close .row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .foot { margin-top: 120px; padding: 32px 0 48px; display: flex; flex-wrap: wrap; gap: 24px 48px; align-items: center; justify-content: space-between; background: var(--surface); border-radius: var(--r-lg) var(--r-lg) 0 0; }
+  .foot-in { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center; justify-content: space-between; width: 100%; }
+  .foot img { height: 28px; display: block; }
+  .contacts { display: flex; flex-wrap: wrap; gap: 8px 32px; font-size: 14px; color: var(--ink-2); }
+  .contacts a { text-decoration: none; }
+  .contacts a:hover { color: var(--ink); }
+  .note { font-size: 14px; color: var(--ink-3); margin: 16px 0 0; }
+
+  /* reveal */
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  @media (max-width: 1100px) {
+    .controls { grid-template-columns: 1fr 1fr auto auto; }
+    #drop-light { grid-column: 1 / 3; } #drop-dark { grid-column: 3 / -1; }
+    .name-field { grid-column: 1 / 3; }
+  }
+  @media (max-width: 900px) {
+    .hero { padding: 64px 0 48px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero-icon { order: -1; width: 128px; }
+    .sec { padding-top: 72px; }
+    .sec-head { grid-template-columns: 1fr; gap: 16px; margin-bottom: 32px; }
+    .sec-head p, .hero .lead { font-size: 18px; }
+    .ident { grid-template-columns: 1fr; }
+    .shots { gap: 32px; }
+  }
+  @media (max-width: 640px) {
+    :root { --gutter: 16px; --r-lg: 20px; }
+    .controls { grid-template-columns: 1fr 1fr; margin-top: 40px; }
+    .name-field, #drop-light, #drop-dark { grid-column: 1 / -1; }
+    .pdf { min-width: 0; }
+    .close { padding-top: 96px; }
+  }
+  /* ---------- crop dialog ---------- */
+  .drop .edit {
+    position: relative; z-index: 2; width: 40px; height: 40px; flex: none; margin-left: auto;
+    display: grid; place-items: center; border: 0; border-radius: 10px; background: none;
+    color: var(--ink-3); cursor: pointer;
+  }
+  .drop .edit + .clear { margin-left: 0; }
+  .drop .edit:hover { color: var(--ink); background: rgba(255,255,255,.08); }
+  .drop .edit[hidden] { display: none; }
+  .drop .edit svg { width: 20px; height: 20px; }
+  dialog.crop {
+    width: min(960px, calc(100vw - 32px)); max-height: calc(100dvh - 32px);
+    padding: 0; border: 0; border-radius: var(--r-lg); overflow: auto;
+    background: var(--surface); color: var(--ink);
+  }
+  dialog.crop::backdrop { background: rgba(0,0,0,.72); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  .crop-in { padding: 32px; display: grid; gap: 24px; }
+  .crop-in h3 { margin: 0; font-size: 24px; line-height: 1.25; font-weight: 600; letter-spacing: -.01em; }
+  .crop-in .sub { margin: 8px 0 0; font-size: 16px; color: var(--ink-2); }
+  .crop-grid { display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 24px; align-items: start; }
+  .crop-area {
+    position: relative; height: 360px; border-radius: var(--r-md); overflow: hidden; touch-action: none; user-select: none;
+    background-color: #fff;
+    background-image: linear-gradient(45deg, #E9E9E6 25%, transparent 25%, transparent 75%, #E9E9E6 75%), linear-gradient(45deg, #E9E9E6 25%, transparent 25%, transparent 75%, #E9E9E6 75%);
+    background-size: 20px 20px; background-position: 0 0, 10px 10px;
+  }
+  .crop-area.dark { background-color: #000; background-image: linear-gradient(45deg, #161615 25%, transparent 25%, transparent 75%, #161615 75%), linear-gradient(45deg, #161615 25%, transparent 25%, transparent 75%, #161615 75%); }
+  .crop-area img { position: absolute; pointer-events: none; }
+  .crop-frame {
+    position: absolute; cursor: move; border-radius: 22.5%;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 9999px rgba(0,0,0,.55);
+  }
+  .crop-frame .h { position: absolute; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+  .crop-frame .h.nw { left: -12px; top: -12px; cursor: nwse-resize; }
+  .crop-frame .h.ne { right: -12px; top: -12px; cursor: nesw-resize; }
+  .crop-frame .h.sw { left: -12px; bottom: -12px; cursor: nesw-resize; }
+  .crop-frame .h.se { right: -12px; bottom: -12px; cursor: nwse-resize; }
+  .crop-size { display: flex; align-items: center; gap: 16px; margin-top: 16px; font-size: 14px; color: var(--ink-2); }
+  .crop-size input { flex: 1; accent-color: #fff; height: 32px; }
+  .crop-size input:focus { outline: none; }
+  .crop-size input:focus-visible { outline: 2px solid rgba(255,255,255,.5); outline-offset: 4px; border-radius: 4px; }
+  .crop-prev { display: grid; gap: 16px; }
+  .crop-prev .lbl { font-size: 14px; color: var(--ink-2); margin-top: 8px; }
+  .crop-prev .tile { width: 100%; aspect-ratio: 1; border-radius: 22.5%; background: #000; display: grid; place-items: center; }
+  .crop-prev .tile img { width: 72%; height: 72%; object-fit: contain; }
+  .crop-prev .small { display: flex; gap: 16px; align-items: center; }
+  .crop-prev .small .tile { width: 64px; flex: none; }
+  .crop-prev .small span { font-size: 14px; color: var(--ink-2); }
+  .crop-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+  @media (max-width: 720px) {
+    .crop-in { padding: 20px; gap: 20px; }
+    .crop-grid { grid-template-columns: 1fr; }
+    .crop-area { height: 300px; }
+    .crop-prev { grid-template-columns: 120px 1fr; align-items: center; }
+    .crop-actions .btn { flex: 1; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1><span id="hero-name">Your brand</span><span class="sub">on cTrader</span></h1>
+        <p class="lead">Web, Desktop, Mobile, Admin and Email. One trading platform that carries your brand everywhere your traders meet it.</p>
+      </div>
+      <div class="hero-icon" aria-hidden="true"><img id="hero-icon" alt=""></div>
+    </div>
+    <div class="wrap">
+      <div class="controls">
+    <label class="drop" id="drop-light">
+      <span class="thumb"><img id="thumb-light" alt=""></span>
+      <span class="txt">
+        <span class="t">Your logo</span>
+        <span class="s" id="hint-light">SVG or PNG, transparent</span>
+      </span>
+      <button class="edit" id="edit-light" type="button" hidden aria-label="Edit icon crop" title="Edit icon crop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14"/></svg></button>
+      <button class="clear" id="clear-light" type="button" hidden aria-label="Remove logo" title="Remove logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button>
+      <input type="file" accept="image/svg+xml,image/png,image/webp,image/jpeg" data-key="light">
+    </label>
+
+    <label class="drop" id="drop-dark">
+      <span class="thumb dark"><img id="thumb-dark" alt=""></span>
+      <span class="txt">
+        <span class="t">Logo for dark backgrounds</span>
+        <span class="s" id="hint-dark">Optional</span>
+      </span>
+      <button class="edit" id="edit-dark" type="button" hidden aria-label="Edit icon crop" title="Edit icon crop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14"/></svg></button>
+      <button class="clear" id="clear-dark" type="button" hidden aria-label="Remove dark logo" title="Remove logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button>
+      <input type="file" accept="image/svg+xml,image/png,image/webp,image/jpeg" data-key="dark">
+    </label>
+
+    <div class="name-field">
+      <input id="name" type="text" maxlength="40" placeholder="Broker name" aria-label="Broker name" autocomplete="organization">
+    </div>
+
+    <button class="btn reset" id="reset" type="button">Reset</button>
+    <button class="btn primary pdf" id="pdf" type="button">Download PDF</button>
+      </div>
+      <p class="note">Your logo stays in this browser only. Nothing is uploaded to our servers.</p>
+      <ul class="index" id="index"></ul>
+    </div>
+  </section>
+
+  <div id="sections"></div>
+
+  <section class="close">
+    <div class="wrap">
+      <h2>Let’s put your brand on cTrader.</h2>
+      <div class="row">
+        <a class="btn primary" href="mailto:sales@spotware.com">Contact sales</a>
+        <button class="btn reset" type="button" id="pdf-2">Download as PDF</button>
+      </div>
+    </div>
+    <div class="wrap">
+      <footer class="foot">
+        <div class="foot-in wrap">
+          <img src="assets/spotware-logo.svg" alt="Spotware">
+          <div class="contacts">
+            <a href="https://www.spotware.com" target="_blank" rel="noopener">www.spotware.com</a>
+            <a href="mailto:sales@spotware.com">sales@spotware.com</a>
+            <a href="tel:+35725344902">+357 25 344 902</a>
+            <span>3rd Floor, Stratigou Gianni Timagia 19, Limassol 3107</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </section>
+</main>
+
+<dialog class="crop" id="crop" aria-labelledby="crop-title">
+  <div class="crop-in">
+    <div>
+      <h3 id="crop-title">Choose your app icon</h3>
+      <p class="sub">Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.</p>
+    </div>
+    <div class="crop-grid">
+      <div>
+        <div class="crop-area" id="crop-area">
+          <img id="crop-img" alt="">
+          <div class="crop-frame" id="crop-frame"><i class="h nw"></i><i class="h ne"></i><i class="h sw"></i><i class="h se"></i></div>
+        </div>
+        <label class="crop-size">Size <input type="range" id="crop-range" min="0" max="1000" value="500" aria-label="Frame size"></label>
+      </div>
+      <div class="crop-prev">
+        <div><div class="tile"><img id="crop-prev-big" alt=""></div><div class="lbl">App icon</div></div>
+        <div class="small"><div class="tile"><img id="crop-prev-small" alt=""></div><span>Notification</span></div>
+      </div>
+    </div>
+    <div class="crop-actions">
+      <button class="btn reset" type="button" id="crop-full">Use the whole logo</button>
+      <button class="btn primary" type="button" id="crop-done" autofocus>Done</button>
+    </div>
+  </div>
+</dialog>
+
+<script src="shots.js"></script>
+<script>
+(() => {
+  const DEFAULT_NAME = 'cTrader';          // name inside app screens before the broker types theirs
+  const DEFAULT_HERO = 'Your brand';       // headline before the broker types their name
+  const DEF = {
+    markWhite: 'assets/ctrader-mark-white.svg',
+    wideWhite: 'assets/ctrader-wide-white.svg',
+    wideBlack: 'assets/ctrader-wide-black.svg',
+  };
+  const state = { light: null, dark: null, lightSquare: null, darkSquare: null, lightCrop: null, darkCrop: null, name: '' };
+  const IMG_KEYS = ['light', 'dark', 'lightSquare', 'darkSquare', 'lightCrop', 'darkCrop'];
+
+  /* ---------- page content ---------- */
+  // Identity panels are drawn from slots too, so the PDF renders them with the same code.
+  const IDENT = [
+    { cap: 'App icon', w: 640, h: 480, fill: '#FFFFFF', slots: [
+      { k: 'tile', x: 200, y: 120, w: 240, h: 240, r: 54 },
+      { k: 'icon', x: 233.6, y: 153.6, w: 172.8, h: 172.8 },
+    ]},
+    { cap: 'Logo on light', w: 640, h: 480, fill: '#FFFFFF', slots: [
+      { k: 'wide', bg: 'light', x: 120, y: 165, w: 400, h: 150 },
+    ]},
+    { cap: 'Logo on dark', w: 640, h: 480, fill: '#181817', slots: [
+      { k: 'wide', bg: 'dark', sil: true, x: 120, y: 165, w: 400, h: 150 },
+    ]},
+  ];
+  const S = window.SHOTS;
+  const SECTIONS = [
+    { id: 'identity', title: 'Identity', lead: 'One logo, every surface. Your mark replaces cTrader on app icons, splash screens, installers, notifications and emails.', ident: true },
+    { id: 'desktop', title: 'cTrader Web & Desktop', lead: 'From the browser tab and the dock to the installer, notifications and login screen, traders see your brand first.', shots: ['05', '06', '07'] },
+    { id: 'mobile', title: 'cTrader Mobile', lead: 'Android and iOS apps with your icon, splash screen, login and in-app menu.', shots: ['09', '10'] },
+    { id: 'stores', title: 'App Store & Google Play', lead: 'Your listing in both stores, with your name and your icon.', shots: ['11'] },
+    { id: 'admin', title: 'cTrader Admin', lead: 'Your back office carries your brand in the splash screen, notifications, dialogs and app header.', shots: ['13', '14'] },
+    { id: 'email', title: 'Email', lead: 'Transactional emails in light and dark themes, signed with your logo.', shots: ['15'] },
+  ];
+
+  /* ---------- local storage (IndexedDB for images, localStorage for name) ---------- */
+  const DB = 'ctrader-branding-preview', STORE = 'logos';
+  function idb() {
+    return new Promise((res, rej) => {
+      try {
+        const r = indexedDB.open(DB, 1);
+        r.onupgradeneeded = () => r.result.createObjectStore(STORE);
+        r.onsuccess = () => res(r.result);
+        r.onerror = () => rej(r.error);
+      } catch (e) { rej(e); }
+    });
+  }
+  async function dbGet(key) {
+    try { const db = await idb();
+      return await new Promise((res) => { const q = db.transaction(STORE).objectStore(STORE).get(key); q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); });
+    } catch { return null; }
+  }
+  async function dbSet(key, val) {
+    try { const db = await idb();
+      await new Promise((res) => { const tx = db.transaction(STORE, 'readwrite'); val == null ? tx.objectStore(STORE).delete(key) : tx.objectStore(STORE).put(val, key); tx.oncomplete = res; tx.onerror = res; });
+    } catch {}
+  }
+  const lsGet = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+  const lsSet = (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch {} };
+
+  /* ---------- reading uploads ---------- */
+  function readFile(file) {
+    return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = () => rej(fr.error); fr.readAsDataURL(file); });
+  }
+  // Raster logos are trimmed of transparent margins and capped at 1600px; SVG is kept as is.
+  async function normalise(file) {
+    const url = await readFile(file);
+    if (file.type === 'image/svg+xml') return url;
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+    const w = img.naturalWidth, h = img.naturalHeight;
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d'); g.drawImage(img, 0, 0);
+    let box = { x0: 0, y0: 0, x1: w, y1: h };
+    try {
+      const d = g.getImageData(0, 0, w, h).data;
+      let x0 = w, y0 = h, x1 = -1, y1 = -1;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        if (d[(y * w + x) * 4 + 3] > 8) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      }
+      if (x1 >= 0) box = { x0, y0, x1: x1 + 1, y1: y1 + 1 };
+    } catch {}
+    const bw = box.x1 - box.x0, bh = box.y1 - box.y0;
+    const s = Math.min(1, 1600 / Math.max(bw, bh));
+    const o = document.createElement('canvas'); o.width = Math.round(bw * s); o.height = Math.round(bh * s);
+    const og = o.getContext('2d'); og.imageSmoothingQuality = 'high';
+    og.drawImage(c, box.x0, box.y0, bw, bh, 0, 0, o.width, o.height);
+    return o.toDataURL('image/png');
+  }
+
+  /* ---------- which image goes into which slot ---------- */
+  function pick(slot) {
+    const square = slot.k === 'icon' || slot.k === 'mark';
+    const light = (square && state.lightSquare) || state.light;
+    const dark = (square && state.darkSquare) || state.dark;
+    const dk = slot.k !== 'wide' || slot.bg === 'dark';
+    if (!light && !dark) {
+      if (square) return { src: DEF.markWhite };
+      return { src: dk ? DEF.wideWhite : DEF.wideBlack };
+    }
+    if (dk) {
+      if (dark) return { src: dark };
+      return { src: light, sil: !!slot.sil, outline: !!slot.outline };
+    }
+    return { src: light || dark };
+  }
+  const brokerName = () => (state.name || '').trim() || DEFAULT_NAME;
+  const heroName = () => (state.name || '').trim() || DEFAULT_HERO;
+
+  /* ---------- build ---------- */
+  const refs = [];  // { el, img?, slot }
+  const extraIcons = [];  // plain <img> that show the icon logo (hero)
+  function buildPanel({ w, h, fill, bg, slots }, dark) {
+    const panel = document.createElement('div');
+    panel.className = 'panel' + (dark ? ' dark' : '');
+    panel.style.aspectRatio = `${w} / ${h}`;
+    if (fill) panel.style.background = fill;
+    panel.dataset.w = w;
+    const st = document.createElement('div'); st.className = 'stage';
+    st.style.width = w + 'px'; st.style.height = h + 'px';
+    if (bg) {
+      const im = document.createElement('img');
+      im.className = 'bgimg'; im.src = bg; im.alt = ''; im.loading = 'lazy'; im.decoding = 'async';
+      st.appendChild(im);
+    }
+    for (const slot of slots) {
+      const el = document.createElement('div');
+      el.className = 'slot';
+      Object.assign(el.style, { left: slot.x + 'px', top: slot.y + 'px', width: slot.w + 'px', height: slot.h + 'px' });
+      if (slot.k === 'tile') {
+        el.classList.add('tile'); el.style.borderRadius = slot.r + 'px';
+      } else if (slot.k === 'name') {
+        el.classList.add('name');
+        Object.assign(el.style, { fontFamily: slot.f.family, fontWeight: slot.f.weight, fontSize: slot.size + 'px', lineHeight: slot.h + 'px', color: slot.color, textAlign: slot.align });
+        if (slot.align === 'center') { el.style.display = 'flex'; el.style.justifyContent = 'center'; }
+        refs.push({ el, slot });
+      } else {
+        if (slot.k === 'wide') el.classList.add('wide');
+        const img = document.createElement('img'); img.alt = ''; img.decoding = 'async';
+        img.style.objectPosition = slot.pos || 'center';
+        el.appendChild(img);
+        refs.push({ el, img, slot });
+      }
+      st.appendChild(el);
+    }
+    panel.appendChild(st);
+    return panel;
+  }
+  function figure(panel, caps) {
+    const f = document.createElement('figure'); f.className = 'reveal';
+    f.appendChild(panel);
+    const c = document.createElement('figcaption');
+    for (const t of caps) { const s = document.createElement('span'); s.textContent = t; c.appendChild(s); }
+    f.appendChild(c);
+    return f;
+  }
+
+  const index = document.getElementById('index');
+  const root = document.getElementById('sections');
+  SECTIONS.forEach((sec, i) => {
+    const num = String(i + 1).padStart(2, '0');
+    index.insertAdjacentHTML('beforeend', `<li><a href="#${sec.id}"><span>${num}</span>${sec.title.replace('&', '&amp;')}</a></li>`);
+    const el = document.createElement('section');
+    el.className = 'sec'; el.id = sec.id;
+    el.innerHTML = `<div class="wrap"><div class="sec-head reveal"><div><span class="num">${num}</span><h2></h2></div><p></p></div><div class="body"></div></div>`;
+    el.querySelector('h2').textContent = sec.title;
+    el.querySelector('p').textContent = sec.lead;
+    const body = el.querySelector('.body');
+    if (sec.ident) {
+      const g = document.createElement('div'); g.className = 'ident';
+      for (const p of IDENT) g.appendChild(figure(buildPanel(p), [p.cap]));
+      body.appendChild(g);
+    } else {
+      const list = document.createElement('div'); list.className = 'shots';
+      for (const n of sec.shots) {
+        const s = S[n];
+        list.appendChild(figure(buildPanel({ w: s.w, h: s.h, bg: `shots/${n}.webp`, slots: s.slots }), s.caption));
+      }
+      body.appendChild(list);
+    }
+    root.appendChild(el);
+  });
+  extraIcons.push(document.getElementById('hero-icon'));
+
+  // scale every stage to its panel width
+  const ro = new ResizeObserver((entries) => {
+    for (const e of entries) e.target.style.setProperty('--k', e.contentRect.width / +e.target.dataset.w);
+  });
+  document.querySelectorAll('.panel').forEach((n) => ro.observe(n));
+
+  // reveal on scroll
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => {
+    for (const e of es) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }, { rootMargin: '0px 0px -8% 0px' }) : null;
+  document.querySelectorAll('.reveal').forEach((n) => io ? io.observe(n) : n.classList.add('in'));
+
+  function render() {
+    const nm = brokerName();
+    for (const r of refs) {
+      if (r.slot.k === 'name') { r.el.textContent = nm; continue; }
+      const p = pick(r.slot);
+      if (r.img.getAttribute('src') !== p.src) r.img.src = p.src;
+      r.el.classList.toggle('sil', !!p.sil);
+      r.el.classList.toggle('outline', !!p.outline);
+    }
+    const ic = pick({ k: 'icon' });
+    for (const im of extraIcons) { if (im.getAttribute('src') !== ic.src) im.src = ic.src; im.style.filter = ic.sil ? 'brightness(0) invert(1)' : ''; }
+    document.getElementById('hero-name').textContent = heroName();
+    document.title = (state.name.trim() ? state.name.trim() + ' on cTrader' : 'cTrader Branding Preview');
+    setThumb('light', state.light, DEF.wideBlack, 'SVG or PNG, transparent');
+    setThumb('dark', state.dark, state.light ? null : DEF.wideWhite, 'Optional');
+  }
+  function setThumb(key, val, fallback, hint) {
+    const t = document.getElementById('thumb-' + key);
+    const src = val || fallback || state.light;
+    if (src) { t.src = src; t.style.visibility = ''; } else t.style.visibility = 'hidden';
+    document.getElementById('clear-' + key).hidden = !val;
+    document.getElementById('edit-' + key).hidden = !val;
+    document.getElementById('hint-' + key).textContent = val ? 'Uploaded' : hint;
+  }
+
+  /* ---------- inputs ---------- */
+  async function setLogo(key, file) {
+    if (!file || !/^image\//.test(file.type)) return;
+    try { state[key] = await normalise(file); } catch { return; }
+    state[key + 'Square'] = null; state[key + 'Crop'] = null;
+    for (const k of [key, key + 'Square', key + 'Crop']) await dbSet(k, state[k]);
+    render();
+    openCrop(key);
+  }
+
+  /* ---------- icon crop ---------- */
+  // The square icon is cut from the uploaded logo. Frame is kept in logo pixels: { x, y, s }.
+  // It may be larger than the logo (zoom out) — the outside stays transparent.
+  const dlg = document.getElementById('crop');
+  const area = document.getElementById('crop-area');
+  const cImg = document.getElementById('crop-img');
+  const frameEl = document.getElementById('crop-frame');
+  const range = document.getElementById('crop-range');
+  const prevBig = document.getElementById('crop-prev-big');
+  const prevSmall = document.getElementById('crop-prev-small');
+  const cs = { key: null, img: null, w: 0, h: 0, f: null, view: null, prevTimer: 0 };
+  const OUT = 1024;
+
+  function sizeLimits() { const m = Math.max(cs.w, cs.h); return { min: Math.max(8, Math.min(cs.w, cs.h) * 0.15), max: m * 1.6 }; }
+  function clampFrame(f) {
+    const { min, max } = sizeLimits();
+    f.s = Math.min(max, Math.max(min, f.s));
+    // frame may not leave the logo: if it is bigger than the logo, it may only slide over the logo
+    const lo = (len) => Math.min(0, len - f.s), hi = (len) => Math.max(0, len - f.s);
+    f.x = Math.min(hi(cs.w), Math.max(lo(cs.w), f.x));
+    f.y = Math.min(hi(cs.h), Math.max(lo(cs.h), f.y));
+    return f;
+  }
+  function defaultFrame() {
+    const r = cs.w / cs.h;
+    if (r > 1.5) return { x: 0, y: 0, s: cs.h };                       // wide logo: the mark is usually on the left
+    if (r < 1 / 1.5) return { x: 0, y: 0, s: cs.w };                   // tall logo: the mark is usually on top
+    const s = Math.max(cs.w, cs.h); return { x: (cs.w - s) / 2, y: (cs.h - s) / 2, s };
+  }
+  function layout() {
+    const A = area.getBoundingClientRect();
+    const pad = 32, k = Math.min((A.width - 2 * pad) / cs.w, (A.height - 2 * pad) / cs.h);
+    const ox = (A.width - cs.w * k) / 2, oy = (A.height - cs.h * k) / 2;
+    cs.view = { k, ox, oy };
+    Object.assign(cImg.style, { left: ox + 'px', top: oy + 'px', width: cs.w * k + 'px', height: cs.h * k + 'px' });
+    drawFrame();
+  }
+  function drawFrame() {
+    const { k, ox, oy } = cs.view, f = cs.f;
+    Object.assign(frameEl.style, { left: ox + f.x * k + 'px', top: oy + f.y * k + 'px', width: f.s * k + 'px', height: f.s * k + 'px' });
+    const { min, max } = sizeLimits();
+    range.value = Math.round(1000 * Math.log(f.s / min) / Math.log(max / min));
+    clearTimeout(cs.prevTimer); cs.prevTimer = setTimeout(updatePreview, 30);
+  }
+  function cropTo(size) {
+    const c = document.createElement('canvas'); c.width = c.height = size;
+    const g = c.getContext('2d'); g.imageSmoothingQuality = 'high';
+    const k = size / cs.f.s;
+    g.drawImage(cs.img, -cs.f.x * k, -cs.f.y * k, cs.w * k, cs.h * k);
+    return c.toDataURL('image/png');
+  }
+  function updatePreview() { const u = cropTo(256); prevBig.src = u; prevSmall.src = u; }
+
+  async function openCrop(key) {
+    const src = state[key]; if (!src) return;
+    cs.key = key;
+    cs.img = await loadImg(src);
+    cs.w = cs.img.naturalWidth || 1000; cs.h = cs.img.naturalHeight || Math.round(1000 / ratioOf(cs.img, src));
+    cImg.src = src;
+    area.classList.toggle('dark', key === 'dark');
+    cs.f = clampFrame(state[key + 'Crop'] ? { ...state[key + 'Crop'] } : defaultFrame());
+    if (!dlg.open) dlg.showModal();
+    layout();
+  }
+  async function closeCrop(useCrop) {
+    const key = cs.key;
+    if (useCrop) { state[key + 'Square'] = cropTo(OUT); state[key + 'Crop'] = { ...cs.f }; }
+    else { state[key + 'Square'] = null; state[key + 'Crop'] = null; }
+    dlg.close();
+    for (const k of [key + 'Square', key + 'Crop']) await dbSet(k, state[k]);
+    render();
+  }
+  document.getElementById('crop-done').addEventListener('click', () => closeCrop(true));
+  document.getElementById('crop-full').addEventListener('click', () => closeCrop(false));
+  dlg.addEventListener('cancel', (e) => { e.preventDefault(); closeCrop(true); });
+  window.addEventListener('resize', () => dlg.open && layout());
+
+  // drag to move, corner handles to resize (square, opposite corner fixed)
+  let drag = null;
+  frameEl.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    const h = e.target.classList.contains('h') ? [...e.target.classList].find((c) => c !== 'h') : null;
+    drag = { id: e.pointerId, h, sx: e.clientX, sy: e.clientY, f: { ...cs.f } };
+    frameEl.setPointerCapture(e.pointerId);
+  });
+  frameEl.addEventListener('pointermove', (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const k = cs.view.k, dx = (e.clientX - drag.sx) / k, dy = (e.clientY - drag.sy) / k, f0 = drag.f;
+    if (!drag.h) { cs.f = clampFrame({ x: f0.x + dx, y: f0.y + dy, s: f0.s }); drawFrame(); return; }
+    const sx = drag.h.includes('e') ? 1 : -1, sy = drag.h.includes('s') ? 1 : -1;
+    const d = (sx * dx + sy * dy) / 2;                                // grow along the diagonal
+    const { min, max } = sizeLimits();
+    const s = Math.min(max, Math.max(min, f0.s + d));
+    const ax = sx > 0 ? f0.x : f0.x + f0.s, ay = sy > 0 ? f0.y : f0.y + f0.s;   // fixed corner
+    cs.f = clampFrame({ x: sx > 0 ? ax : ax - s, y: sy > 0 ? ay : ay - s, s });
+    drawFrame();
+  });
+  const endDrag = (e) => { if (drag && e.pointerId === drag.id) drag = null; };
+  frameEl.addEventListener('pointerup', endDrag); frameEl.addEventListener('pointercancel', endDrag);
+  // size slider and mouse wheel zoom around the frame centre
+  function resizeAround(s) {
+    const cx = cs.f.x + cs.f.s / 2, cy = cs.f.y + cs.f.s / 2;
+    const { min, max } = sizeLimits(); s = Math.min(max, Math.max(min, s));
+    cs.f = clampFrame({ x: cx - s / 2, y: cy - s / 2, s }); drawFrame();
+  }
+  range.addEventListener('input', () => { const { min, max } = sizeLimits(); resizeAround(min * Math.pow(max / min, range.value / 1000)); });
+  area.addEventListener('wheel', (e) => { e.preventDefault(); resizeAround(cs.f.s * Math.exp(e.deltaY * 0.0015)); }, { passive: false });
+  for (const key of ['light', 'dark']) {
+    document.getElementById('edit-' + key).addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); openCrop(key); });
+  }
+  document.querySelectorAll('.drop input[type=file]').forEach((inp) => {
+    inp.addEventListener('change', () => { setLogo(inp.dataset.key, inp.files[0]); inp.value = ''; });
+    const drop = inp.closest('.drop');
+    drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+    drop.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('over'); setLogo(inp.dataset.key, e.dataTransfer.files[0]); });
+  });
+  for (const key of ['light', 'dark']) {
+    document.getElementById('clear-' + key).addEventListener('click', async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      for (const k of [key, key + 'Square', key + 'Crop']) { state[k] = null; await dbSet(k, null); }
+      render();
+    });
+  }
+  const nameInput = document.getElementById('name');
+  nameInput.addEventListener('input', () => { state.name = nameInput.value; lsSet('ctrader-preview-name', state.name); render(); });
+  document.getElementById('reset').addEventListener('click', async () => {
+    for (const k of IMG_KEYS) { state[k] = null; await dbSet(k, null); }
+    state.name = ''; nameInput.value = ''; lsSet('ctrader-preview-name', '');
+    render();
+  });
+
+  /* ---------- canvas render (for PDF) — same rules as the DOM preview ---------- */
+  const imgCache = new Map();
+  function loadImg(src) {
+    // opened as a local file: use inlined copies, otherwise the canvas is "tainted" and can't be exported
+    const real = (window.__LOCAL_ASSETS && window.__LOCAL_ASSETS[src]) || src;
+    if (!imgCache.has(real)) imgCache.set(real, new Promise((res, rej) => {
+      const i = new Image(); i.decoding = 'async';
+      i.onload = () => res(i); i.onerror = () => rej(new Error('image failed: ' + src.slice(0, 60)));
+      i.src = real;
+    }));
+    return imgCache.get(real);
+  }
+  function ratioOf(img, src) {
+    if (img.naturalWidth && img.naturalHeight) return img.naturalWidth / img.naturalHeight;
+    try {
+      const txt = src.startsWith('data:image/svg+xml;base64,') ? atob(src.split(',')[1]) : decodeURIComponent(src.split(',')[1] || '');
+      const vb = txt.match(/viewBox="\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/);
+      if (vb) return parseFloat(vb[1]) / parseFloat(vb[2]);
+    } catch {}
+    return 1;
+  }
+  function tinted(img, w, h, color, px) {
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.ceil(w * px)); c.height = Math.max(1, Math.ceil(h * px));
+    const g = c.getContext('2d');
+    g.drawImage(img, 0, 0, c.width, c.height);
+    g.globalCompositeOperation = 'source-in';
+    g.fillStyle = color; g.fillRect(0, 0, c.width, c.height);
+    return c;
+  }
+  // Draws one panel (bg image + slots) into a box on the page canvas. px = device pixels per panel unit.
+  async function drawPanel(g, p, X, Y, W, radius, px) {
+    const k = W / p.w, H = p.h * k;
+    g.save();
+    g.beginPath(); g.roundRect(X, Y, W, H, radius); g.clip();
+    g.fillStyle = p.fill || '#FFFFFF'; g.fillRect(X, Y, W, H);
+    g.translate(X, Y); g.scale(k, k);
+    if (p.bg) g.drawImage(await loadImg(p.bg), 0, 0, p.w, p.h);
+    const nm = brokerName();
+    for (const slot of p.slots) {
+      if (slot.k === 'tile') { g.fillStyle = '#000'; g.beginPath(); g.roundRect(slot.x, slot.y, slot.w, slot.h, slot.r); g.fill(); continue; }
+      if (slot.k === 'name') {
+        g.font = `${slot.f.weight} ${slot.size}px ${slot.f.family}`;
+        g.fillStyle = slot.color; g.textBaseline = 'alphabetic';
+        const m = g.measureText(nm);
+        const asc = m.fontBoundingBoxAscent ?? slot.size * 0.93;
+        const desc = m.fontBoundingBoxDescent ?? slot.size * 0.24;
+        const base = slot.y + (slot.h - (asc + desc)) / 2 + asc;
+        g.textAlign = slot.align === 'center' ? 'center' : 'left';
+        g.fillText(nm, slot.align === 'center' ? slot.x + slot.w / 2 : slot.x, base);
+        continue;
+      }
+      const pk = pick(slot);
+      const img = await loadImg(pk.src);
+      const r = ratioOf(img, pk.src);
+      let bx = slot.x, by = slot.y, bw = slot.w, bh = slot.h;
+      if (slot.k === 'wide') { by = slot.y + slot.h * 0.1975; bh = slot.h * 0.605; }
+      let dw = bw, dh = bw / r;
+      if (dh > bh) { dh = bh; dw = bh * r; }
+      const pos = slot.pos || 'center';
+      const dx = pos.startsWith('left') ? bx : pos.startsWith('right') ? bx + bw - dw : bx + (bw - dw) / 2;
+      const dy = by + (bh - dh) / 2;
+      const dpx = px * k;
+      if (pk.sil) g.drawImage(tinted(img, dw, dh, '#fff', dpx), dx, dy, dw, dh);
+      else if (pk.outline) {
+        const wt = tinted(img, dw, dh, '#fff', dpx);
+        for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) g.drawImage(wt, dx + ox / k, dy + oy / k, dw, dh);
+        g.drawImage(img, dx, dy, dw, dh);
+      } else g.drawImage(img, dx, dy, dw, dh);
+    }
+    g.restore();
+    return H;
+  }
+  const PW = 1920, PH = 1080, M = 120;
+  function text(g, str, x, y, font, color) { g.font = font; g.fillStyle = color; g.textAlign = 'left'; g.textBaseline = 'alphabetic'; g.fillText(str, x, y); }
+  function fitFont(g, str, weight, size, maxW) {
+    g.font = `${weight} ${size}px Geist`;
+    const w = g.measureText(str).width;
+    return w > maxW ? Math.floor(size * maxW / w) : size;
+  }
+  async function drawLogoImg(g, src, x, y, h) {
+    const img = await loadImg(src); const w = h * ratioOf(img, src); g.drawImage(img, x, y, w, h);
+  }
+  // pages: cover · identity · one per shot · closing
+  function pages() {
+    const list = [{ type: 'cover' }];
+    SECTIONS.forEach((sec, i) => {
+      const num = String(i + 1).padStart(2, '0');
+      if (sec.ident) list.push({ type: 'ident', num, sec });
+      else sec.shots.forEach((n, j) => list.push({ type: 'shot', num, sec, n, first: j === 0 }));
+    });
+    list.push({ type: 'close' });
+    return list;
+  }
+  async function renderPage(pg, px = 2) {
+    const c = document.createElement('canvas');
+    c.width = PW * px; c.height = PH * px;
+    const g = c.getContext('2d');
+    g.scale(px, px); g.imageSmoothingQuality = 'high';
+    g.fillStyle = '#000'; g.fillRect(0, 0, PW, PH);
+    if (pg.type === 'cover') {
+      const grd = g.createRadialGradient(1500, 430, 0, 1500, 430, 900);
+      grd.addColorStop(0, 'rgba(255,255,255,.12)'); grd.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = grd; g.fillRect(0, 0, PW, PH);
+      await drawLogoImg(g, 'assets/spotware-logo.svg', M, 96, 34);
+      const nm = heroName();
+      const fs = fitFont(g, nm, 600, 168, 1080);
+      text(g, nm, M, 600 + 40 + fs * .85, `600 ${fs}px Geist`, '#F2F2F0');
+      text(g, 'on cTrader', M, 600 + 40 + fs * .85 + 168 * .95, '600 168px Geist', '#75756E');
+      await drawPanel(g, { w: 240, h: 240, fill: '#000', slots: [{ k: 'icon', x: 33.6, y: 33.6, w: 172.8, h: 172.8 }] }, 1380, 300, 400, 90, px);
+    } else if (pg.type === 'close') {
+      text(g, 'Let’s put your brand', M, 460, '600 120px Geist', '#F2F2F0');
+      text(g, 'on cTrader.', M, 590, '600 120px Geist', '#F2F2F0');
+      await drawLogoImg(g, 'assets/spotware-logo.svg', M, 860, 34);
+      text(g, 'www.spotware.com    sales@spotware.com    +357 25 344 902    3rd Floor, Stratigou Gianni Timagia 19, Limassol 3107', M, 960, '400 24px Geist', '#A3A39C');
+    } else {
+      text(g, pg.num, M, 128, '500 28px Geist', '#75756E');
+      text(g, pg.sec.title, M + 64, 128, '600 28px Geist', '#F2F2F0');
+      const top = 200, box = { w: PW - 2 * M, h: PH - top - 150 };
+      if (pg.type === 'ident') {
+        text(g, pg.sec.lead, M, 200, '400 28px Geist', '#A3A39C');
+        const gap = 32, w = (box.w - 2 * gap) / 3;
+        for (let i = 0; i < IDENT.length; i++) {
+          const x = M + i * (w + gap);
+          const h = await drawPanel(g, IDENT[i], x, 320, w, 32, px);
+          text(g, IDENT[i].cap, x, 300 + h + 48, '400 24px Geist', '#A3A39C');
+        }
+      } else {
+        const s = S[pg.n];
+        const k = Math.min(box.w / s.w, box.h / s.h);
+        const w = s.w * k, h = s.h * k, x = M, y = top;
+        await drawPanel(g, { w: s.w, h: s.h, bg: `shots/${pg.n}.webp`, slots: s.slots }, x, y, w, 32, px);
+        text(g, s.caption.join('  ·  '), x, y + h + 56, '400 24px Geist', '#A3A39C');
+      }
+    }
+    return c;
+  }
+
+  /* ---------- PDF ---------- */
+  const loaded = new Set();
+  function loadScript(src) {
+    return new Promise((res, rej) => {
+      if (loaded.has(src)) return res();
+      const t = document.createElement('script'); t.src = src;
+      t.onload = () => { loaded.add(src); res(); };
+      t.onerror = () => rej(new Error('failed to load ' + src));
+      document.head.appendChild(t);
+    });
+  }
+  const pdfBtns = [document.getElementById('pdf'), document.getElementById('pdf-2')];
+  let busy = false;
+  async function downloadPdf(btn) {
+    if (busy) return; busy = true;
+    const labels = pdfBtns.map((b) => b.textContent);
+    pdfBtns.forEach((b) => (b.disabled = true));
+    const say = (t) => { btn.textContent = t; };
+    try {
+      say('Preparing…');
+      await loadScript('vendor/jspdf.umd.min.js');
+      if (location.protocol === 'file:') await loadScript('vendor/local-assets.js');
+      await document.fonts.ready;
+      const specs = new Set(['500 28px Geist', '600 28px Geist', '400 24px Geist', '600 120px Geist']);
+      for (const n in S) for (const sl of S[n].slots) if (sl.k === 'name') specs.add(`${sl.f.weight} ${sl.size}px ${sl.f.family}`);
+      await Promise.all([...specs].map((f) => document.fonts.load(f, brokerName() + heroName()).catch(() => {})));
+      const { jsPDF } = window.jspdf;
+      const W = 1440, H = 810;
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: [W, H], compress: true });
+      const list = pages();
+      for (let i = 0; i < list.length; i++) {
+        say(`Page ${i + 1} of ${list.length}…`);
+        const c = await renderPage(list[i], 2);
+        if (i > 0) doc.addPage([W, H], 'landscape');
+        doc.addImage(c.toDataURL('image/jpeg', 0.88), 'JPEG', 0, 0, W, H, `page-${i}`, 'FAST');
+        c.width = c.height = 0;
+        await new Promise((r) => setTimeout(r, 0));
+      }
+      const slug = brokerName().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'ctrader';
+      doc.save(`${slug}-ctrader-branding.pdf`);
+    } catch (e) {
+      console.error(e);
+      alert('Could not build the PDF: ' + (e && e.message ? e.message : e));
+    } finally {
+      pdfBtns.forEach((b, i) => { b.textContent = labels[i]; b.disabled = false; });
+      busy = false;
+    }
+  }
+  pdfBtns.forEach((b) => b.addEventListener('click', () => downloadPdf(b)));
+
+  // hook for QA scripts
+  window.__brandingPreview = {
+    state, render, pages, set: (k, v) => { state[k] = v; render(); },
+    renderPage: async (i, px = 1) => (await renderPage(pages()[i], px)).toDataURL('image/png'),
+  };
+
+  /* ---------- restore ---------- */
+  render();
+  (async () => {
+    for (const k of IMG_KEYS) state[k] = await dbGet(k);
+    state.name = lsGet('ctrader-preview-name') || '';
+    nameInput.value = state.name;
+    render();
+  })();
+})();
+</script>
+</body>
+</html>

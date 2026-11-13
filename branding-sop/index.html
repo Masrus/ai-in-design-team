@@ -1,0 +1,283 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0}[hidden]{display:none!important}</style></head><body><title>SOP брендирования cTrader</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: стиль страницы презентации. Чёрный фон, крупный плотный заголовок, по карточке на шаг: слева номер и название, справа действия и условия вызова дизайнера. */
+:root {
+  --bg: #000000;
+  --surface: #0F0F0E;
+  --surface-2: #181817;
+  --surface-3: #232321;
+  --ink: #F2F2F0;
+  --ink-2: #A3A39C;
+  --ink-3: #75756E;
+  --paper: #FFFFFF;
+  --on-paper: #000000;
+  --designer: #8E8CFF;
+  --support: #3DD598;
+  --decision: #FF9F0A;
+  --r-lg: 28px;
+  --r-md: 16px;
+  --gutter: 24px;
+  --font: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg); color: var(--ink);
+  font: 400 16px/1.5 var(--font);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+}
+h1, h2, p { margin: 0; }
+.wrap { max-width: 1440px; margin: 0 auto; }
+
+/* hero */
+.hero { position: relative; padding-block: 96px 64px; }
+.hero::before {
+  content: ""; position: absolute; inset: -80px calc(-1 * var(--gutter)) 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(60% 55% at 80% 30%, rgba(255,255,255,.09), transparent 70%),
+    radial-gradient(40% 40% at 8% 0%, rgba(255,255,255,.05), transparent 70%);
+}
+.eyebrow { display: block; font-size: 16px; font-weight: 500; color: var(--ink-3); margin-bottom: 24px; }
+h1 { font-weight: 600; letter-spacing: -.045em; line-height: .95; font-size: clamp(40px, 8.4vw, 136px); overflow-wrap: anywhere; }
+h1 .dim { display: block; color: var(--ink-3); }
+.lead { margin-top: 32px; max-width: 620px; font-size: 20px; line-height: 1.5; color: var(--ink-2); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 40px 0 0; padding: 0; list-style: none; }
+.legend li { display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 20px; border-radius: 999px; background: var(--surface-2); font-weight: 500; }
+
+.lang { position: absolute; top: 32px; right: 0; display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px; background: var(--surface-2); }
+.lang button { appearance: none; -webkit-appearance: none; border: 0; font: 500 14px var(--font); height: 36px; min-width: 48px; padding: 0 14px; border-radius: 999px; background: transparent; color: var(--ink-2); cursor: pointer; }
+.lang button:hover { color: var(--ink); }
+.lang button[aria-pressed="true"] { background: var(--paper); color: var(--on-paper); }
+.lang button:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--ink-3); }
+.dot.s { background: var(--support); }
+.dot.d { background: var(--designer); }
+.dot.q { background: var(--decision); }
+
+/* steps */
+.steps { display: flex; flex-direction: column; gap: 16px; padding-bottom: 120px; }
+.step {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: start;
+  background: var(--surface); border-radius: var(--r-lg); padding: clamp(24px, 4vw, 48px);
+}
+.num { display: block; font-size: 16px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; margin-bottom: 16px; }
+.who { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; color: var(--ink-2); margin-bottom: 12px; }
+.step h2 { font-size: clamp(30px, 4vw, 56px); line-height: 1.02; letter-spacing: -.035em; font-weight: 600; text-wrap: balance; }
+.step h2 a { color: inherit; text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; text-decoration-color: var(--ink-3); }
+.step h2 a:hover { text-decoration-color: var(--ink); }
+.body { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.body p { font-size: 20px; line-height: 1.5; color: var(--ink-2); max-width: 560px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 8px 20px; border-radius: 999px;
+  background: var(--surface-2); color: var(--ink); text-decoration: none; font-weight: 500; font-size: 16px;
+  transition: background .15s;
+}
+.btn:hover { background: var(--surface-3); }
+.btn.primary { background: var(--paper); color: var(--on-paper); }
+.btn.primary:hover { background: #E2E2DE; }
+.btn:focus-visible, .step h2 a:focus-visible, .back:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.notes { display: flex; flex-direction: column; gap: 8px; }
+.note { background: var(--surface-2); border-radius: var(--r-md); padding: 16px 20px; display: flex; align-items: flex-start; gap: 12px; }
+.note .dot { margin-top: 9px; }
+.note span { font-size: 18px; line-height: 1.4; color: var(--ink); }
+
+/* presentation view */
+.pres { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg); z-index: 20; }
+.pres-bar { flex: none; display: flex; align-items: center; min-height: 64px; padding-top: env(safe-area-inset-top, 0px); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.back { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 999px; background: var(--surface-2); color: var(--ink); text-decoration: none; font-weight: 500; }
+.back:hover { background: var(--surface-3); }
+.pres iframe { flex: 1; width: 100%; border: 0; background: var(--bg); padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+@media (max-width: 900px) {
+  .hero { padding-block: 88px 48px; }
+  .lang { top: 24px; }
+  .lead, .body p { font-size: 18px; }
+  .step { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+}
+@media (max-width: 640px) {
+  :root { --gutter: 16px; --r-lg: 20px; }
+  .steps { padding-bottom: 72px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .btn, .back { transition: none; }
+}
+</style>
+
+<div id="scheme">
+  <div class="wrap">
+    <header class="hero">
+      <div class="lang" role="group" aria-label="Язык">
+        <button type="button" data-lang="ru" aria-pressed="true">RU</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <span class="eyebrow">cTrader White Label</span>
+      <h1><span data-i="h1a">Брендирование</span><span class="dim" data-i="h1b">приложения</span></h1>
+      <p class="lead" data-i="lead">Support ведёт процесс сам. Дизайнера зовут, когда что-то не получается, и обязательно на проверку ассетов.</p>
+      <ul class="legend" id="legend" aria-label="Обозначения">
+        <li><i class="dot s"></i>Support</li>
+        <li><i class="dot d"></i>Designer</li>
+        <li><i class="dot q"></i><span data-i="lg3">Когда звать дизайнера</span></li>
+      </ul>
+    </header>
+
+    <main class="steps">
+      <section class="step">
+        <div>
+          <span class="num">01</span>
+          <span class="who"><i class="dot s"></i>Support</span>
+          <h2 data-i="s1h">Создаёт задачу в YouTrack <a href="https://yt.ctrader.com/projects/XD" target="_blank" rel="noopener">Branding Design</a>.</h2>
+        </div>
+        <div class="body">
+          <p data-i="s1p">Таск в очереди не ставится автоматически на дизайнера. Дизайнер привлекается автором по мере необходимости.</p>
+          <div class="actions">
+            <a class="btn primary" href="https://yt.ctrader.com/newIssue?project=XD" target="_blank" rel="noopener" data-i="s1b">Создать новую задачу ↗</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="step">
+        <div>
+          <span class="num">02</span>
+          <span class="who"><i class="dot s"></i>Support</span>
+          <h2 data-i="s2h">Готовит презентацию в инструменте</h2>
+        </div>
+        <div class="body">
+          <p data-i="s2p">Загружает лого и название брокера, и все приложения показываются с его брендом. Готовую презентацию можно скачать в PDF.</p>
+          <div class="actions">
+            <a class="btn primary" href="#presentation" data-i="s2b">Открыть инструмент презентации</a>
+          </div>
+          <div class="notes">
+            <div class="note"><i class="dot"></i><span data-i="s2n1">Работает только во внутренней сети Spotware.</span></div>
+            <div class="note"><i class="dot q"></i><span data-i="s2n2">Не получается — призови дизайнера в задачу.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="step">
+        <div>
+          <span class="num">03</span>
+          <span class="who"><i class="dot s"></i>Support</span>
+          <h2 data-i="s3h">Согласует с брокером</h2>
+        </div>
+        <div class="body">
+          <div class="actions">
+            <a class="btn" href="https://assets-generator.vibe.spotwa.re/broker-assets/requirements" target="_blank" rel="noopener" data-i="s3b">Гайд: что мы делаем, а что нет ↗</a>
+          </div>
+          <div class="notes">
+            <div class="note"><i class="dot q"></i><span data-i="s3n">Брокер просит поправить, а сам не справляешься — призови дизайнера в задачу.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="step">
+        <div>
+          <span class="num">04</span>
+          <span class="who"><i class="dot s"></i>Support</span>
+          <h2 data-i="s4h">Готовит ассеты</h2>
+        </div>
+        <div class="body">
+          <div class="actions">
+            <a class="btn primary" href="https://assets-generator.vibe.spotwa.re/" target="_blank" rel="noopener" data-i="s4b1">Открыть генератор ассетов ↗</a>
+            <a class="btn" href="https://assets-generator.vibe.spotwa.re/broker-assets" target="_blank" rel="noopener" data-i="s4b2">Гайд: какие файлы подойдут для брендирования ↗</a>
+          </div>
+          <div class="notes">
+            <div class="note"><i class="dot q"></i><span data-i="s4n">Логотип не векторный, что-то идёт не так или не справляешься — призови дизайнера в задачу.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="step">
+        <div>
+          <span class="num">05</span>
+          <span class="who"><i class="dot d"></i><span data-i="s5w">Designer · обязательно</span></span>
+          <h2 data-i="s5h">Дизайнер проверяет готовые ассеты</h2>
+        </div>
+        <div class="body">
+          <p data-i="s5p">Когда ассеты готовы, Support призывает дизайнера в таск.</p>
+          <div class="notes">
+            <div class="note"><i class="dot q"></i><span data-i="s5n">Обязательно призови дизайнера в задачу на проверку.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="step">
+        <div>
+          <span class="num">06</span>
+          <span class="who"><i class="dot s"></i>Support</span>
+          <h2 data-i="s6h">Кладёт архив с иконками в нужное место</h2>
+        </div>
+        <div class="body"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="pres" id="presView" hidden>
+  <div class="pres-bar"><a class="back" href="#" data-i="back">← К схеме</a></div>
+  <iframe id="presFrame" title="Инструмент презентации"></iframe>
+</div>
+
+<script>
+(function () {
+  var EN = {"h1a": "Branding", "h1b": "the app", "lead": "Support runs the process on their own. The designer is called in when something doesn't work out, and always for the asset check.", "lg3": "When to call the designer", "s1h": "Creates a task in YouTrack <a href='https://yt.ctrader.com/projects/XD' target='_blank' rel='noopener'>Branding Design</a>.", "s1b": "Create a new task ↗",
+    "s1p": "A task in the queue isn't assigned to the designer automatically. The author brings the designer in as needed.", "s2h": "Prepares the presentation in the tool", "s2p": "Uploads the broker's logo and name, and every app is shown with their branding. The finished presentation can be downloaded as a PDF.", "s2b": "Open the presentation tool", "s2n1": "Works only inside the Spotware internal network.", "s2n2": "Not working out? Add the designer to the task.", "s3h": "Agrees it with the broker", "s3b": "Guide: what we do and what we don't ↗", "s3n": "The broker asks for changes and you can't handle it? Add the designer to the task.", "s4h": "Prepares the assets", "s4b1": "Open the asset generator ↗", "s4b2": "Guide: which files work for branding ↗", "s4n": "The logo isn't a vector, something goes wrong, or you can't manage? Add the designer to the task.", "s5w": "Designer · required", "s5h": "The designer checks the finished assets", "s5p": "When the assets are ready, Support adds the designer to the task.", "s5n": "Always add the designer to the task for this check.", "s6h": "Puts the archive with the icons in the right place", "back": "← Back to the scheme"};
+  var META = {
+    ru: { title: 'SOP брендирования cTrader', legend: 'Обозначения', frame: 'Инструмент презентации', group: 'Язык' },
+    en: { title: 'cTrader Branding SOP', legend: 'Legend', frame: 'Presentation tool', group: 'Language' }
+  };
+  var scheme = document.getElementById('scheme');
+  var view = document.getElementById('presView');
+  var frame = document.getElementById('presFrame');
+  var legend = document.getElementById('legend');
+  var group = document.querySelector('.lang');
+  var buttons = document.querySelectorAll('.lang button');
+  var els = document.querySelectorAll('[data-i]');
+  var loaded = false;
+
+  els.forEach(function (e) { e._ru = e.innerHTML; });
+
+  function setLang(l) {
+    els.forEach(function (e) {
+      var k = e.getAttribute('data-i');
+      e.innerHTML = (l === 'en' && EN[k] !== undefined) ? EN[k] : e._ru;
+    });
+    document.documentElement.lang = l;
+    document.title = META[l].title;
+    legend.setAttribute('aria-label', META[l].legend);
+    group.setAttribute('aria-label', META[l].group);
+    frame.setAttribute('title', META[l].frame);
+    buttons.forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-lang') === l ? 'true' : 'false'); });
+    try { localStorage.setItem('sop-lang', l); } catch (e) {}
+  }
+  buttons.forEach(function (b) {
+    b.addEventListener('click', function () { setLang(b.getAttribute('data-lang')); });
+  });
+
+  var saved = 'ru';
+  try { saved = localStorage.getItem('sop-lang') === 'en' ? 'en' : 'ru'; } catch (e) {}
+  setLang(saved);
+
+  function route() {
+    var on = location.hash === '#presentation';
+    if (on && !loaded) { frame.src = 'presentation/index.html'; loaded = true; }
+    view.hidden = !on;
+    scheme.hidden = on;
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', route);
+  route();
+})();
+</script>
+</body></html>
