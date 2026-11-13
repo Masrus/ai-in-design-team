@@ -110,6 +110,10 @@
     background: #000; position: relative; display: grid; place-items: center;
     box-shadow: 0 0 0 1px rgba(255,255,255,.06) inset, 0 40px 120px rgba(255,255,255,.10);
   }
+  .hero-icon { cursor: pointer; transition: transform .2s ease; }
+  .hero-icon:hover { transform: scale(1.02); }
+  .hero-icon:focus-visible { outline: 2px solid rgba(255,255,255,.6); outline-offset: 6px; }
+  .hero-icon.over { outline: 2px dashed rgba(255,255,255,.6); outline-offset: 6px; }
   .hero-icon img { width: 72%; height: 72%; object-fit: contain; }
 
   .index { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 56px; padding: 0; list-style: none; }
@@ -259,7 +263,7 @@
         <h1><span id="hero-name">Your brand</span><span class="sub">on cTrader</span></h1>
         <p class="lead">Web, Desktop, Mobile, Admin and Email. One trading platform that carries your brand everywhere your traders meet it.</p>
       </div>
-      <div class="hero-icon" aria-hidden="true"><img id="hero-icon" alt=""></div>
+      <div class="hero-icon" id="hero-pick" role="button" tabindex="0" aria-label="Upload your logo" title="Upload your logo"><img id="hero-icon" alt=""></div>
     </div>
     <div class="wrap">
       <div class="controls">
@@ -729,6 +733,14 @@
     drop.addEventListener('dragleave', () => drop.classList.remove('over'));
     drop.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('over'); setLogo(inp.dataset.key, e.dataTransfer.files[0]); });
   });
+  {
+    const hp = document.getElementById('hero-pick'), li = document.querySelector('#drop-light input[type=file]');
+    hp.addEventListener('click', () => li.click());
+    hp.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); li.click(); } });
+    hp.addEventListener('dragover', (e) => { e.preventDefault(); hp.classList.add('over'); });
+    hp.addEventListener('dragleave', () => hp.classList.remove('over'));
+    hp.addEventListener('drop', (e) => { e.preventDefault(); hp.classList.remove('over'); setLogo('light', e.dataTransfer.files[0]); });
+  }
   for (const key of ['light', 'dark']) {
     document.getElementById('clear-' + key).addEventListener('click', async (e) => {
       e.preventDefault(); e.stopPropagation();
