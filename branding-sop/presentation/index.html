@@ -307,6 +307,15 @@
     position: absolute; cursor: move; border-radius: 22.5%;
     box-shadow: 0 0 0 2px #fff, 0 0 0 9999px rgba(0,0,0,.55);
   }
+  .crop-area { position: relative; }
+  .crop-own-view { position: absolute; inset: 0; display: grid; place-items: center; padding: 32px; background: inherit; border-radius: inherit; }
+  .crop-own-view[hidden] { display: none; }
+  .crop-own-view img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .crop-own { display: flex; gap: 8px; margin-top: 12px; }
+  .own-btn { height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--surface-3); color: var(--ink); font: 500 14px 'Geist', sans-serif; cursor: pointer; }
+  .own-btn:hover { background: #2D2D2B; }
+  .own-btn.quiet { background: transparent; color: var(--ink-2); }
+  .own-btn[hidden] { display: none; }
   .crop-frame.rect { border-radius: 6px; }
   .crop-frame[hidden], .crop-prev[hidden], .crop-size[hidden] { display: none; }
   .crop-tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--surface-2); margin-bottom: 20px; }
@@ -457,7 +466,13 @@
       <div>
         <div class="crop-area" id="crop-area">
           <img id="crop-img" alt="">
+          <div class="crop-own-view" id="crop-own-view" hidden><img id="crop-own-img" alt=""></div>
           <div class="crop-frame" id="crop-frame"><i class="h nw"></i><i class="h ne"></i><i class="h sw"></i><i class="h se"></i></div>
+        </div>
+        <div class="crop-own">
+          <button type="button" class="own-btn" id="crop-own">Upload a square icon</button>
+          <button type="button" class="own-btn quiet" id="crop-own-rm" hidden>Remove</button>
+          <input type="file" id="crop-own-file" accept="image/*" hidden>
         </div>
         <label class="crop-size" id="crop-size">Size <input type="range" id="crop-range" min="0" max="1000" value="500" aria-label="Frame size"></label>
       </div>
@@ -486,9 +501,9 @@
     wideWhite: 'assets/ctrader-wide-white.svg',
     wideBlack: 'assets/ctrader-wide-black.svg',
   };
-  const state = { light: null, dark: null, lightSquare: null, darkSquare: null, lightCrop: null, darkCrop: null, lightWide: null, darkWide: null, lightWideCrop: null, darkWideCrop: null, sq: false, name: '' };
-  const IMG_KEYS = ['light', 'dark', 'lightSquare', 'darkSquare', 'lightCrop', 'darkCrop', 'lightWide', 'darkWide', 'lightWideCrop', 'darkWideCrop'];
-  const LOGO_KEYS = (k) => [k, k + 'Square', k + 'Crop', k + 'Wide', k + 'WideCrop'];
+  const state = { light: null, dark: null, lightSquare: null, darkSquare: null, lightCrop: null, darkCrop: null, lightWide: null, darkWide: null, lightWideCrop: null, darkWideCrop: null, lightOwnIcon: null, darkOwnIcon: null, lightOwnWide: null, darkOwnWide: null, sq: false, name: '' };
+  const IMG_KEYS = ['light', 'dark', 'lightSquare', 'darkSquare', 'lightCrop', 'darkCrop', 'lightWide', 'darkWide', 'lightWideCrop', 'darkWideCrop', 'lightOwnIcon', 'darkOwnIcon', 'lightOwnWide', 'darkOwnWide'];
+  const LOGO_KEYS = (k) => [k, k + 'Square', k + 'Crop', k + 'Wide', k + 'WideCrop', k + 'OwnIcon', k + 'OwnWide'];
 
   /* ---------- page content ---------- */
   // Identity panels are drawn from slots too, so the PDF renders them with the same code.
@@ -932,9 +947,11 @@
   const prevSmall = document.getElementById('crop-prev-small');
   const prevIcon = document.getElementById('prev-icon'), prevWide = document.getElementById('prev-wide');
   const wpLight = document.getElementById('wp-light'), wpDark = document.getElementById('wp-dark');
+  const ownBtn = document.getElementById('crop-own'), ownRm = document.getElementById('crop-own-rm'), ownFile = document.getElementById('crop-own-file');
+  const ownView = document.getElementById('crop-own-view'), ownImg = document.getElementById('crop-own-img');
   const tabIcon = document.getElementById('tab-icon'), tabWide = document.getElementById('tab-wide');
   const cTitle = document.getElementById('crop-title'), cSub = document.getElementById('crop-sub');
-  const cs = { key: null, src: null, img: null, w: 0, h: 0, tab: 'icon', sq: false, fSq: null, fWide: null, bbox: null, view: null, prevTimer: 0 };
+  const cs = { ownIcon: null, ownWide: null, key: null, src: null, img: null, w: 0, h: 0, tab: 'icon', sq: false, fSq: null, fWide: null, bbox: null, view: null, prevTimer: 0 };
   const OUT = 1024;
   const TXT = {
     icon: ['Choose your app icon', 'Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.'],
@@ -992,9 +1009,13 @@
   function drawFrame() {
     const { k, ox, oy } = cs.view;
     const wide = cs.tab === 'wide';
-    frameEl.hidden = !wide && iconAsIs();
+    const own = wide ? cs.ownWide : cs.ownIcon;
+    ownView.hidden = !own; if (own) ownImg.src = own;
+    ownBtn.textContent = own ? 'Replace' : (wide ? 'Upload a full logo' : 'Upload a square icon');
+    ownRm.hidden = !own;
+    frameEl.hidden = !!own || (!wide && iconAsIs());
     frameEl.classList.toggle('rect', wide);
-    rangeBox.hidden = wide || iconAsIs();
+    rangeBox.hidden = wide || iconAsIs() || !!cs.ownIcon;
     if (wide) {
       const f = cs.fWide;
       Object.assign(frameEl.style, { left: ox + f.x * k + 'px', top: oy + f.y * k + 'px', width: f.w * k + 'px', height: f.h * k + 'px' });
@@ -1027,20 +1048,23 @@
   }
   function updatePreview() {
     if (cs.tab === 'icon') {
-      const c = iconCanvas(256), u = c.toDataURL();
+      let u, full;
+      if (cs.ownIcon) { u = cs.ownIcon; full = opaqueOf(u) === true; setTimeout(() => { const f = opaqueOf(u) === true; prevBig.parentElement.classList.toggle('full', f); prevSmall.parentElement.classList.toggle('full', f); }, 120); }
+      else { const c = iconCanvas(256); u = c.toDataURL(); full = opaqueCanvas(c); }
       prevBig.src = u; prevSmall.src = u;
-      const full = opaqueCanvas(c);
       prevBig.parentElement.classList.toggle('full', full); prevSmall.parentElement.classList.toggle('full', full);
     } else {
-      const u = wideCanvas(480).toDataURL();
+      const u = cs.ownWide || wideCanvas(480).toDataURL();
       wpLight.src = u; wpDark.src = u;
-      wpDark.style.filter = flatness(cs.src) !== false ? 'brightness(0) invert(1)' : '';
+      wpDark.style.filter = flatness(cs.ownWide || cs.src) !== false ? 'brightness(0) invert(1)' : '';
     }
   }
   function setTab(t) {
     cs.tab = t;
     tabIcon.setAttribute('aria-selected', t === 'icon'); tabWide.setAttribute('aria-selected', t === 'wide');
-    const [h, sub] = t === 'wide' ? TXT.wide : (iconAsIs() ? TXT.iconSq : TXT.icon);
+    let [h, sub] = t === 'wide' ? TXT.wide : (iconAsIs() ? TXT.iconSq : TXT.icon);
+    if (t === 'wide' && cs.ownWide) sub = 'Using the full logo you uploaded. It is used in emails, installers and login screens.';
+    if (t === 'icon' && cs.ownIcon) sub = 'Using the square icon you uploaded for app icons, splash screens and notifications.';
     cTitle.textContent = h; cSub.textContent = sub;
     prevIcon.hidden = t === 'wide'; prevWide.hidden = t !== 'wide';
     if (cs.view) drawFrame();
@@ -1060,21 +1084,25 @@
     try { const c = document.createElement('canvas'); c.width = c.height = 64; c.getContext('2d').drawImage(cs.img, 0, 0, 64, 64); cs.opq = opaqueCanvas(c); } catch { cs.opq = false; }
     cs.fSq = clampFrame(state[key + 'Crop'] ? { ...state[key + 'Crop'] } : defaultFrame());
     cs.fWide = clampRect(state[key + 'WideCrop'] ? { ...state[key + 'WideCrop'] } : { ...cs.bbox });
+    cs.ownIcon = state[key + 'OwnIcon'] || null; cs.ownWide = state[key + 'OwnWide'] || null;
     cs.view = null; cs.tab = 'icon';
-    setSq(state.sq);
+    setSq(state.sq && !cs.ownWide);
     if (!dlg.open) dlg.showModal();
     layout();
   }
   async function closeCrop() {
     const key = cs.key;
-    state.sq = cs.sq; lsSet('ctrader-preview-sq', cs.sq ? '1' : '');
-    if (iconAsIs()) {
-      for (const k of LOGO_KEYS(key).slice(1)) state[k] = null;
-    } else {
-      if (cs.sq) { state[key + 'Wide'] = null; state[key + 'WideCrop'] = null; }
-      state[key + 'Square'] = iconCanvas(OUT).toDataURL(); state[key + 'Crop'] = { ...cs.fSq };
-    }
-    if (!cs.sq) {
+    state[key + 'OwnIcon'] = cs.ownIcon; state[key + 'OwnWide'] = cs.ownWide;
+    const sq = cs.sq && !cs.ownWide;
+    state.sq = sq; lsSet('ctrader-preview-sq', sq ? '1' : '');
+    // app icon
+    if (cs.ownIcon) { state[key + 'Square'] = cs.ownIcon; state[key + 'Crop'] = null; }
+    else if (iconAsIs()) { state[key + 'Square'] = null; state[key + 'Crop'] = null; }
+    else { state[key + 'Square'] = iconCanvas(OUT).toDataURL(); state[key + 'Crop'] = { ...cs.fSq }; }
+    // full logo
+    if (cs.ownWide) { state[key + 'Wide'] = cs.ownWide; state[key + 'WideCrop'] = null; }
+    else if (sq) { state[key + 'Wide'] = null; state[key + 'WideCrop'] = null; }
+    else {
       const f = cs.fWide, full = f.x < 1 && f.y < 1 && Math.abs(f.w - cs.w) < 1 && Math.abs(f.h - cs.h) < 1;
       if (full) { state[key + 'Wide'] = null; state[key + 'WideCrop'] = null; }
       else { state[key + 'Wide'] = wideCanvas(1600).toDataURL(); state[key + 'WideCrop'] = { ...f }; }
@@ -1086,6 +1114,14 @@
   document.getElementById('crop-done').addEventListener('click', closeCrop);
   dlg.addEventListener('cancel', (e) => { e.preventDefault(); closeCrop(); });
   tabIcon.addEventListener('click', () => setTab('icon'));
+  ownBtn.addEventListener('click', () => ownFile.click());
+  ownFile.addEventListener('change', async () => {
+    const f = ownFile.files[0]; ownFile.value = ''; if (!f) return;
+    let u; try { u = await normalise(f); } catch { return; }
+    if (cs.tab === 'wide') { cs.ownWide = u; cs.sq = false; } else cs.ownIcon = u;
+    setTab(cs.tab);
+  });
+  ownRm.addEventListener('click', () => { if (cs.tab === 'wide') cs.ownWide = null; else cs.ownIcon = null; setTab(cs.tab); });
   tabWide.addEventListener('click', () => { if (cs.sq) cs.sq = false; setTab('wide'); });   // opening Full logo = there is a wide logo
   window.addEventListener('resize', () => dlg.open && layout());
 
