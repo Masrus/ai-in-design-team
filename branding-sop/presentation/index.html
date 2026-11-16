@@ -665,8 +665,7 @@
     // section
     const el = document.createElement('section');
     el.className = 'sec'; el.id = sec.id;
-    el.innerHTML = `<div class="wrap"><div class="sec-head reveal"><p class="eyebrow"></p><h2><span class="l1"></span><span class="grey"></span></h2><p class="lead-p"></p></div><div class="body"></div></div>`;
-    el.querySelector('.eyebrow').textContent = sec.title;
+    el.innerHTML = `<div class="wrap"><div class="sec-head reveal"><h2><span class="l1"></span><span class="grey"></span></h2><p class="lead-p"></p></div><div class="body"></div></div>`;
     el.querySelector('.l1').textContent = sec.h[0];
     el.querySelector('h2 .grey').textContent = sec.h[1];
     el.querySelector('.lead-p').textContent = sec.lead;
