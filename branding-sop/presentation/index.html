@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="robots" content="noindex, nofollow, noarchive, nosnippet"><meta name="googlebot" content="noindex, nofollow">
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cTrader Branding Preview</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -521,7 +520,7 @@
   ];
   const S = window.SHOTS;
   const SECTIONS = [
-    { id: 'identity', title: 'Identity', h: ['Your icon.', 'On every screen.'], card: ['Your icon.', 'Cropped from your logo, used everywhere.'], lead: 'One logo, every surface. Your mark replaces cTrader on app icons, splash screens, installers, notifications and emails.', ident: true },
+    { id: 'identity', title: 'Identity', h: ['Your icon.', 'On every screen.'], card: ['Your icon.', 'Cropped from your logo, used everywhere.'], lead: 'One logo, every surface. Your logo replaces cTrader on app icons, splash screens, installers, notifications and emails.', ident: true },
     { id: 'desktop', title: 'cTrader Web & Desktop', nav: 'Desktop', h: ['Web & Desktop.', 'Your brand from the first click.'], card: ['Web & Desktop.', 'From the browser tab to the dock.'], lead: 'From the browser tab and the dock to the installer, notifications and login screen, traders see your brand first.', shots: ['05', '06', '07'] },
     { id: 'mobile', title: 'cTrader Mobile', nav: 'Mobile', h: ['iOS and Android.', 'In your traders’ pockets.'], card: ['iOS and Android.', 'Icon, splash, login and menu.'], lead: 'Android and iOS apps with your icon, splash screen, login and in-app menu.', shots: ['10', '09'] },
     { id: 'stores', title: 'App Store & Google Play', nav: 'Stores', h: ['Listed under', 'your name.'], card: ['App Store and Google Play.', 'Listed under your name.'], lead: 'Your listing in both stores, with your name and your icon.', shots: ['11'] },
@@ -603,8 +602,13 @@
     if (dk) {
       if (dark) return out({ src: dark });
       if (square && opaqueOf(light) === true) return out({ src: light });
-      if (flatness(light) === false) return out({ src: light });
-      return { src: light, sil: !!slot.sil, outline: !!slot.outline };
+      // no dark version: check the contrast against the dark plate and lighten the logo only if it is needed
+      const ad = autoDark(light);
+      if (ad && !ad.low) return out({ src: light });
+      const fl = flatness(light);
+      if (ad && ad.low && fl === false && ad.canvas) return { src: ad.url() };
+      if (fl === false) return out({ src: light });
+      return { src: light, sil: ad && ad.low ? true : !!slot.sil, outline: !!slot.outline };
     }
     return out({ src: light || dark });
   }
@@ -654,9 +658,12 @@
     const own = state.darkSquare || state.dark;
     const icon = dk ? (own || state.lightSquare || state.light) : (state.lightSquare || state.light || own);
     if (!icon) return null;
-    const tint = dk && !own && flatness(icon) !== false && opaqueOf(icon) !== true;
+    const ad = dk && !own ? autoDark(icon) : null;
+    const fl = flatness(icon) !== false;
+    const tint = dk && !own && opaqueOf(icon) !== true && (ad ? ad.low && fl : fl);
+    const recol = dk && !own && ad && ad.low && !fl && ad.canvas;
     const nm = brokerName();
-    const key = [theme, nm, icon.length, icon.slice(-48), tint].join('|');
+    const key = [theme, nm, icon.length, icon.slice(-48), tint, !!recol].join('|');
     if (compCache.has(key)) return compCache.get(key);
     const img = imgReady.get(icon);
     if (!img || !document.fonts.check('600 100px Geist')) { ensureAssets(icon); return null; }
@@ -670,11 +677,45 @@
     if (full) { g.save(); g.beginPath(); g.roundRect(0, 0, H, H, H * 0.225); g.clip(); }
     const dw = full ? (r >= 1 ? H * r : H) : (r >= 1 ? H : H * r), dh = full ? (r >= 1 ? H : H / r) : (r >= 1 ? H / r : H);
     const dx = (H - dw) / 2, dy = (H - dh) / 2;
-    if (tint) g.drawImage(tinted(img, dw, dh, '#fff', 1), dx, dy, dw, dh); else g.drawImage(img, dx, dy, dw, dh);
+    if (tint) g.drawImage(tinted(img, dw, dh, '#fff', 1), dx, dy, dw, dh); else g.drawImage(recol || img, dx, dy, dw, dh);
     if (full) g.restore();
     g.font = `600 ${fs}px Geist`; g.fillStyle = dk ? '#fff' : '#111'; g.textBaseline = 'alphabetic';
     g.fillText(nm, H + gap, H / 2 + fs * 0.35);
     const url = c.toDataURL('image/png'); compCache.set(key, url); return url;
+  }
+
+  // Contrast of a logo against the dark plate (#181818): below 3:1 for a noticeable part of it → "low".
+  // Colourful logos get their dark pixels repainted white (canvas); flat ones are painted as a white silhouette elsewhere.
+  const darkCache = new Map();
+  const lumOf = (r, g, b) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+  function autoDark(src) {
+    if (!src) return null;
+    if (darkCache.size > 40) darkCache.clear();
+    if (darkCache.has(src)) { const v = darkCache.get(src); return v === 'wait' ? undefined : v; }
+    darkCache.set(src, 'wait');
+    loadImg(src).then((img) => {
+      let res = { low: false, canvas: null, url: () => src };
+      try {
+        const w0 = img.naturalWidth || 64, h0 = img.naturalHeight || 64, s = Math.min(1, 1200 / Math.max(w0, h0));
+        const w = Math.max(1, Math.round(w0 * s)), h = Math.max(1, Math.round(h0 * s));
+        const c = document.createElement('canvas'); c.width = w; c.height = h;
+        const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, w, h);
+        const im = g.getImageData(0, 0, w, h), d = im.data;
+        let total = 0, low = 0;
+        for (let i = 0; i < d.length; i += 4) if (d[i + 3] >= 200) { total++; if (lumOf(d[i], d[i + 1], d[i + 2]) < 0.127) low++; }
+        const isLow = total > 0 && low / total >= 0.15 && opaqueOf(src) !== true;
+        if (isLow) {
+          for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 0 && lumOf(d[i], d[i + 1], d[i + 2]) < 0.127) { d[i] = d[i + 1] = d[i + 2] = 255; }
+          g.putImageData(im, 0, 0);
+        }
+        let url = null;
+        res = { low: isLow, canvas: isLow ? c : null, url: () => url || (url = c.toDataURL('image/png')) };
+      } catch {}
+      darkCache.set(src, res);
+      render();
+      const dlg = document.getElementById('crop'); if (dlg && dlg.open && typeof updatePreview === 'function') updatePreview();
+    }).catch(() => darkCache.set(src, { low: false, canvas: null, url: () => src }));
+    return undefined;
   }
 
   // Flat logo (few solid colours) → OK to paint as a white silhouette on dark slots.
@@ -713,7 +754,8 @@
           }
           const flat = main <= 4 && edges <= total * 0.015;
           flatCache.set(src, flat);
-          if (!flat) render();
+          render();
+          const dlg = document.getElementById('crop'); if (dlg && dlg.open && typeof updatePreview === 'function') updatePreview();
         } catch { flatCache.set(src, true); }
       };
       img.onerror = () => flatCache.set(src, true);
@@ -882,6 +924,8 @@
 
   function render() {
     const nm = brokerName();
+    { const hd = document.getElementById('hint-dark');
+      if (hd && !state.dark) { const a = state.light ? autoDark(state.light) : null; hd.textContent = a && a.low ? 'Optional · dark parts turn white automatically' : 'Optional'; } }
     for (const r of refs) {
       if (r.slot.k === 'name') { r.el.textContent = nm; continue; }
       const p = pick(r.slot);
@@ -917,7 +961,8 @@
     if (src) { t.src = src; t.style.visibility = ''; } else t.style.visibility = 'hidden';
     document.getElementById('clear-' + key).hidden = !val;
     document.getElementById('edit-' + key).hidden = !val;
-    document.getElementById('hint-' + key).textContent = val ? 'Uploaded' : hint;
+    const ad = key === 'dark' && !val && state.light ? autoDark(state.light) : null;
+    document.getElementById('hint-' + key).textContent = val ? 'Uploaded' : (ad && ad.low ? 'Optional · dark parts turn white automatically' : hint);
   }
 
   /* ---------- inputs ---------- */
@@ -1011,7 +1056,7 @@
     const wide = cs.tab === 'wide';
     const own = wide ? cs.ownWide : cs.ownIcon;
     ownView.hidden = !own; if (own) ownImg.src = own;
-    ownBtn.textContent = own ? 'Replace' : (wide ? 'Upload a full logo' : 'Upload a square icon');
+    ownBtn.textContent = own ? (wide ? 'Replace logo' : 'Replace icon') : (wide ? 'Upload a full logo' : 'Upload a square icon');
     ownRm.hidden = !own;
     frameEl.hidden = !!own || (!wide && iconAsIs());
     frameEl.classList.toggle('rect', wide);
@@ -1056,7 +1101,11 @@
     } else {
       const u = cs.ownWide || wideCanvas(480).toDataURL();
       wpLight.src = u; wpDark.src = u;
-      wpDark.style.filter = flatness(cs.ownWide || cs.src) !== false ? 'brightness(0) invert(1)' : '';
+      // dark plate: with enough contrast keep colours; otherwise white silhouette (flat) or dark parts made white (colourful)
+      const ad = autoDark(u);
+      const fl = flatness(u) !== false;
+      wpDark.style.filter = ad ? (ad.low && fl ? 'brightness(0) invert(1)' : '') : (fl ? 'brightness(0) invert(1)' : '');
+      if (ad && ad.low && !fl && ad.canvas) wpDark.src = ad.url();
     }
   }
   function setTab(t) {
