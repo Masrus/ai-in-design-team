@@ -1,4 +1,4 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="robots" content="noindex, nofollow, noarchive, nosnippet"><meta name="googlebot" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0}[hidden]{display:none!important}</style></head><body><title>SOP брендирования cTrader</title>
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0}[hidden]{display:none!important}</style></head><body><title>SOP брендирования cTrader</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,6 +53,9 @@ h1 .dim { display: block; color: var(--ink-3); }
 .legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 40px 0 0; padding: 0; list-style: none; }
 .legend li { display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 20px; border-radius: 999px; background: var(--surface-2); font-weight: 500; }
 
+.brand { position: absolute; top: 45px; left: 0; display: block; line-height: 0; }
+.brand img { display: block; height: 18px; width: auto; }
+.brand:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; border-radius: 4px; }
 .lang { position: absolute; top: 32px; right: 0; display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px; background: var(--surface-2); }
 .lang button { appearance: none; -webkit-appearance: none; border: 0; font: 500 14px var(--font); height: 36px; min-width: 48px; padding: 0 14px; border-radius: 999px; background: transparent; color: var(--ink-2); cursor: pointer; }
 .lang button:hover { color: var(--ink); }
@@ -102,6 +105,8 @@ h1 .dim { display: block; color: var(--ink-3); }
 @media (max-width: 900px) {
   .hero { padding-block: 88px 48px; }
   .lang { top: 24px; }
+  .brand { top: 37px; }
+  .brand img { height: 16px; }
   .lead, .body p { font-size: 18px; }
   .step { grid-template-columns: minmax(0, 1fr); gap: 24px; }
 }
@@ -122,6 +127,7 @@ h1 .dim { display: block; color: var(--ink-3); }
         <button type="button" data-lang="ru" aria-pressed="true">RU</button>
         <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
+      <a class="brand" href="https://www.spotware.com" target="_blank" rel="noopener" aria-label="Spotware"><img src="presentation/assets/spotware-logo-header.svg" alt="Spotware" width="160" height="18"></a>
       <span class="eyebrow">cTrader White Label</span>
       <h1><span data-i="h1a">Брендирование</span><span class="dim" data-i="h1b">приложения</span></h1>
       <p class="lead" data-i="lead">Support ведёт процесс сам. Дизайнера зовут, когда что-то не получается, и обязательно на проверку ассетов.</p>
@@ -151,7 +157,7 @@ h1 .dim { display: block; color: var(--ink-3); }
         <div>
           <span class="num">02</span>
           <span class="who"><i class="dot s"></i>Support</span>
-          <h2 data-i="s2h">Готовит презентацию в инструменте</h2>
+          <h2 data-i="s2h">Готовит презентацию</h2>
         </div>
         <div class="body">
           <p data-i="s2p">Загружает лого и название брокера, и все приложения показываются с его брендом. Готовую презентацию можно скачать в PDF.</p>
@@ -185,7 +191,7 @@ h1 .dim { display: block; color: var(--ink-3); }
         <div>
           <span class="num">04</span>
           <span class="who"><i class="dot s"></i>Support</span>
-          <h2 data-i="s4h">Готовит ассеты</h2>
+          <h2 data-i="s4h">Готовит ассеты для брендирования приложений</h2>
         </div>
         <div class="body">
           <div class="actions">
@@ -225,14 +231,13 @@ h1 .dim { display: block; color: var(--ink-3); }
 </div>
 
 <div class="pres" id="presView" hidden>
-  <div class="pres-bar"><a class="back" href="#" data-i="back">← К схеме</a></div>
   <iframe id="presFrame" title="Инструмент презентации"></iframe>
 </div>
 
 <script>
 (function () {
   var EN = {"h1a": "Branding", "h1b": "the app", "lead": "Support runs the process on their own. The designer is called in when something doesn't work out, and always for the asset check.", "lg3": "When to call the designer", "s1h": "Creates a task in YouTrack <a href='https://yt.ctrader.com/projects/XD' target='_blank' rel='noopener'>Branding Design</a>.", "s1b": "Create a new task ↗",
-    "s1p": "A task in the queue isn't assigned to the designer automatically. The author brings the designer in as needed.", "s2h": "Prepares the presentation in the tool", "s2p": "Uploads the broker's logo and name, and every app is shown with their branding. The finished presentation can be downloaded as a PDF.", "s2b": "Open the presentation tool", "s2n1": "Works only inside the Spotware internal network.", "s2n2": "Not working out? Add the designer to the task.", "s3h": "Agrees it with the broker", "s3b": "Guide: what we do and what we don't ↗", "s3n": "The broker asks for changes and you can't handle it? Add the designer to the task.", "s4h": "Prepares the assets", "s4b1": "Open the asset generator ↗", "s4b2": "Guide: which files work for branding ↗", "s4n": "The logo isn't a vector, something goes wrong, or you can't manage? Add the designer to the task.", "s5w": "Designer · required", "s5h": "The designer checks the finished assets", "s5p": "When the assets are ready, Support adds the designer to the task.", "s5n": "Always add the designer to the task for this check.", "s6h": "Puts the archive with the icons in the right place", "back": "← Back to the scheme"};
+    "s1p": "A task in the queue isn't assigned to the designer automatically. The author brings the designer in as needed.", "s2h": "Prepares the presentation", "s2p": "Uploads the broker's logo and name, and every app is shown with their branding. The finished presentation can be downloaded as a PDF.", "s2b": "Open the presentation tool", "s2n1": "Works only inside the Spotware internal network.", "s2n2": "Not working out? Add the designer to the task.", "s3h": "Agrees it with the broker", "s3b": "Guide: what we do and what we don't ↗", "s3n": "The broker asks for changes and you can't handle it? Add the designer to the task.", "s4h": "Prepares the assets for app branding", "s4b1": "Open the asset generator ↗", "s4b2": "Guide: which files work for branding ↗", "s4n": "The logo isn't a vector, something goes wrong, or you can't manage? Add the designer to the task.", "s5w": "Designer · required", "s5h": "The designer checks the finished assets", "s5p": "When the assets are ready, Support adds the designer to the task.", "s5n": "Always add the designer to the task for this check.", "s6h": "Puts the archive with the icons in the right place", "back": "← Back to the scheme"};
   var META = {
     ru: { title: 'SOP брендирования cTrader', legend: 'Обозначения', frame: 'Инструмент презентации', group: 'Язык' },
     en: { title: 'cTrader Branding SOP', legend: 'Legend', frame: 'Presentation tool', group: 'Language' }
