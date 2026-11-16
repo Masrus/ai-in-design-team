@@ -383,7 +383,7 @@
   .crop-prev .small { display: flex; gap: 16px; align-items: center; }
   .crop-prev .small .tile { width: 64px; flex: none; }
   .crop-prev .small span { font-size: 14px; color: var(--ink-2); }
-  .crop-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+  .crop-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-start; }
   .crop-actions .btn { height: 48px; padding: 0 28px; font-size: 16px; }
   @media (max-width: 720px) {
     .crop-in { padding: 20px; gap: 20px; }
@@ -752,7 +752,7 @@
         const im = g.getImageData(0, 0, w, h), d = im.data;
         let total = 0, low = 0;
         for (let i = 0; i < d.length; i += 4) if (d[i + 3] >= 200) { total++; if (lumOf(d[i], d[i + 1], d[i + 2]) < thr) low++; }
-        const isLow = total > 0 && low / total >= 0.15 && opaqueOf(src) !== true;
+        const isLow = total > 0 && low / total >= 0.15 && total / (w * h) < 0.9;   // a picture with its own background is left alone
         if (isLow) {
           for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 0 && lumOf(d[i], d[i + 1], d[i + 2]) < thr) { d[i] = d[i + 1] = d[i + 2] = 255; }
           g.putImageData(im, 0, 0);
@@ -1072,7 +1072,7 @@
   };
 
   const nearSq = () => { const q = cs.w / cs.h; return q >= 0.85 && q <= 1.18; };
-  const iconAsIs = () => cs.sq && nearSq();   // the whole logo is the icon (no frame to move)
+  const iconAsIs = () => false;   // the frame and the Size slider are always there, a square logo just starts with the frame over all of it
   function sizeLimits() { const m = Math.max(cs.w, cs.h); return { min: Math.max(8, Math.min(cs.w, cs.h) * 0.15), max: m * 1.6 }; }
   function clampFrame(f) {
     const { min, max } = sizeLimits();
