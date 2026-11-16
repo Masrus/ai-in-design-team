@@ -39,7 +39,7 @@ h1, h2, p { margin: 0; }
 .wrap { max-width: 1440px; margin: 0 auto; }
 
 /* hero */
-.hero { position: relative; padding-block: 96px 64px; }
+.hero { position: relative; padding-block: 136px 64px; }
 .hero::before {
   content: ""; position: absolute; inset: -80px calc(-1 * var(--gutter)) 0; z-index: -1; pointer-events: none;
   background:
@@ -47,7 +47,7 @@ h1, h2, p { margin: 0; }
     radial-gradient(40% 40% at 8% 0%, rgba(255,255,255,.05), transparent 70%);
 }
 .eyebrow { display: block; font-size: 16px; font-weight: 500; color: var(--ink-3); margin-bottom: 24px; }
-h1 { font-weight: 600; letter-spacing: -.045em; line-height: .95; font-size: clamp(40px, 8.4vw, 136px); overflow-wrap: anywhere; }
+h1 { font-weight: 600; letter-spacing: -.045em; line-height: .95; font-size: clamp(40px, 5.4vw, 104px); overflow-wrap: anywhere; }
 h1 .dim { display: block; color: var(--ink-3); }
 .lead { margin-top: 32px; max-width: 620px; font-size: 20px; line-height: 1.5; color: var(--ink-2); }
 .legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 40px 0 0; padding: 0; list-style: none; }
@@ -103,7 +103,7 @@ h1 .dim { display: block; color: var(--ink-3); }
 .pres iframe { flex: 1; width: 100%; border: 0; background: var(--bg); padding-bottom: env(safe-area-inset-bottom, 0px); }
 
 @media (max-width: 900px) {
-  .hero { padding-block: 88px 48px; }
+  .hero { padding-block: 120px 48px; }
   .lang { top: 24px; }
   .brand { top: 37px; }
   .brand img { height: 16px; }
@@ -128,11 +128,10 @@ h1 .dim { display: block; color: var(--ink-3); }
         <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
       <a class="brand" href="https://www.spotware.com" target="_blank" rel="noopener" aria-label="Spotware"><img src="presentation/assets/spotware-logo-header.svg" alt="Spotware" width="160" height="18"></a>
-      <span class="eyebrow">cTrader White Label</span>
-      <h1><span data-i="h1a">Брендирование</span><span class="dim" data-i="h1b">приложения</span></h1>
-      <p class="lead" data-i="lead">Support ведёт процесс сам. Дизайнера зовут, когда что-то не получается, и обязательно на проверку ассетов.</p>
+      <h1><span data-i="h1a">Брендирование</span><span class="dim" data-i="h1b">приложения для Customer Support</span></h1>
+      <p class="lead" data-i="lead">Customer Support ведёт процесс сам. Дизайнера зовут, когда что-то не получается, и обязательно на проверку ассетов.</p>
       <ul class="legend" id="legend" aria-label="Обозначения">
-        <li><i class="dot s"></i>Support</li>
+        <li><i class="dot s"></i>Customer Support</li>
         <li><i class="dot d"></i>Designer</li>
         <li><i class="dot q"></i><span data-i="lg3">Когда звать дизайнера</span></li>
       </ul>
@@ -142,7 +141,7 @@ h1 .dim { display: block; color: var(--ink-3); }
       <section class="step">
         <div>
           <span class="num">01</span>
-          <span class="who"><i class="dot s"></i>Support</span>
+          <span class="who"><i class="dot s"></i>Customer Support</span>
           <h2 data-i="s1h">Создаёт задачу в YouTrack <a href="https://yt.ctrader.com/projects/XD" target="_blank" rel="noopener">Branding Design</a>.</h2>
         </div>
         <div class="body">
@@ -156,7 +155,7 @@ h1 .dim { display: block; color: var(--ink-3); }
       <section class="step">
         <div>
           <span class="num">02</span>
-          <span class="who"><i class="dot s"></i>Support</span>
+          <span class="who"><i class="dot s"></i>Customer Support</span>
           <h2 data-i="s2h">Готовит презентацию</h2>
         </div>
         <div class="body">
@@ -174,7 +173,7 @@ h1 .dim { display: block; color: var(--ink-3); }
       <section class="step">
         <div>
           <span class="num">03</span>
-          <span class="who"><i class="dot s"></i>Support</span>
+          <span class="who"><i class="dot s"></i>Customer Support</span>
           <h2 data-i="s3h">Согласует с брокером</h2>
         </div>
         <div class="body">
@@ -190,7 +189,7 @@ h1 .dim { display: block; color: var(--ink-3); }
       <section class="step">
         <div>
           <span class="num">04</span>
-          <span class="who"><i class="dot s"></i>Support</span>
+          <span class="who"><i class="dot s"></i>Customer Support</span>
           <h2 data-i="s4h">Готовит ассеты для брендирования приложений</h2>
         </div>
         <div class="body">
@@ -211,7 +210,7 @@ h1 .dim { display: block; color: var(--ink-3); }
           <h2 data-i="s5h">Дизайнер проверяет готовые ассеты</h2>
         </div>
         <div class="body">
-          <p data-i="s5p">Когда ассеты готовы, Support призывает дизайнера в таск.</p>
+          <p data-i="s5p">Когда ассеты готовы, Customer Support призывает дизайнера в таск.</p>
           <div class="notes">
             <div class="note"><i class="dot q"></i><span data-i="s5n">Обязательно призови дизайнера в задачу на проверку.</span></div>
           </div>
@@ -221,7 +220,7 @@ h1 .dim { display: block; color: var(--ink-3); }
       <section class="step">
         <div>
           <span class="num">06</span>
-          <span class="who"><i class="dot s"></i>Support</span>
+          <span class="who"><i class="dot s"></i>Customer Support</span>
           <h2 data-i="s6h">Кладёт архив с иконками в нужное место</h2>
         </div>
         <div class="body"></div>
@@ -236,8 +235,8 @@ h1 .dim { display: block; color: var(--ink-3); }
 
 <script>
 (function () {
-  var EN = {"h1a": "Branding", "h1b": "the app", "lead": "Support runs the process on their own. The designer is called in when something doesn't work out, and always for the asset check.", "lg3": "When to call the designer", "s1h": "Creates a task in YouTrack <a href='https://yt.ctrader.com/projects/XD' target='_blank' rel='noopener'>Branding Design</a>.", "s1b": "Create a new task ↗",
-    "s1p": "A task in the queue isn't assigned to the designer automatically. The author brings the designer in as needed.", "s2h": "Prepares the presentation", "s2p": "Uploads the broker's logo and name, and every app is shown with their branding. The finished presentation can be downloaded as a PDF.", "s2b": "Open the presentation tool", "s2n1": "Works only inside the Spotware internal network.", "s2n2": "Not working out? Add the designer to the task.", "s3h": "Agrees it with the broker", "s3b": "Guide: what we do and what we don't ↗", "s3n": "The broker asks for changes and you can't handle it? Add the designer to the task.", "s4h": "Prepares the assets for app branding", "s4b1": "Open the asset generator ↗", "s4b2": "Guide: which files work for branding ↗", "s4n": "The logo isn't a vector, something goes wrong, or you can't manage? Add the designer to the task.", "s5w": "Designer · required", "s5h": "The designer checks the finished assets", "s5p": "When the assets are ready, Support adds the designer to the task.", "s5n": "Always add the designer to the task for this check.", "s6h": "Puts the archive with the icons in the right place", "back": "← Back to the scheme"};
+  var EN = {"h1a": "Branding", "h1b": "the app for Customer Support", "lead": "Customer Support runs the process on their own. The designer is called in when something doesn't work out, and always for the asset check.", "lg3": "When to call the designer", "s1h": "Creates a task in YouTrack <a href='https://yt.ctrader.com/projects/XD' target='_blank' rel='noopener'>Branding Design</a>.", "s1b": "Create a new task ↗",
+    "s1p": "A task in the queue isn't assigned to the designer automatically. The author brings the designer in as needed.", "s2h": "Prepares the presentation", "s2p": "Uploads the broker's logo and name, and every app is shown with their branding. The finished presentation can be downloaded as a PDF.", "s2b": "Open the presentation tool", "s2n1": "Works only inside the Spotware internal network.", "s2n2": "Not working out? Add the designer to the task.", "s3h": "Agrees it with the broker", "s3b": "Guide: what we do and what we don't ↗", "s3n": "The broker asks for changes and you can't handle it? Add the designer to the task.", "s4h": "Prepares the assets for app branding", "s4b1": "Open the asset generator ↗", "s4b2": "Guide: which files work for branding ↗", "s4n": "The logo isn't a vector, something goes wrong, or you can't manage? Add the designer to the task.", "s5w": "Designer · required", "s5h": "The designer checks the finished assets", "s5p": "When the assets are ready, Customer Support adds the designer to the task.", "s5n": "Always add the designer to the task for this check.", "s6h": "Puts the archive with the icons in the right place", "back": "← Back to the scheme"};
   var META = {
     ru: { title: 'SOP брендирования cTrader', legend: 'Обозначения', frame: 'Инструмент презентации', group: 'Язык' },
     en: { title: 'cTrader Branding SOP', legend: 'Legend', frame: 'Presentation tool', group: 'Language' }
@@ -270,8 +269,8 @@ h1 .dim { display: block; color: var(--ink-3); }
     b.addEventListener('click', function () { setLang(b.getAttribute('data-lang')); });
   });
 
-  var saved = 'ru';
-  try { saved = localStorage.getItem('sop-lang') === 'en' ? 'en' : 'ru'; } catch (e) {}
+  var saved = 'en';
+  try { saved = localStorage.getItem('sop-lang') === 'ru' ? 'ru' : 'en'; } catch (e) {}
   setLang(saved);
 
   function route() {
