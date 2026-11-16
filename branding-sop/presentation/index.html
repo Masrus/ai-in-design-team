@@ -473,16 +473,6 @@
     </div>
   </section>
 
-  <section class="hl" id="highlights">
-    <div class="wrap hl-head reveal">
-      <h2>Get the highlights.</h2>
-      <div class="hl-nav">
-        <button class="round" id="hl-prev" type="button" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
-        <button class="round" id="hl-next" type="button" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
-      </div>
-    </div>
-    <div class="hl-row" id="hl-row"></div>
-  </section>
 
 
   <div id="sections"></div>
@@ -894,8 +884,6 @@
 
   const navLinks = document.getElementById('lnav-links');
   const root = document.getElementById('sections');
-  const hlRow = document.getElementById('hl-row');
-  const HL_SHOT = { desktop: '05', mobile: '10', stores: '11', admin: '14', email: '15' };
   function zoomFig(panel, caps) {
     const f = figure(panel, caps);
     const z = document.createElement('div'); z.className = 'zoom';
@@ -904,16 +892,6 @@
   }
   SECTIONS.forEach((sec) => {
     navLinks.insertAdjacentHTML('beforeend', `<a href="#${sec.id}" data-sec="${sec.id}">${(sec.nav || sec.title).replace('&', '&amp;')}</a>`);
-    // highlight card
-    const card = document.createElement('a');
-    card.className = 'card'; card.href = '#' + sec.id;
-    card.innerHTML = '<div class="cap"></div><div class="media"></div>';
-    card.querySelector('.cap').innerHTML = `${sec.card[0]} <span></span>`;
-    card.querySelector('.cap span').textContent = sec.card[1];
-    const media = card.querySelector('.media');
-    if (sec.ident) media.appendChild(buildPanel({ ...IDENT[0], h: 360, slots: IDENT[0].slots.map((s) => ({ ...s, y: s.y - 60 })) }));
-    else { const s = S[HL_SHOT[sec.id]]; media.appendChild(buildPanel({ w: s.w, h: s.h, bg: `shots/${s.n}.webp`, slots: s.slots })); }
-    hlRow.appendChild(card);
     // section
     const el = document.createElement('section');
     el.className = 'sec'; el.id = sec.id;
@@ -956,16 +934,6 @@
     for (const e of es) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
   }, { rootMargin: '0px 0px -8% 0px' }) : null;
   document.querySelectorAll('.reveal').forEach((n) => io ? io.observe(n) : n.classList.add('in'));
-
-  // highlights gallery arrows
-  (() => {
-    const prev = document.getElementById('hl-prev'), next = document.getElementById('hl-next');
-    const stepW = () => (hlRow.querySelector('.card')?.getBoundingClientRect().width || 600) + 24;
-    const upd = () => { prev.disabled = hlRow.scrollLeft < 4; next.disabled = hlRow.scrollLeft > hlRow.scrollWidth - hlRow.clientWidth - 4; };
-    prev.addEventListener('click', () => hlRow.scrollBy({ left: -stepW(), behavior: 'smooth' }));
-    next.addEventListener('click', () => hlRow.scrollBy({ left: stepW(), behavior: 'smooth' }));
-    hlRow.addEventListener('scroll', upd, { passive: true }); window.addEventListener('resize', upd); upd();
-  })();
 
   // scroll-driven motion: hero fades and the icon grows, screens zoom in as they enter
   (() => {
