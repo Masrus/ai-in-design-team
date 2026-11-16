@@ -310,8 +310,10 @@
   .crop-own-view { position: absolute; inset: 0; display: grid; place-items: center; padding: 32px; background: inherit; border-radius: inherit; }
   .crop-own-view[hidden] { display: none; }
   .crop-own-view img { max-width: 100%; max-height: 100%; object-fit: contain; }
-  .crop-own { display: flex; gap: 8px; margin-top: 12px; }
-  .own-btn { height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--surface-3); color: var(--ink); font: 500 14px 'Geist', sans-serif; cursor: pointer; }
+  .crop-own { display: flex; gap: 8px; margin-right: auto; }
+  .crop-own-btnrow { display: contents; }
+  .crop-area.tall { height: 408px; }
+  .own-btn { height: 48px; padding: 0 28px; border: 0; border-radius: 999px; background: var(--surface-3); color: var(--ink); font: 500 14px 'Geist', sans-serif; cursor: pointer; }
   .own-btn:hover { background: #2D2D2B; }
   .own-btn.quiet { background: transparent; color: var(--ink-2); }
   .own-btn[hidden] { display: none; }
@@ -335,7 +337,7 @@
   .crop-frame .h.ne { right: -12px; top: -12px; cursor: nesw-resize; }
   .crop-frame .h.sw { left: -12px; bottom: -12px; cursor: nesw-resize; }
   .crop-frame .h.se { right: -12px; bottom: -12px; cursor: nwse-resize; }
-  .crop-size { display: flex; align-items: center; gap: 16px; margin-top: 16px; font-size: 14px; color: var(--ink-2); }
+  .crop-size { display: flex; align-items: center; gap: 16px; margin-top: 16px; height: 32px; font-size: 14px; color: var(--ink-2); }
   .crop-size input { flex: 1; accent-color: #fff; height: 32px; }
   .crop-size input:focus { outline: none; }
   .crop-size input:focus-visible { outline: 2px solid rgba(255,255,255,.5); outline-offset: 4px; border-radius: 4px; }
@@ -347,10 +349,12 @@
   .crop-prev .small .tile { width: 64px; flex: none; }
   .crop-prev .small span { font-size: 14px; color: var(--ink-2); }
   .crop-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+  .crop-actions .btn { height: 48px; padding: 0 28px; font-size: 16px; }
   @media (max-width: 720px) {
     .crop-in { padding: 20px; gap: 20px; }
     .crop-grid { grid-template-columns: 1fr; }
     .crop-area { height: 300px; }
+    .crop-area.tall { height: 348px; }
     .crop-prev { grid-template-columns: 120px 1fr; align-items: center; }
     .crop-actions .btn { flex: 1; }
   }
@@ -468,11 +472,6 @@
           <div class="crop-own-view" id="crop-own-view" hidden><img id="crop-own-img" alt=""></div>
           <div class="crop-frame" id="crop-frame"><i class="h nw"></i><i class="h ne"></i><i class="h sw"></i><i class="h se"></i></div>
         </div>
-        <div class="crop-own">
-          <button type="button" class="own-btn" id="crop-own">Upload a square icon</button>
-          <button type="button" class="own-btn quiet" id="crop-own-rm" hidden>Remove</button>
-          <input type="file" id="crop-own-file" accept="image/*" hidden>
-        </div>
         <label class="crop-size" id="crop-size">Size <input type="range" id="crop-range" min="0" max="1000" value="500" aria-label="Frame size"></label>
       </div>
       <div class="crop-prev" id="prev-icon">
@@ -485,6 +484,11 @@
       </div>
     </div>
     <div class="crop-actions">
+      <div class="crop-own">
+        <button type="button" class="own-btn" id="crop-own">Upload a square icon</button>
+        <button type="button" class="own-btn quiet" id="crop-own-rm" hidden>Remove</button>
+        <input type="file" id="crop-own-file" accept="image/*" hidden>
+      </div>
       <button class="btn primary" type="button" id="crop-done">Done</button>
     </div>
   </div>
@@ -1052,8 +1056,11 @@
     drawFrame();
   }
   function drawFrame() {
-    const { k, ox, oy } = cs.view;
     const wide = cs.tab === 'wide';
+    // no Size row on this state → the logo area takes its place, so the dialog keeps the same height on both tabs
+    const noRange = wide || iconAsIs() || !!cs.ownIcon;
+    if (area.classList.contains('tall') !== noRange) { area.classList.toggle('tall', noRange); return layout(); }
+    const { k, ox, oy } = cs.view;
     const own = wide ? cs.ownWide : cs.ownIcon;
     ownView.hidden = !own; if (own) ownImg.src = own;
     ownBtn.textContent = own ? (wide ? 'Replace logo' : 'Replace icon') : (wide ? 'Upload a full logo' : 'Upload a square icon');
