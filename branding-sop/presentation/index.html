@@ -580,14 +580,14 @@
     const dark = square ? (state.darkSquare || state.dark) : wide ? (state.darkWide || state.dark) : state.dark;
     const dk = slot.k !== 'wide' || slot.bg === 'dark';
     // a logo that comes with its own background fills the whole app tile
-    const out = (o) => (slot.k === 'icon' && opaqueOf(o.src) === true) ? { src: o.src, full: true } : o;
+    const out = (o) => (square && opaqueOf(o.src) === true) ? { src: o.src, full: true } : o;
     if (!light && !dark) {
       if (square) return { src: DEF.markWhite };
       return { src: dk ? DEF.wideWhite : DEF.wideBlack };
     }
     if (dk) {
       if (dark) return out({ src: dark });
-      if (slot.k === 'icon' && opaqueOf(light) === true) return out({ src: light });
+      if (square && opaqueOf(light) === true) return out({ src: light });
       if (flatness(light) === false) return out({ src: light });
       return { src: light, sil: !!slot.sil, outline: !!slot.outline };
     }
@@ -876,6 +876,11 @@
         Object.assign(r.el.style, f
           ? { left: T.x + 'px', top: T.y + 'px', width: T.w + 'px', height: T.h + 'px', borderRadius: T.r + 'px', overflow: 'hidden' }
           : { left: sl.x + 'px', top: sl.y + 'px', width: sl.w + 'px', height: sl.h + 'px', borderRadius: '', overflow: '' });
+        r.img.style.objectFit = f ? 'cover' : '';
+      }
+      if (r.slot.k === 'mark') {                       // bare logo on a dark screen: a logo with its own background gets rounded corners
+        const f = !!p.full;
+        Object.assign(r.el.style, { borderRadius: f ? r.slot.w * 0.225 + 'px' : '', overflow: f ? 'hidden' : '' });
         r.img.style.objectFit = f ? 'cover' : '';
       }
       r.el.classList.toggle('sil', !!p.sil);
@@ -1204,6 +1209,12 @@
       const dx = pos.startsWith('left') ? bx : pos.startsWith('right') ? bx + bw - dw : bx + (bw - dw) / 2;
       const dy = by + (bh - dh) / 2;
       const dpx = px * k;
+      if (slot.k === 'mark' && pk.full) {
+        const cw = r >= 1 ? slot.h * r : slot.w, ch = r >= 1 ? slot.h : slot.w / r;
+        g.save(); g.beginPath(); g.roundRect(slot.x, slot.y, slot.w, slot.h, slot.w * 0.225); g.clip();
+        g.drawImage(img, slot.x - (cw - slot.w) / 2, slot.y - (ch - slot.h) / 2, cw, ch); g.restore();
+        continue;
+      }
       if (slot.k === 'icon' && pk.full) {
         const T = tileOf(slot), t = T.w;
         const cw = r >= 1 ? t * r : t, ch = r >= 1 ? t : t / r;
