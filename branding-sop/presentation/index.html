@@ -392,16 +392,6 @@
     <div class="hl-row" id="hl-row"></div>
   </section>
 
-  <section class="stats">
-    <div class="wrap">
-      <h2 class="reveal">One logo. <span class="grey">Everywhere.</span></h2>
-      <div class="stats-row">
-        <div class="stat reveal"><b id="st-logo">0</b><span>places your logo appears</span></div>
-        <div class="stat reveal"><b id="st-name">0</b><span>places your name appears</span></div>
-        <div class="stat reveal"><b id="st-prod">0</b><span>products, one brand</span></div>
-      </div>
-    </div>
-  </section>
 
   <div id="sections"></div>
 
@@ -716,25 +706,6 @@
     for (const e of es) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
   }, { rootMargin: '0px 0px -8% 0px' }) : null;
   document.querySelectorAll('.reveal').forEach((n) => io ? io.observe(n) : n.classList.add('in'));
-
-  // stats: real counts from the slot data
-  (() => {
-    let logo = 0, name = 0;
-    const all = [...IDENT.flatMap((p) => p.slots), ...Object.values(S).flatMap((s) => s.slots)];
-    for (const s of all) { if (s.k === 'name') name++; else if (s.k !== 'tile') logo++; }
-    const target = { 'st-logo': logo + 1, 'st-name': name, 'st-prod': SECTIONS.length - 1 };   // +1 hero icon, products = sections minus Identity
-    const counted = new WeakSet();
-    const cio = 'IntersectionObserver' in window ? new IntersectionObserver((es) => {
-      for (const e of es) if (e.isIntersecting && !counted.has(e.target)) { counted.add(e.target); countUp(e.target); }
-    }, { threshold: .6 }) : null;
-    function countUp(el) {
-      const to = target[el.id], t0 = performance.now(), dur = 1200;
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = to; return; }
-      const step = (now) => { const k = Math.min(1, (now - t0) / dur); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); };
-      requestAnimationFrame(step);
-    }
-    for (const id in target) { const el = document.getElementById(id); cio ? cio.observe(el) : (el.textContent = target[id]); }
-  })();
 
   // highlights gallery arrows
   (() => {
