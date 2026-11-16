@@ -352,6 +352,7 @@
   .own-btn.icon { width: 48px; padding: 0; display: grid; place-items: center; }
   .own-btn.icon svg { width: 20px; height: 20px; }
   .own-btn.icon:hover { color: var(--ink); background: var(--surface-3); }
+  .bgpick[hidden] { display: none; }
   #crop-dark { width: 100%; padding: 0 16px; }
   #crop-dark[hidden] { display: none; }
   .crop-prev .tile { width: 100%; aspect-ratio: 1; border-radius: 22.5%; background: #000; display: grid; place-items: center; }
@@ -487,12 +488,12 @@
       </div>
       <div class="crop-side">
         <div class="crop-prev" id="prev-icon">
-          <div><div class="wp light"><div class="tile"><img id="crop-prev-big" alt=""></div></div><div class="lbl"><span>On light</span><input type="color" class="bgpick" data-t="light" value="#ffffff" aria-label="Background on light"></div></div>
-          <div><div class="wp dark"><div class="tile"><img id="crop-prev-small" alt=""></div></div><div class="lbl"><span>On dark</span><input type="color" class="bgpick" data-t="dark" value="#181818" aria-label="Background on dark"></div></div>
+          <div><div class="wp light"><div class="tile"><img id="crop-prev-big" alt=""></div></div><div class="lbl"><span>On light</span><input type="color" class="bgpick" data-t="light" value="#000000" title="Icon background on light" aria-label="Icon background on light"></div></div>
+          <div><div class="wp dark"><div class="tile"><img id="crop-prev-small" alt=""></div></div><div class="lbl"><span>On dark</span><input type="color" class="bgpick" data-t="dark" value="#000000" title="Icon background on dark" aria-label="Icon background on dark"></div></div>
         </div>
         <div class="crop-prev" id="prev-wide" hidden>
-          <div><div class="wp light"><img id="wp-light" alt=""></div><div class="lbl"><span>On light</span><input type="color" class="bgpick" data-t="light" value="#ffffff" aria-label="Background on light"></div></div>
-          <div><div class="wp dark"><img id="wp-dark" alt=""></div><div class="lbl"><span>On dark</span><input type="color" class="bgpick" data-t="dark" value="#181818" aria-label="Background on dark"></div></div>
+          <div><div class="wp light"><img id="wp-light" alt=""></div><div class="lbl"><span>On light</span></div></div>
+          <div><div class="wp dark"><img id="wp-dark" alt=""></div><div class="lbl"><span>On dark</span></div></div>
         </div>
         <button type="button" class="own-btn" id="crop-dark">Logo for dark</button>
         <input type="file" id="crop-dark-file" accept="image/svg+xml,image/png,image/webp,image/jpeg" hidden>
@@ -571,6 +572,10 @@
   }
   const lsGet = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
   const lsSet = (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch {} };
+  // colour behind a transparent app icon: on light (identity card, light themes) and on dark (app screens)
+  const iconBg = { light: '#000000', dark: '#000000' };
+  try { Object.assign(iconBg, JSON.parse(lsGet('ctrader-preview-iconbg') || '{}')); } catch {}
+  const bgIsBlack = (c) => !c || c.toLowerCase() === '#000000';
 
   /* ---------- reading uploads ---------- */
   function readFile(file) {
@@ -817,7 +822,11 @@
         const img = document.createElement('img'); img.alt = ''; img.decoding = 'async';
         img.style.objectPosition = slot.pos || 'center';
         el.appendChild(img);
-        refs.push({ el, img, slot });
+        let bgEl = null;
+        if (slot.k === 'icon' && !slots.some((q) => q.k === 'tile')) {
+          bgEl = document.createElement('div'); bgEl.className = 'slot tilebg'; bgEl.style.display = 'none'; st.appendChild(bgEl);
+        }
+        refs.push({ el, img, slot, bgEl });
       }
       st.appendChild(el);
     }
@@ -955,6 +964,11 @@
           ? { left: T.x + 'px', top: T.y + 'px', width: T.w + 'px', height: T.h + 'px', borderRadius: T.r + 'px', overflow: 'hidden' }
           : { left: sl.x + 'px', top: sl.y + 'px', width: sl.w + 'px', height: sl.h + 'px', borderRadius: '', overflow: '' });
         r.img.style.objectFit = f ? 'cover' : '';
+        if (r.bgEl) {
+          const show = !f && !bgIsBlack(iconBg.dark);
+          r.bgEl.style.display = show ? '' : 'none';
+          if (show) Object.assign(r.bgEl.style, { left: T.x + 'px', top: T.y + 'px', width: T.w + 'px', height: T.h + 'px', borderRadius: T.r + 'px', background: iconBg.dark });
+        }
       }
       if (r.slot.k === 'mark') {                       // bare logo on a dark screen: a logo with its own background gets rounded corners
         const f = !!p.full;
@@ -964,6 +978,7 @@
       r.el.classList.toggle('sil', !!p.sil);
       r.el.classList.toggle('outline', !!p.outline);
     }
+    document.querySelectorAll('.slot.tile').forEach((e) => { e.style.background = iconBg.light; });
     const ic = pick({ k: 'icon' });
     for (const im of extraIcons) { if (im.getAttribute('src') !== ic.src) im.src = ic.src; im.style.filter = ic.sil ? 'brightness(0) invert(1)' : ''; }
     const has = !!(state.light || state.dark);
@@ -1013,12 +1028,13 @@
   const wpLight = document.getElementById('wp-light'), wpDark = document.getElementById('wp-dark');
   const ownBtn = document.getElementById('crop-own'), ownRm = document.getElementById('crop-own-rm'), ownFile = document.getElementById('crop-own-file');
   const darkBtn = document.getElementById('crop-dark'), darkFile = document.getElementById('crop-dark-file');
-  const bg = { light: '#ffffff', dark: '#181818' };
   function applyBg() {
-    dlg.querySelectorAll('.wp').forEach((el) => { el.style.background = bg[el.classList.contains('dark') ? 'dark' : 'light']; });
-    dlg.querySelectorAll('.bgpick').forEach((el) => { el.value = bg[el.dataset.t]; });
+    dlg.querySelectorAll('#prev-icon .tile').forEach((t) => { t.style.background = iconBg[t.closest('.wp').classList.contains('dark') ? 'dark' : 'light']; });
+    dlg.querySelectorAll('.bgpick').forEach((el) => { el.value = iconBg[el.dataset.t]; });
   }
-  dlg.querySelectorAll('.bgpick').forEach((el) => el.addEventListener('input', () => { bg[el.dataset.t] = el.value; applyBg(); }));
+  dlg.querySelectorAll('.bgpick').forEach((el) => el.addEventListener('input', () => {
+    iconBg[el.dataset.t] = el.value; lsSet('ctrader-preview-iconbg', JSON.stringify(iconBg)); applyBg(); render();
+  }));
   function darkBtnState() { darkBtn.hidden = cs.key !== 'light'; darkBtn.textContent = state.dark ? 'Replace dark logo' : 'Logo for dark'; }
   const ownView = document.getElementById('crop-own-view'), ownImg = document.getElementById('crop-own-img');
   const tabIcon = document.getElementById('tab-icon'), tabWide = document.getElementById('tab-wide');
@@ -1128,6 +1144,7 @@
       else { const c = iconCanvas(256); u = c.toDataURL(); full = opaqueCanvas(c); }
       prevBig.src = u; prevSmall.src = u;
       prevBig.parentElement.classList.toggle('full', full); prevSmall.parentElement.classList.toggle('full', full);
+      prevIcon.querySelectorAll('.bgpick').forEach((el) => { el.hidden = !!full; });
     } else {
       const u = cs.ownWide || wideCanvas(480).toDataURL();
       wpLight.src = u; wpDark.src = u;
@@ -1318,7 +1335,7 @@
     if (p.bg) g.drawImage(await loadImg(p.bg), 0, 0, p.w, p.h);
     const nm = brokerName();
     for (const slot of p.slots) {
-      if (slot.k === 'tile') { g.fillStyle = '#000'; g.beginPath(); g.roundRect(slot.x, slot.y, slot.w, slot.h, slot.r); g.fill(); continue; }
+      if (slot.k === 'tile') { g.fillStyle = iconBg.light; g.beginPath(); g.roundRect(slot.x, slot.y, slot.w, slot.h, slot.r); g.fill(); continue; }
       if (slot.k === 'name') {
         g.font = `${slot.f.weight} ${slot.size}px ${slot.f.family}`;
         g.fillStyle = slot.color; g.textBaseline = 'alphabetic';
@@ -1353,6 +1370,9 @@
         g.save(); g.beginPath(); g.roundRect(T.x, T.y, T.w, T.h, T.r); g.clip();
         g.drawImage(img, T.x - (cw - t) / 2, T.y - (ch - t) / 2, cw, ch); g.restore();
         continue;
+      }
+      if (slot.k === 'icon' && !pk.full && !p.slots.some((q) => q.k === 'tile') && !bgIsBlack(iconBg.dark)) {
+        const T = tileOf(slot); g.fillStyle = iconBg.dark; g.beginPath(); g.roundRect(T.x, T.y, T.w, T.h, T.r); g.fill();
       }
       if (pk.sil) g.drawImage(tinted(img, dw, dh, '#fff', dpx), dx, dy, dw, dh);
       else if (pk.outline) {
@@ -1400,7 +1420,7 @@
       const fs = fitFont(g, nm, 600, 168, 1080);
       text(g, nm, M, 600 + 40 + fs * .85, `600 ${fs}px Geist`, '#F2F2F0');
       text(g, 'on cTrader', M, 600 + 40 + fs * .85 + 168 * .95, '600 168px Geist', '#75756E');
-      await drawPanel(g, { w: 240, h: 240, fill: '#000', slots: [{ k: 'icon', x: 33.6, y: 33.6, w: 172.8, h: 172.8 }] }, 1380, 300, 400, 90, px);
+      await drawPanel(g, { w: 240, h: 240, fill: iconBg.dark, slots: [{ k: 'icon', x: 33.6, y: 33.6, w: 172.8, h: 172.8 }] }, 1380, 300, 400, 90, px);
     } else if (pg.type === 'close') {
       text(g, 'Let’s put your brand', M, 460, '600 120px Geist', '#F2F2F0');
       text(g, 'on cTrader.', M, 590, '600 120px Geist', '#F2F2F0');
