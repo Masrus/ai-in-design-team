@@ -341,8 +341,19 @@
   .crop-size input { flex: 1; accent-color: #fff; height: 32px; }
   .crop-size input:focus { outline: none; }
   .crop-size input:focus-visible { outline: 2px solid rgba(255,255,255,.5); outline-offset: 4px; border-radius: 4px; }
+  .crop-side { display: grid; gap: 16px; align-content: start; }
   .crop-prev { display: grid; gap: 16px; }
-  .crop-prev .lbl { font-size: 14px; color: var(--ink-2); margin-top: 8px; }
+  .crop-prev .lbl { display: flex; align-items: center; justify-content: space-between; font-size: 14px; color: var(--ink-2); margin-top: 8px; }
+  .bgpick { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
+  .bgpick::-webkit-color-swatch-wrapper { padding: 0; }
+  .bgpick::-webkit-color-swatch { border: 0; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(128,128,128,.45); }
+  .bgpick::-moz-color-swatch { border: 0; border-radius: 50%; }
+  .crop-prev .wp .tile { width: 72px; flex: none; }
+  .own-btn.icon { width: 48px; padding: 0; display: grid; place-items: center; }
+  .own-btn.icon svg { width: 20px; height: 20px; }
+  .own-btn.icon:hover { color: var(--ink); background: var(--surface-3); }
+  #crop-dark { width: 100%; padding: 0 16px; }
+  #crop-dark[hidden] { display: none; }
   .crop-prev .tile { width: 100%; aspect-ratio: 1; border-radius: 22.5%; background: #000; display: grid; place-items: center; }
   .crop-prev .tile img { width: 72%; height: 72%; object-fit: contain; }
   .crop-prev .small { display: flex; gap: 16px; align-items: center; }
@@ -355,7 +366,7 @@
     .crop-grid { grid-template-columns: 1fr; }
     .crop-area { height: 300px; }
     .crop-area.tall { height: 348px; }
-    .crop-prev { grid-template-columns: 120px 1fr; align-items: center; }
+    .crop-prev { grid-template-columns: 1fr 1fr; align-items: start; }
     .crop-actions .btn { flex: 1; }
   }
 </style>
@@ -474,19 +485,23 @@
         </div>
         <label class="crop-size" id="crop-size">Size <input type="range" id="crop-range" min="0" max="1000" value="500" aria-label="Frame size"></label>
       </div>
-      <div class="crop-prev" id="prev-icon">
-        <div><div class="tile"><img id="crop-prev-big" alt=""></div><div class="lbl">App icon</div></div>
-        <div class="small"><div class="tile"><img id="crop-prev-small" alt=""></div><span>Notification</span></div>
-      </div>
-      <div class="crop-prev" id="prev-wide" hidden>
-        <div><div class="wp light"><img id="wp-light" alt=""></div><div class="lbl">On light</div></div>
-        <div><div class="wp dark"><img id="wp-dark" alt=""></div><div class="lbl">On dark</div></div>
+      <div class="crop-side">
+        <div class="crop-prev" id="prev-icon">
+          <div><div class="wp light"><div class="tile"><img id="crop-prev-big" alt=""></div></div><div class="lbl"><span>On light</span><input type="color" class="bgpick" data-t="light" value="#ffffff" aria-label="Background on light"></div></div>
+          <div><div class="wp dark"><div class="tile"><img id="crop-prev-small" alt=""></div></div><div class="lbl"><span>On dark</span><input type="color" class="bgpick" data-t="dark" value="#181818" aria-label="Background on dark"></div></div>
+        </div>
+        <div class="crop-prev" id="prev-wide" hidden>
+          <div><div class="wp light"><img id="wp-light" alt=""></div><div class="lbl"><span>On light</span><input type="color" class="bgpick" data-t="light" value="#ffffff" aria-label="Background on light"></div></div>
+          <div><div class="wp dark"><img id="wp-dark" alt=""></div><div class="lbl"><span>On dark</span><input type="color" class="bgpick" data-t="dark" value="#181818" aria-label="Background on dark"></div></div>
+        </div>
+        <button type="button" class="own-btn" id="crop-dark">Logo for dark</button>
+        <input type="file" id="crop-dark-file" accept="image/svg+xml,image/png,image/webp,image/jpeg" hidden>
       </div>
     </div>
     <div class="crop-actions">
       <div class="crop-own">
         <button type="button" class="own-btn" id="crop-own">Upload a square icon</button>
-        <button type="button" class="own-btn quiet" id="crop-own-rm" hidden>Remove</button>
+        <button type="button" class="own-btn quiet icon" id="crop-own-rm" hidden aria-label="Remove icon" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button>
         <input type="file" id="crop-own-file" accept="image/*" hidden>
       </div>
       <button class="btn primary" type="button" id="crop-done">Done</button>
@@ -970,7 +985,7 @@
   }
 
   /* ---------- inputs ---------- */
-  async function setLogo(key, file) {
+  async function setLogo(key, file, quiet) {
     if (!file || !/^image\//.test(file.type)) return;
     try { state[key] = await normalise(file); } catch { return; }
     for (const k of LOGO_KEYS(key).slice(1)) state[k] = null;
@@ -982,7 +997,7 @@
         state.sq = (q >= 0.85 && q <= 1.18) || opq; lsSet('ctrader-preview-sq', state.sq ? '1' : ''); } catch {}
     }
     render();
-    openCrop(key);
+    if (!quiet) openCrop(key);
   }
 
   /* ---------- logo crop: app icon (square) and full logo (any shape) ---------- */
@@ -997,6 +1012,14 @@
   const prevIcon = document.getElementById('prev-icon'), prevWide = document.getElementById('prev-wide');
   const wpLight = document.getElementById('wp-light'), wpDark = document.getElementById('wp-dark');
   const ownBtn = document.getElementById('crop-own'), ownRm = document.getElementById('crop-own-rm'), ownFile = document.getElementById('crop-own-file');
+  const darkBtn = document.getElementById('crop-dark'), darkFile = document.getElementById('crop-dark-file');
+  const bg = { light: '#ffffff', dark: '#181818' };
+  function applyBg() {
+    dlg.querySelectorAll('.wp').forEach((el) => { el.style.background = bg[el.classList.contains('dark') ? 'dark' : 'light']; });
+    dlg.querySelectorAll('.bgpick').forEach((el) => { el.value = bg[el.dataset.t]; });
+  }
+  dlg.querySelectorAll('.bgpick').forEach((el) => el.addEventListener('input', () => { bg[el.dataset.t] = el.value; applyBg(); }));
+  function darkBtnState() { darkBtn.hidden = cs.key !== 'light'; darkBtn.textContent = state.dark ? 'Replace dark logo' : 'Logo for dark'; }
   const ownView = document.getElementById('crop-own-view'), ownImg = document.getElementById('crop-own-img');
   const tabIcon = document.getElementById('tab-icon'), tabWide = document.getElementById('tab-wide');
   const cTitle = document.getElementById('crop-title'), cSub = document.getElementById('crop-sub');
@@ -1113,6 +1136,7 @@
       const fl = flatness(u) !== false;
       wpDark.style.filter = ad ? (ad.low && fl ? 'brightness(0) invert(1)' : '') : (fl ? 'brightness(0) invert(1)' : '');
       if (ad && ad.low && !fl && ad.canvas) wpDark.src = ad.url();
+      if (cs.key === 'light' && state.dark) { wpDark.src = state.dark; wpDark.style.filter = ''; }
     }
   }
   function setTab(t) {
@@ -1123,6 +1147,7 @@
     if (t === 'icon' && cs.ownIcon) sub = 'Using the square icon you uploaded for app icons, splash screens and notifications.';
     cTitle.textContent = h; cSub.textContent = sub;
     prevIcon.hidden = t === 'wide'; prevWide.hidden = t !== 'wide';
+    applyBg(); darkBtnState();
     if (cs.view) drawFrame();
   }
   function setSq(v) {
@@ -1170,6 +1195,11 @@
   document.getElementById('crop-done').addEventListener('click', closeCrop);
   dlg.addEventListener('cancel', (e) => { e.preventDefault(); closeCrop(); });
   tabIcon.addEventListener('click', () => setTab('icon'));
+  darkBtn.addEventListener('click', () => darkFile.click());
+  darkFile.addEventListener('change', async () => {
+    const f = darkFile.files[0]; darkFile.value = ''; if (!f) return;
+    await setLogo('dark', f, true); darkBtnState(); updatePreview();
+  });
   ownBtn.addEventListener('click', () => ownFile.click());
   ownFile.addEventListener('change', async () => {
     const f = ownFile.files[0]; ownFile.value = ''; if (!f) return;
