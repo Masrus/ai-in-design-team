@@ -350,6 +350,7 @@
   .sc-act svg { width: 20px; height: 20px; }
   .sc-act[hidden], .scard[hidden] { display: none; }
   .sc-btns { display: flex; flex: none; }
+  .sc-act:disabled { opacity: .3; pointer-events: none; }
   .dblk { cursor: pointer; outline: none; }
   .dblk .wp { position: relative; }
   .dblk.sel .wp { box-shadow: 0 0 0 2px #fff; }
@@ -559,8 +560,8 @@
     wideWhite: 'assets/ctrader-wide-white.svg',
     wideBlack: 'assets/ctrader-wide-black.svg',
   };
-  const state = { light: null, dark: null, lightSquare: null, darkSquare: null, lightCrop: null, darkCrop: null, lightWide: null, darkWide: null, lightWideCrop: null, darkWideCrop: null, lightOwnIcon: null, darkOwnIcon: null, lightOwnWide: null, darkOwnWide: null, sq: false, name: '' };
-  const IMG_KEYS = ['light', 'dark', 'lightSquare', 'darkSquare', 'lightCrop', 'darkCrop', 'lightWide', 'darkWide', 'lightWideCrop', 'darkWideCrop', 'lightOwnIcon', 'darkOwnIcon', 'lightOwnWide', 'darkOwnWide'];
+  const state = { light: null, dark: null, lightSquare: null, darkSquare: null, lightCrop: null, darkCrop: null, lightWide: null, darkWide: null, lightWideCrop: null, darkWideCrop: null, lightOwnIcon: null, darkOwnIcon: null, lightOwnWide: null, darkOwnWide: null, darkIconCrop: null, darkIconSrc: null, sq: false, name: '' };
+  const IMG_KEYS = ['light', 'dark', 'lightSquare', 'darkSquare', 'lightCrop', 'darkCrop', 'lightWide', 'darkWide', 'lightWideCrop', 'darkWideCrop', 'lightOwnIcon', 'darkOwnIcon', 'lightOwnWide', 'darkOwnWide', 'darkIconCrop', 'darkIconSrc'];
   const LOGO_KEYS = (k) => [k, k + 'Square', k + 'Crop', k + 'Wide', k + 'WideCrop', k + 'OwnIcon', k + 'OwnWide'];
 
   /* ---------- page content ---------- */
@@ -657,6 +658,7 @@
     const light = square ? (state.lightSquare || state.light) : wide ? (state.lightWide || state.light) : state.light;
     const dark = square ? (state.darkSquare || state.dark) : wide ? (state.darkWide || state.dark) : state.dark;
     const dk = slot.k !== 'wide' || slot.bg === 'dark';
+    const dsrc = (square && state.darkIconSrc) ? state.darkIconSrc : light;   // dark-theme icon with its own crop
     // a logo that comes with its own background fills the whole app tile
     const out = (o) => (square && opaqueOf(o.src) === true) ? { src: o.src, full: true } : o;
     if (!light && !dark) {
@@ -665,14 +667,14 @@
     }
     if (dk) {
       if (dark) return out({ src: dark });
-      if (square && opaqueOf(light) === true) return out({ src: light });
+      if (square && opaqueOf(dsrc) === true) return out({ src: dsrc });
       // no dark version: check the contrast against the dark plate and lighten the logo only if it is needed
-      const ad = autoDark(light, slot.k === 'icon' ? iconBg[slot.bgKey || 'dark'] : '#181818');
-      if (ad && !ad.low) return out({ src: light });
-      const fl = flatness(light);
+      const ad = autoDark(dsrc, slot.k === 'icon' ? iconBg[slot.bgKey || 'dark'] : '#181818');
+      if (ad && !ad.low) return out({ src: dsrc });
+      const fl = flatness(dsrc);
       if (ad && ad.low && ad.canvas) return { src: ad.url() };   // dark parts → white, other colours stay
-      if (fl === false) return out({ src: light });
-      return { src: light, sil: ad && ad.low ? true : !!slot.sil, outline: !!slot.outline };
+      if (fl === false) return out({ src: dsrc });
+      return { src: dsrc, sil: ad && ad.low ? true : !!slot.sil, outline: !!slot.outline };
     }
     return out({ src: light || dark });
   }
@@ -720,7 +722,7 @@
   function composeSync(theme) {
     const dk = theme === 'dark';
     const own = state.darkSquare || state.dark;
-    const icon = dk ? (own || state.lightSquare || state.light) : (state.lightSquare || state.light || own);
+    const icon = dk ? (own || state.darkIconSrc || state.lightSquare || state.light) : (state.lightSquare || state.light || own);
     if (!icon) return null;
     const ad = dk && !own ? autoDark(icon) : null;
     const fl = flatness(icon) !== false;
@@ -1053,6 +1055,7 @@
     if (!file || !/^image\//.test(file.type)) return;
     try { state[key] = await normalise(file); } catch { return; }
     for (const k of LOGO_KEYS(key).slice(1)) state[k] = null;
+    if (key === 'light') { state.darkIconCrop = null; state.darkIconSrc = null; await dbSet('darkIconCrop', null); await dbSet('darkIconSrc', null); }
     for (const k of LOGO_KEYS(key)) await dbSet(k, state[k]);
     if (key === 'light') {
       try { const im = await loadImg(state.light); const q = ratioOf(im, state.light);
@@ -1092,10 +1095,12 @@
   const TXT = {
     icon: ['Choose your app icon', 'Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.'],
     iconSq: ['Your app icon', 'Your logo is used as the app icon as it is. Where a wide logo is needed we show it next to your broker name. Have a wide logo? Open the Full logo tab.'],
-    dark: ['Dark theme', 'Used on dark screens. We make the dark parts of your logo white. Upload your own full logo or app icon if you prefer.'],
+    dark: ['Dark theme', 'Used on dark screens. We make the dark parts of your logo white. If you have a logo made for dark themes and you’re not happy with our version, feel free to upload it.'],
     wide: ['Trim your full logo', 'Used in emails, installers and login screens. We cut the empty space around it; drag the corners if something is missing.'],
   };
 
+  const ownDarkIcon = () => !!(state.darkSquare || state.dark);
+  const dkCrop = () => cs.tab === 'dark' && cs.dsub === 'icon' && !ownDarkIcon();   // frame + Size slider over the logo for the dark icon
   const nearSq = () => { const q = cs.w / cs.h; return q >= 0.85 && q <= 1.18; };
   const iconAsIs = () => false;   // the frame and the Size slider are always there, a square logo just starts with the frame over all of it
   function sizeLimits() { const m = Math.max(cs.w, cs.h); return { min: Math.max(8, Math.min(cs.w, cs.h) * 0.15), max: m * 1.6 }; }
@@ -1146,38 +1151,40 @@
   function drawFrame() {
     const wide = cs.tab === 'wide', dk = cs.tab === 'dark';
     // no Size row on this state → the logo area takes its place, so the dialog keeps the same height on every tab
-    const noRange = wide || dk || iconAsIs() || !!cs.ownIcon;
+    const noRange = dk ? !dkCrop() : (wide || iconAsIs() || !!cs.ownIcon);
     if (area.classList.contains('tall') !== noRange) { area.classList.toggle('tall', noRange); return layout(); }
     const { k, ox, oy } = cs.view;
-    const dd = dk ? darkAuto(cs.dsub) : null;
-    const own = dk ? dd.src : wide ? cs.ownWide : cs.ownIcon;
+    const dd = dk && !dkCrop() ? darkAuto(cs.dsub) : null;
+    const own = dk ? (dd && dd.src) : wide ? cs.ownWide : cs.ownIcon;
+    { const want = dk ? (() => { const ad = autoDark(cs.src); return ad && ad.low && ad.canvas ? ad.url() : cs.src; })() : cs.src; if (cImg.getAttribute('src') !== want) cImg.src = want; }
     ownView.hidden = !own; if (own) ownImg.src = own;
     ownImg.style.filter = dd ? dd.filter : '';
     area.classList.toggle('dark', dk || cs.key === 'dark');
-    frameEl.hidden = !!own || (!wide && iconAsIs());
+    frameEl.hidden = !!own || (!wide && !dk && iconAsIs());
     frameEl.classList.toggle('rect', wide);
-    rangeBox.hidden = wide || dk || iconAsIs() || !!cs.ownIcon;
-    if (dk) { /* nothing to drag: it is a plain preview */ }
+    rangeBox.hidden = noRange;
+    if (dk && !dkCrop()) { /* nothing to drag: it is a plain preview */ }
     else if (wide) {
       const f = cs.fWide;
       Object.assign(frameEl.style, { left: ox + f.x * k + 'px', top: oy + f.y * k + 'px', width: f.w * k + 'px', height: f.h * k + 'px' });
     } else {
-      const f = cs.fSq;
+      const f = dk ? (cs.fSqD || cs.fSq) : cs.fSq;
       Object.assign(frameEl.style, { left: ox + f.x * k + 'px', top: oy + f.y * k + 'px', width: f.s * k + 'px', height: f.s * k + 'px' });
       const { min, max } = sizeLimits();
       range.value = Math.round(1000 * Math.log(f.s / min) / Math.log(max / min));
     }
     clearTimeout(cs.prevTimer); cs.prevTimer = setTimeout(updatePreview, 30);
   }
-  function iconCanvas(size) {
+  function iconCanvas(size, fr) {
+    const F = fr || cs.fSq;
     const c = document.createElement('canvas'); c.width = c.height = size;
     const g = c.getContext('2d'); g.imageSmoothingQuality = 'high';
     if (iconAsIs()) {                                                  // the whole logo is the icon
       const k = size / Math.max(cs.w, cs.h);
       g.drawImage(cs.img, (size - cs.w * k) / 2, (size - cs.h * k) / 2, cs.w * k, cs.h * k);
     } else {
-      const k = size / cs.fSq.s;
-      g.drawImage(cs.img, -cs.fSq.x * k, -cs.fSq.y * k, cs.w * k, cs.h * k);
+      const k = size / F.s;
+      g.drawImage(cs.img, -F.x * k, -F.y * k, cs.w * k, cs.h * k);
     }
     return c;
   }
@@ -1205,9 +1212,9 @@
       const w = darkAuto('wide'), ic = darkAuto('icon');
       dkWideImg.src = w.src; dkWideImg.style.filter = w.filter;
       dkIconImg.src = ic.src; dkIconImg.style.filter = ic.filter;
-      const full = ic.own && opaqueOf(ic.src) === true;
-      dkIconImg.parentElement.classList.toggle('full', full);
-      blkIcon.querySelector('.bgpick').hidden = full;
+      const setFull = () => { const f = opaqueOf(ic.src) === true; dkIconImg.parentElement.classList.toggle('full', f); blkIcon.querySelector('.bgpick').hidden = f; };
+      setFull(); setTimeout(setFull, 120);
+      if (!dkCrop()) { const dd = darkAuto(cs.dsub); if (ownImg.getAttribute('src') !== dd.src) ownImg.src = dd.src; ownImg.style.filter = dd.filter; }   // the big view follows when the auto version is ready
       blkWide.classList.toggle('sel', cs.dsub === 'wide'); blkIcon.classList.toggle('sel', cs.dsub === 'icon');
       blkWide.querySelector('.rm').hidden = !w.own; blkIcon.querySelector('.rm').hidden = !ic.own;
     } else {
@@ -1238,7 +1245,7 @@
     const wide = kind === 'wide';
     const own = wide ? (state.darkWide || state.dark) : (state.darkSquare || state.dark);
     if (own) return { src: own, own: true, filter: '' };
-    const base = wide ? ((cs.sq && !cs.ownWide) ? iconCanvas(512).toDataURL() : (cs.ownWide || wideCanvas(640).toDataURL())) : (cs.ownIcon || iconCanvas(256).toDataURL());
+    const base = wide ? ((cs.sq && !cs.ownWide) ? iconCanvas(512).toDataURL() : (cs.ownWide || wideCanvas(640).toDataURL())) : (cs.ownIcon || iconCanvas(256, cs.fSqD).toDataURL());
     const ad = autoDark(base, wide ? '#181818' : iconBg.dark);
     if (ad && ad.low && ad.canvas) return { src: ad.url(), own: false, filter: '' };
     return { src: base, own: false, filter: !ad && opaqueOf(base) !== true && flatness(base) !== false ? 'brightness(0) invert(1)' : '' };
@@ -1253,7 +1260,7 @@
     plus.hidden = !o.empty; el.classList.toggle('empty', !!o.empty);
     el.querySelector('i').textContent = o.sub;
     const set = (b, on, t, ic) => { b.hidden = !on; if (on) { b.innerHTML = CARD_ICON[ic]; b.title = t; b.setAttribute('aria-label', t); } };
-    set(up, o.up, o.upTitle, 'up'); set(rm, o.rm, o.rmTitle, 'trash');
+    set(up, o.up, o.upTitle, 'up'); set(rm, o.rm, o.rmTitle, 'trash'); rm.disabled = !!o.rmOff;
     el.querySelector('.th').style.borderRadius = o.round ? '22.5%' : '';
   }
   function renderCards() {
@@ -1262,7 +1269,7 @@
     const hw = hasWide();
     paintCard(tabWide, { thumb: hw ? (cs.ownWide || wideCanvas(160).toDataURL()) : null, empty: !hw, sub: hw ? (cs.ownWide ? 'Your file' : 'Trimmed from your logo') : 'Optional', up: true, upTitle: cs.ownWide ? 'Replace logo' : 'Upload a full logo', rm: !!cs.ownWide, rmTitle: 'Remove your logo' });
     const di = darkAuto('icon'), n = (state.darkWide || state.dark ? 1 : 0) + (state.darkSquare || state.dark ? 1 : 0);
-    paintCard(tabDark, { hidden: cs.key !== 'light', thumb: di.src, filter: di.filter, round: true, sub: n === 2 ? 'Your files' : n === 1 ? 'One file uploaded' : 'Made from your logo', rm: n > 0, rmTitle: 'Remove your files for dark' });
+    paintCard(tabDark, { hidden: cs.key !== 'light', thumb: di.src, filter: di.filter, round: true, sub: n === 2 ? 'Your files' : n === 1 ? 'One file uploaded' : 'Made from your logo', rm: true, rmOff: !(n > 0 || cs.fSqD || state.darkIconSrc), rmTitle: 'Reset to the version we made' });
   }
   let ownTarget = 'icon';
   function setSq(v) {
@@ -1280,6 +1287,7 @@
     try { const c = document.createElement('canvas'); c.width = c.height = 64; c.getContext('2d').drawImage(cs.img, 0, 0, 64, 64); cs.opq = opaqueCanvas(c); } catch { cs.opq = false; }
     cs.fSq = clampFrame(state[key + 'Crop'] ? { ...state[key + 'Crop'] } : defaultFrame());
     cs.fWide = clampRect(state[key + 'WideCrop'] ? { ...state[key + 'WideCrop'] } : { ...cs.bbox });
+    cs.fSqD = key === 'light' && state.darkIconCrop ? clampFrame({ ...state.darkIconCrop }) : null;
     cs.ownIcon = state[key + 'OwnIcon'] || null; cs.ownWide = state[key + 'OwnWide'] || null;
     cs.view = null; cs.tab = 'icon'; cs.dsub = 'wide';
     cs.sq0 = !!state.sq && !cs.ownWide;
@@ -1304,6 +1312,10 @@
       if (full) { state[key + 'Wide'] = null; state[key + 'WideCrop'] = null; }
       else { state[key + 'Wide'] = wideCanvas(1600).toDataURL(); state[key + 'WideCrop'] = { ...f }; }
     }
+    if (key === 'light') {
+      if (cs.fSqD && !ownDarkIcon()) { state.darkIconCrop = { ...cs.fSqD }; state.darkIconSrc = iconCanvas(OUT, cs.fSqD).toDataURL(); } else { state.darkIconCrop = null; state.darkIconSrc = null; }
+      await dbSet('darkIconCrop', state.darkIconCrop); await dbSet('darkIconSrc', state.darkIconSrc);
+    }
     dlg.close();
     for (const k of LOGO_KEYS(key).slice(1)) await dbSet(k, state[k]);
     render();
@@ -1314,7 +1326,7 @@
   const pickFile = (target) => { ownTarget = target; ownFile.click(); };
   const cards = { icon: tabIcon, wide: tabWide, dark: tabDark };
   async function clearDark(which) {   // which: 'wide' | 'icon' | 'all'
-    if (which === 'all') { for (const k of LOGO_KEYS('dark')) { state[k] = null; await dbSet(k, null); } }
+    if (which === 'all') { for (const k of [...LOGO_KEYS('dark'), 'darkIconCrop', 'darkIconSrc']) { state[k] = null; await dbSet(k, null); } cs.fSqD = null; }
     else {
       if (state.dark) {   // the single dark file used to serve both places: keep it for the other one
         const other = which === 'wide' ? 'darkSquare' : 'darkWide';
@@ -1361,7 +1373,7 @@
   frameEl.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     const h = e.target.classList.contains('h') ? [...e.target.classList].find((c) => c !== 'h') : null;
-    drag = { id: e.pointerId, h, sx: e.clientX, sy: e.clientY, f: { ...(cs.tab === 'wide' ? cs.fWide : cs.fSq) } };
+    drag = { id: e.pointerId, h, sx: e.clientX, sy: e.clientY, f: { ...(cs.tab === 'wide' ? cs.fWide : (cs.tab === 'dark' ? (cs.fSqD || cs.fSq) : cs.fSq)) } };
     frameEl.setPointerCapture(e.pointerId);
   });
   frameEl.addEventListener('pointermove', (e) => {
@@ -1377,26 +1389,30 @@
       }
       drawFrame(); return;
     }
-    if (!drag.h) { cs.fSq = clampFrame({ x: f0.x + dx, y: f0.y + dy, s: f0.s }); drawFrame(); return; }
+    const setSq = (v) => { if (cs.tab === 'dark') cs.fSqD = v; else cs.fSq = v; };
+    if (!drag.h) { setSq(clampFrame({ x: f0.x + dx, y: f0.y + dy, s: f0.s })); drawFrame(); return; }
     const sx = drag.h.includes('e') ? 1 : -1, sy = drag.h.includes('s') ? 1 : -1;
     const d = (sx * dx + sy * dy) / 2;                                // grow along the diagonal
     const { min, max } = sizeLimits();
     const s = Math.min(max, Math.max(min, f0.s + d));
     const ax = sx > 0 ? f0.x : f0.x + f0.s, ay = sy > 0 ? f0.y : f0.y + f0.s;   // fixed corner
-    cs.fSq = clampFrame({ x: sx > 0 ? ax : ax - s, y: sy > 0 ? ay : ay - s, s });
+    setSq(clampFrame({ x: sx > 0 ? ax : ax - s, y: sy > 0 ? ay : ay - s, s }));
     drawFrame();
   });
   const endDrag = (e) => { if (drag && e.pointerId === drag.id) drag = null; };
   frameEl.addEventListener('pointerup', endDrag); frameEl.addEventListener('pointercancel', endDrag);
   // size slider and mouse wheel zoom around the frame centre (icon frame only)
   function resizeAround(sz) {
-    if (cs.tab !== 'icon' || iconAsIs()) return;
-    const cx = cs.fSq.x + cs.fSq.s / 2, cy = cs.fSq.y + cs.fSq.s / 2;
+    if (!(cs.tab === 'icon' || dkCrop()) || iconAsIs()) return;
+    const F = cs.tab === 'dark' ? (cs.fSqD || cs.fSq) : cs.fSq;
+    const cx = F.x + F.s / 2, cy = F.y + F.s / 2;
     const { min, max } = sizeLimits(); sz = Math.min(max, Math.max(min, sz));
-    cs.fSq = clampFrame({ x: cx - sz / 2, y: cy - sz / 2, s: sz }); drawFrame();
+    const nf = clampFrame({ x: cx - sz / 2, y: cy - sz / 2, s: sz });
+    if (cs.tab === 'dark') cs.fSqD = nf; else cs.fSq = nf;
+    drawFrame();
   }
   range.addEventListener('input', () => { const { min, max } = sizeLimits(); resizeAround(min * Math.pow(max / min, range.value / 1000)); });
-  area.addEventListener('wheel', (e) => { e.preventDefault(); resizeAround(cs.fSq.s * Math.exp(e.deltaY * 0.0015)); }, { passive: false });
+  area.addEventListener('wheel', (e) => { e.preventDefault(); resizeAround((cs.tab === 'dark' ? (cs.fSqD || cs.fSq) : cs.fSq).s * Math.exp(e.deltaY * 0.0015)); }, { passive: false });
   for (const key of ['light', 'dark']) {
     document.getElementById('edit-' + key).addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); openCrop(key); });
   }
