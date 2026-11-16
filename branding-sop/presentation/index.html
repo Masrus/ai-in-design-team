@@ -307,6 +307,21 @@
     position: absolute; cursor: move; border-radius: 22.5%;
     box-shadow: 0 0 0 2px #fff, 0 0 0 9999px rgba(0,0,0,.55);
   }
+  .crop-frame.rect { border-radius: 6px; }
+  .crop-frame[hidden], .crop-prev[hidden], .crop-size[hidden] { display: none; }
+  .crop-tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--surface-2); margin-bottom: 20px; }
+  .crop-tabs button { height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: var(--ink-2); font: 500 14px 'Geist', sans-serif; cursor: pointer; }
+  .crop-tabs button[aria-selected="true"] { background: #fff; color: #000; }
+  .crop-tabs button:disabled { opacity: .35; cursor: default; }
+  .crop-prev .tile { overflow: hidden; }
+  .crop-prev .tile.full img { width: 100%; height: 100%; object-fit: cover; }
+  .crop-prev .wp { width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; display: grid; place-items: center; padding: 14px; }
+  .crop-prev .wp.light { background: #fff; } .crop-prev .wp.dark { background: #181818; }
+  .crop-prev .wp img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .crop-sq { display: flex; gap: 12px; align-items: flex-start; margin-right: auto; font-size: 15px; color: var(--ink); cursor: pointer; text-align: left; }
+  .crop-sq input { width: 20px; height: 20px; margin: 1px 0 0; accent-color: #fff; flex: none; }
+  .crop-sq small { display: block; margin-top: 2px; font-size: 13px; color: var(--ink-3); }
+  .crop-actions { align-items: center; }
   .crop-frame .h { position: absolute; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.4); }
   .crop-frame .h.nw { left: -12px; top: -12px; cursor: nwse-resize; }
   .crop-frame .h.ne { right: -12px; top: -12px; cursor: nesw-resize; }
@@ -431,8 +446,12 @@
 <dialog class="crop" id="crop" aria-labelledby="crop-title">
   <div class="crop-in">
     <div>
+      <div class="crop-tabs" role="tablist">
+        <button type="button" role="tab" id="tab-icon" aria-selected="true" autofocus>App icon</button>
+        <button type="button" role="tab" id="tab-wide" aria-selected="false">Full logo</button>
+      </div>
       <h3 id="crop-title">Choose your app icon</h3>
-      <p class="sub">Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.</p>
+      <p class="sub" id="crop-sub">Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.</p>
     </div>
     <div class="crop-grid">
       <div>
@@ -440,16 +459,20 @@
           <img id="crop-img" alt="">
           <div class="crop-frame" id="crop-frame"><i class="h nw"></i><i class="h ne"></i><i class="h sw"></i><i class="h se"></i></div>
         </div>
-        <label class="crop-size">Size <input type="range" id="crop-range" min="0" max="1000" value="500" aria-label="Frame size"></label>
+        <label class="crop-size" id="crop-size">Size <input type="range" id="crop-range" min="0" max="1000" value="500" aria-label="Frame size"></label>
       </div>
-      <div class="crop-prev">
+      <div class="crop-prev" id="prev-icon">
         <div><div class="tile"><img id="crop-prev-big" alt=""></div><div class="lbl">App icon</div></div>
         <div class="small"><div class="tile"><img id="crop-prev-small" alt=""></div><span>Notification</span></div>
       </div>
+      <div class="crop-prev" id="prev-wide" hidden>
+        <div><div class="wp light"><img id="wp-light" alt=""></div><div class="lbl">On light</div></div>
+        <div><div class="wp dark"><img id="wp-dark" alt=""></div><div class="lbl">On dark</div></div>
+      </div>
     </div>
     <div class="crop-actions">
-      <button class="btn reset" type="button" id="crop-full">Use the whole logo</button>
-      <button class="btn primary" type="button" id="crop-done" autofocus>Done</button>
+      <label class="crop-sq"><input type="checkbox" id="crop-sq"><span>My logo is already square<small>Where a wide logo is needed we show it next to your broker name.</small></span></label>
+      <button class="btn primary" type="button" id="crop-done">Done</button>
     </div>
   </div>
 </dialog>
@@ -464,8 +487,9 @@
     wideWhite: 'assets/ctrader-wide-white.svg',
     wideBlack: 'assets/ctrader-wide-black.svg',
   };
-  const state = { light: null, dark: null, lightSquare: null, darkSquare: null, lightCrop: null, darkCrop: null, name: '' };
-  const IMG_KEYS = ['light', 'dark', 'lightSquare', 'darkSquare', 'lightCrop', 'darkCrop'];
+  const state = { light: null, dark: null, lightSquare: null, darkSquare: null, lightCrop: null, darkCrop: null, lightWide: null, darkWide: null, lightWideCrop: null, darkWideCrop: null, sq: false, name: '' };
+  const IMG_KEYS = ['light', 'dark', 'lightSquare', 'darkSquare', 'lightCrop', 'darkCrop', 'lightWide', 'darkWide', 'lightWideCrop', 'darkWideCrop'];
+  const LOGO_KEYS = (k) => [k, k + 'Square', k + 'Crop', k + 'Wide', k + 'WideCrop'];
 
   /* ---------- page content ---------- */
   // Identity panels are drawn from slots too, so the PDF renders them with the same code.
@@ -548,19 +572,88 @@
   /* ---------- which image goes into which slot ---------- */
   function pick(slot) {
     const square = slot.k === 'icon' || slot.k === 'mark';
-    const light = (square && state.lightSquare) || state.light;
-    const dark = (square && state.darkSquare) || state.dark;
+    const wide = slot.k === 'wide';
+    if (wide && state.sq && (state.light || state.dark)) {
+      const c = composeSync(slot.bg === 'dark' ? 'dark' : 'light');
+      if (c) return { src: c };
+    }
+    const light = square ? (state.lightSquare || state.light) : wide ? (state.lightWide || state.light) : state.light;
+    const dark = square ? (state.darkSquare || state.dark) : wide ? (state.darkWide || state.dark) : state.dark;
     const dk = slot.k !== 'wide' || slot.bg === 'dark';
+    // a logo that comes with its own background fills the whole app tile
+    const out = (o) => (slot.k === 'icon' && opaqueOf(o.src) === true) ? { src: o.src, full: true } : o;
     if (!light && !dark) {
       if (square) return { src: DEF.markWhite };
       return { src: dk ? DEF.wideWhite : DEF.wideBlack };
     }
     if (dk) {
-      if (dark) return { src: dark };
-      if (flatness(light) === false) return { src: light };
+      if (dark) return out({ src: dark });
+      if (slot.k === 'icon' && opaqueOf(light) === true) return out({ src: light });
+      if (flatness(light) === false) return out({ src: light });
       return { src: light, sil: !!slot.sil, outline: !!slot.outline };
     }
-    return { src: light || dark };
+    return out({ src: light || dark });
+  }
+
+  // Logo with its own background (no transparency) → it should fill the whole app tile.
+  const opqCache = new Map();
+  function opaqueCanvas(c) {
+    const g = c.getContext('2d', { willReadFrequently: true });
+    const d = g.getImageData(0, 0, c.width, c.height).data; let n = 0;
+    for (let i = 3; i < d.length; i += 4) if (d[i] >= 245) n++;
+    return n / (c.width * c.height) >= 0.98;
+  }
+  function opaqueOf(src) {
+    if (!src) return null;
+    if (opqCache.has(src)) return opqCache.get(src);
+    opqCache.set(src, null);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const c = document.createElement('canvas'); c.width = c.height = 64;
+        c.getContext('2d').drawImage(img, 0, 0, 64, 64);
+        const v = opaqueCanvas(c); opqCache.set(src, v); if (v) render();
+      } catch { opqCache.set(src, false); }
+    };
+    img.onerror = () => opqCache.set(src, false);
+    img.src = src;
+    return null;
+  }
+
+  // Square logo only: where a wide logo is needed we show the icon and the broker name next to it.
+  const compCache = new Map(), imgReady = new Map(), pendingAsset = new Set();
+  function ensureAssets(src) {
+    if (pendingAsset.has(src)) return; pendingAsset.add(src);
+    Promise.all([loadImg(src), document.fonts.load("600 100px Geist")])
+      .then(([im]) => { imgReady.set(src, im); render(); })
+      .catch(() => {}).finally(() => pendingAsset.delete(src));
+  }
+  function composeSync(theme) {
+    const dk = theme === 'dark';
+    const own = state.darkSquare || state.dark;
+    const icon = dk ? (own || state.lightSquare || state.light) : (state.lightSquare || state.light || own);
+    if (!icon) return null;
+    const tint = dk && !own && flatness(icon) !== false && opaqueOf(icon) !== true;
+    const nm = brokerName();
+    const key = [theme, nm, icon.length, icon.slice(-48), tint].join('|');
+    if (compCache.has(key)) return compCache.get(key);
+    const img = imgReady.get(icon);
+    if (!img || !document.fonts.check('600 100px Geist')) { ensureAssets(icon); return null; }
+    const H = 200, fs = 104, gap = 30, r = ratioOf(img, icon);
+    const iw = opaqueOf(icon) === true ? H : H * Math.min(1, r) , ih = opaqueOf(icon) === true ? H : H / Math.max(1, r);
+    const m = document.createElement('canvas').getContext('2d'); m.font = `600 ${fs}px Geist`;
+    const tw = Math.ceil(m.measureText(nm).width);
+    const c = document.createElement('canvas'); c.width = H + gap + tw; c.height = H;
+    const g = c.getContext('2d'); g.imageSmoothingQuality = 'high';
+    const full = opaqueOf(icon) === true;
+    if (full) { g.save(); g.beginPath(); g.roundRect(0, 0, H, H, H * 0.225); g.clip(); }
+    const dw = full ? (r >= 1 ? H * r : H) : (r >= 1 ? H : H * r), dh = full ? (r >= 1 ? H : H / r) : (r >= 1 ? H / r : H);
+    const dx = (H - dw) / 2, dy = (H - dh) / 2;
+    if (tint) g.drawImage(tinted(img, dw, dh, '#fff', 1), dx, dy, dw, dh); else g.drawImage(img, dx, dy, dw, dh);
+    if (full) g.restore();
+    g.font = `600 ${fs}px Geist`; g.fillStyle = dk ? '#fff' : '#111'; g.textBaseline = 'alphabetic';
+    g.fillText(nm, H + gap, H / 2 + fs * 0.35);
+    const url = c.toDataURL('image/png'); compCache.set(key, url); return url;
   }
 
   // Flat logo (few solid colours) → OK to paint as a white silhouette on dark slots.
@@ -589,7 +682,15 @@
           }
           let main = 0;
           for (const n of bins.values()) if (n > total * 0.015) main++;
-          const flat = main <= 4;
+          // colour boundaries inside the logo (shape on a plate, letter in a badge) would vanish in a silhouette
+          let edges = 0; const dist = (i, j) => Math.abs(d[i] - d[j]) + Math.abs(d[i + 1] - d[j + 1]) + Math.abs(d[i + 2] - d[j + 2]);
+          for (let y = 0; y < h - 1; y++) for (let x = 0; x < w - 1; x++) {
+            const i = (y * w + x) * 4; if (d[i + 3] < 200) continue;
+            const r = i + 4, bt = i + w * 4;
+            if (d[r + 3] >= 200 && dist(i, r) > 90) edges++;
+            if (d[bt + 3] >= 200 && dist(i, bt) > 90) edges++;
+          }
+          const flat = main <= 4 && edges <= total * 0.015;
           flatCache.set(src, flat);
           if (!flat) render();
         } catch { flatCache.set(src, true); }
@@ -764,6 +865,13 @@
       if (r.slot.k === 'name') { r.el.textContent = nm; continue; }
       const p = pick(r.slot);
       if (r.img.getAttribute('src') !== p.src) r.img.src = p.src;
+      if (r.slot.k === 'icon') {
+        const sl = r.slot, t = sl.w / 0.72, f = !!p.full;
+        Object.assign(r.el.style, f
+          ? { left: sl.x - (t - sl.w) / 2 + 'px', top: sl.y - (t - sl.h) / 2 + 'px', width: t + 'px', height: t * sl.h / sl.w + 'px', borderRadius: t * 0.225 + 'px', overflow: 'hidden' }
+          : { left: sl.x + 'px', top: sl.y + 'px', width: sl.w + 'px', height: sl.h + 'px', borderRadius: '', overflow: '' });
+        r.img.style.objectFit = f ? 'cover' : '';
+      }
       r.el.classList.toggle('sil', !!p.sil);
       r.el.classList.toggle('outline', !!p.outline);
     }
@@ -790,24 +898,36 @@
   async function setLogo(key, file) {
     if (!file || !/^image\//.test(file.type)) return;
     try { state[key] = await normalise(file); } catch { return; }
-    state[key + 'Square'] = null; state[key + 'Crop'] = null;
-    for (const k of [key, key + 'Square', key + 'Crop']) await dbSet(k, state[k]);
+    for (const k of LOGO_KEYS(key).slice(1)) state[k] = null;
+    for (const k of LOGO_KEYS(key)) await dbSet(k, state[k]);
+    if (key === 'light') {
+      try { const im = await loadImg(state.light); const q = ratioOf(im, state.light); state.sq = q >= 0.85 && q <= 1.18; lsSet('ctrader-preview-sq', state.sq ? '1' : ''); } catch {}
+    }
     render();
     openCrop(key);
   }
 
-  /* ---------- icon crop ---------- */
-  // The square icon is cut from the uploaded logo. Frame is kept in logo pixels: { x, y, s }.
-  // It may be larger than the logo (zoom out) — the outside stays transparent.
+  /* ---------- logo crop: app icon (square) and full logo (any shape) ---------- */
   const dlg = document.getElementById('crop');
   const area = document.getElementById('crop-area');
   const cImg = document.getElementById('crop-img');
   const frameEl = document.getElementById('crop-frame');
   const range = document.getElementById('crop-range');
+  const rangeBox = document.getElementById('crop-size');
   const prevBig = document.getElementById('crop-prev-big');
   const prevSmall = document.getElementById('crop-prev-small');
-  const cs = { key: null, img: null, w: 0, h: 0, f: null, view: null, prevTimer: 0 };
+  const prevIcon = document.getElementById('prev-icon'), prevWide = document.getElementById('prev-wide');
+  const wpLight = document.getElementById('wp-light'), wpDark = document.getElementById('wp-dark');
+  const tabIcon = document.getElementById('tab-icon'), tabWide = document.getElementById('tab-wide');
+  const sqBox = document.getElementById('crop-sq');
+  const cTitle = document.getElementById('crop-title'), cSub = document.getElementById('crop-sub');
+  const cs = { key: null, src: null, img: null, w: 0, h: 0, tab: 'icon', sq: false, fSq: null, fWide: null, bbox: null, view: null, prevTimer: 0 };
   const OUT = 1024;
+  const TXT = {
+    icon: ['Choose your app icon', 'Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.'],
+    iconSq: ['Your app icon', 'Your logo is used as the app icon as it is.'],
+    wide: ['Trim your full logo', 'Used in emails, installers and login screens. We cut the empty space around it; drag the corners if something is missing.'],
+  };
 
   function sizeLimits() { const m = Math.max(cs.w, cs.h); return { min: Math.max(8, Math.min(cs.w, cs.h) * 0.15), max: m * 1.6 }; }
   function clampFrame(f) {
@@ -819,11 +939,31 @@
     f.y = Math.min(hi(cs.h), Math.max(lo(cs.h), f.y));
     return f;
   }
+  const minRect = () => ({ w: Math.max(8, cs.w * 0.05), h: Math.max(8, cs.h * 0.05) });
+  function clampRect(f) {
+    const m = minRect();
+    f.w = Math.min(cs.w, Math.max(m.w, f.w)); f.h = Math.min(cs.h, Math.max(m.h, f.h));
+    f.x = Math.min(cs.w - f.w, Math.max(0, f.x)); f.y = Math.min(cs.h - f.h, Math.max(0, f.y));
+    return f;
+  }
   function defaultFrame() {
     const r = cs.w / cs.h;
     if (r > 1.5) return { x: 0, y: 0, s: cs.h };                       // wide logo: the mark is usually on the left
     if (r < 1 / 1.5) return { x: 0, y: 0, s: cs.w };                   // tall logo: the mark is usually on top
     const s = Math.max(cs.w, cs.h); return { x: (cs.w - s) / 2, y: (cs.h - s) / 2, s };
+  }
+  // box around the visible (non-transparent) pixels
+  function bboxOf(img, w, h) {
+    try {
+      const k = Math.min(1, 1000 / Math.max(w, h)), cw = Math.max(1, Math.round(w * k)), ch = Math.max(1, Math.round(h * k));
+      const c = document.createElement('canvas'); c.width = cw; c.height = ch;
+      const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, cw, ch);
+      const d = g.getImageData(0, 0, cw, ch).data;
+      let x0 = cw, y0 = ch, x1 = -1, y1 = -1;
+      for (let y = 0; y < ch; y++) for (let x = 0; x < cw; x++) if (d[(y * cw + x) * 4 + 3] > 8) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      if (x1 < 0) return { x: 0, y: 0, w, h };
+      return { x: x0 / k, y: y0 / k, w: Math.min(w, (x1 + 1 - x0) / k), h: Math.min(h, (y1 + 1 - y0) / k) };
+    } catch { return { x: 0, y: 0, w, h }; }
   }
   function layout() {
     const A = area.getBoundingClientRect();
@@ -834,75 +974,144 @@
     drawFrame();
   }
   function drawFrame() {
-    const { k, ox, oy } = cs.view, f = cs.f;
-    Object.assign(frameEl.style, { left: ox + f.x * k + 'px', top: oy + f.y * k + 'px', width: f.s * k + 'px', height: f.s * k + 'px' });
-    const { min, max } = sizeLimits();
-    range.value = Math.round(1000 * Math.log(f.s / min) / Math.log(max / min));
+    const { k, ox, oy } = cs.view;
+    const wide = cs.tab === 'wide';
+    frameEl.hidden = !wide && cs.sq;
+    frameEl.classList.toggle('rect', wide);
+    rangeBox.hidden = wide || cs.sq;
+    if (wide) {
+      const f = cs.fWide;
+      Object.assign(frameEl.style, { left: ox + f.x * k + 'px', top: oy + f.y * k + 'px', width: f.w * k + 'px', height: f.h * k + 'px' });
+    } else {
+      const f = cs.fSq;
+      Object.assign(frameEl.style, { left: ox + f.x * k + 'px', top: oy + f.y * k + 'px', width: f.s * k + 'px', height: f.s * k + 'px' });
+      const { min, max } = sizeLimits();
+      range.value = Math.round(1000 * Math.log(f.s / min) / Math.log(max / min));
+    }
     clearTimeout(cs.prevTimer); cs.prevTimer = setTimeout(updatePreview, 30);
   }
-  function cropTo(size) {
+  function iconCanvas(size) {
     const c = document.createElement('canvas'); c.width = c.height = size;
     const g = c.getContext('2d'); g.imageSmoothingQuality = 'high';
-    const k = size / cs.f.s;
-    g.drawImage(cs.img, -cs.f.x * k, -cs.f.y * k, cs.w * k, cs.h * k);
-    return c.toDataURL('image/png');
+    if (cs.sq) {                                                       // the whole logo is the icon
+      const k = size / Math.max(cs.w, cs.h);
+      g.drawImage(cs.img, (size - cs.w * k) / 2, (size - cs.h * k) / 2, cs.w * k, cs.h * k);
+    } else {
+      const k = size / cs.fSq.s;
+      g.drawImage(cs.img, -cs.fSq.x * k, -cs.fSq.y * k, cs.w * k, cs.h * k);
+    }
+    return c;
   }
-  function updatePreview() { const u = cropTo(256); prevBig.src = u; prevSmall.src = u; }
+  function wideCanvas(maxSide) {
+    const f = cs.fWide, k = maxSide / Math.max(f.w, f.h);
+    const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(f.w * k)); c.height = Math.max(1, Math.round(f.h * k));
+    const g = c.getContext('2d'); g.imageSmoothingQuality = 'high';
+    g.drawImage(cs.img, -f.x * k, -f.y * k, cs.w * k, cs.h * k);
+    return c;
+  }
+  function updatePreview() {
+    if (cs.tab === 'icon') {
+      const c = iconCanvas(256), u = c.toDataURL();
+      prevBig.src = u; prevSmall.src = u;
+      const full = opaqueCanvas(c);
+      prevBig.parentElement.classList.toggle('full', full); prevSmall.parentElement.classList.toggle('full', full);
+    } else {
+      const u = wideCanvas(480).toDataURL();
+      wpLight.src = u; wpDark.src = u;
+      wpDark.style.filter = flatness(cs.src) !== false ? 'brightness(0) invert(1)' : '';
+    }
+  }
+  function setTab(t) {
+    cs.tab = t;
+    tabIcon.setAttribute('aria-selected', t === 'icon'); tabWide.setAttribute('aria-selected', t === 'wide');
+    const [h, sub] = t === 'wide' ? TXT.wide : (cs.sq ? TXT.iconSq : TXT.icon);
+    cTitle.textContent = h; cSub.textContent = sub;
+    prevIcon.hidden = t === 'wide'; prevWide.hidden = t !== 'wide';
+    if (cs.view) drawFrame();
+  }
+  function setSq(v) {
+    cs.sq = v; sqBox.checked = v; tabWide.disabled = v;
+    setTab(v && cs.tab === 'wide' ? 'icon' : cs.tab);
+  }
 
   async function openCrop(key) {
     const src = state[key]; if (!src) return;
-    cs.key = key;
+    cs.key = key; cs.src = src;
     cs.img = await loadImg(src);
     cs.w = cs.img.naturalWidth || 1000; cs.h = cs.img.naturalHeight || Math.round(1000 / ratioOf(cs.img, src));
     cImg.src = src;
     area.classList.toggle('dark', key === 'dark');
-    cs.f = clampFrame(state[key + 'Crop'] ? { ...state[key + 'Crop'] } : defaultFrame());
+    cs.bbox = bboxOf(cs.img, cs.w, cs.h);
+    cs.fSq = clampFrame(state[key + 'Crop'] ? { ...state[key + 'Crop'] } : defaultFrame());
+    cs.fWide = clampRect(state[key + 'WideCrop'] ? { ...state[key + 'WideCrop'] } : { ...cs.bbox });
+    cs.view = null; cs.tab = 'icon';
+    setSq(state.sq);
     if (!dlg.open) dlg.showModal();
     layout();
   }
-  async function closeCrop(useCrop) {
+  async function closeCrop() {
     const key = cs.key;
-    if (useCrop) { state[key + 'Square'] = cropTo(OUT); state[key + 'Crop'] = { ...cs.f }; }
-    else { state[key + 'Square'] = null; state[key + 'Crop'] = null; }
+    state.sq = cs.sq; lsSet('ctrader-preview-sq', cs.sq ? '1' : '');
+    if (cs.sq) {
+      for (const k of LOGO_KEYS(key).slice(1)) state[k] = null;
+    } else {
+      state[key + 'Square'] = iconCanvas(OUT).toDataURL(); state[key + 'Crop'] = { ...cs.fSq };
+      const f = cs.fWide, full = f.x < 1 && f.y < 1 && Math.abs(f.w - cs.w) < 1 && Math.abs(f.h - cs.h) < 1;
+      if (full) { state[key + 'Wide'] = null; state[key + 'WideCrop'] = null; }
+      else { state[key + 'Wide'] = wideCanvas(1600).toDataURL(); state[key + 'WideCrop'] = { ...f }; }
+    }
     dlg.close();
-    for (const k of [key + 'Square', key + 'Crop']) await dbSet(k, state[k]);
+    for (const k of LOGO_KEYS(key).slice(1)) await dbSet(k, state[k]);
     render();
   }
-  document.getElementById('crop-done').addEventListener('click', () => closeCrop(true));
-  document.getElementById('crop-full').addEventListener('click', () => closeCrop(false));
-  dlg.addEventListener('cancel', (e) => { e.preventDefault(); closeCrop(true); });
+  document.getElementById('crop-done').addEventListener('click', closeCrop);
+  dlg.addEventListener('cancel', (e) => { e.preventDefault(); closeCrop(); });
+  tabIcon.addEventListener('click', () => setTab('icon'));
+  tabWide.addEventListener('click', () => { if (!tabWide.disabled) setTab('wide'); });
+  sqBox.addEventListener('change', () => setSq(sqBox.checked));
   window.addEventListener('resize', () => dlg.open && layout());
 
-  // drag to move, corner handles to resize (square, opposite corner fixed)
+  // drag to move, corner handles to resize (icon: square, opposite corner fixed; full logo: free shape)
   let drag = null;
   frameEl.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     const h = e.target.classList.contains('h') ? [...e.target.classList].find((c) => c !== 'h') : null;
-    drag = { id: e.pointerId, h, sx: e.clientX, sy: e.clientY, f: { ...cs.f } };
+    drag = { id: e.pointerId, h, sx: e.clientX, sy: e.clientY, f: { ...(cs.tab === 'wide' ? cs.fWide : cs.fSq) } };
     frameEl.setPointerCapture(e.pointerId);
   });
   frameEl.addEventListener('pointermove', (e) => {
     if (!drag || e.pointerId !== drag.id) return;
     const k = cs.view.k, dx = (e.clientX - drag.sx) / k, dy = (e.clientY - drag.sy) / k, f0 = drag.f;
-    if (!drag.h) { cs.f = clampFrame({ x: f0.x + dx, y: f0.y + dy, s: f0.s }); drawFrame(); return; }
+    if (cs.tab === 'wide') {
+      if (!drag.h) cs.fWide = clampRect({ x: f0.x + dx, y: f0.y + dy, w: f0.w, h: f0.h });
+      else {
+        const m = minRect(); let x0 = f0.x, y0 = f0.y, x1 = f0.x + f0.w, y1 = f0.y + f0.h;
+        if (drag.h.includes('w')) x0 = Math.min(x1 - m.w, Math.max(0, x0 + dx)); else x1 = Math.max(x0 + m.w, Math.min(cs.w, x1 + dx));
+        if (drag.h.includes('n')) y0 = Math.min(y1 - m.h, Math.max(0, y0 + dy)); else y1 = Math.max(y0 + m.h, Math.min(cs.h, y1 + dy));
+        cs.fWide = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+      }
+      drawFrame(); return;
+    }
+    if (!drag.h) { cs.fSq = clampFrame({ x: f0.x + dx, y: f0.y + dy, s: f0.s }); drawFrame(); return; }
     const sx = drag.h.includes('e') ? 1 : -1, sy = drag.h.includes('s') ? 1 : -1;
     const d = (sx * dx + sy * dy) / 2;                                // grow along the diagonal
     const { min, max } = sizeLimits();
     const s = Math.min(max, Math.max(min, f0.s + d));
     const ax = sx > 0 ? f0.x : f0.x + f0.s, ay = sy > 0 ? f0.y : f0.y + f0.s;   // fixed corner
-    cs.f = clampFrame({ x: sx > 0 ? ax : ax - s, y: sy > 0 ? ay : ay - s, s });
+    cs.fSq = clampFrame({ x: sx > 0 ? ax : ax - s, y: sy > 0 ? ay : ay - s, s });
     drawFrame();
   });
   const endDrag = (e) => { if (drag && e.pointerId === drag.id) drag = null; };
   frameEl.addEventListener('pointerup', endDrag); frameEl.addEventListener('pointercancel', endDrag);
-  // size slider and mouse wheel zoom around the frame centre
-  function resizeAround(s) {
-    const cx = cs.f.x + cs.f.s / 2, cy = cs.f.y + cs.f.s / 2;
-    const { min, max } = sizeLimits(); s = Math.min(max, Math.max(min, s));
-    cs.f = clampFrame({ x: cx - s / 2, y: cy - s / 2, s }); drawFrame();
+  // size slider and mouse wheel zoom around the frame centre (icon frame only)
+  function resizeAround(sz) {
+    if (cs.tab !== 'icon' || cs.sq) return;
+    const cx = cs.fSq.x + cs.fSq.s / 2, cy = cs.fSq.y + cs.fSq.s / 2;
+    const { min, max } = sizeLimits(); sz = Math.min(max, Math.max(min, sz));
+    cs.fSq = clampFrame({ x: cx - sz / 2, y: cy - sz / 2, s: sz }); drawFrame();
   }
   range.addEventListener('input', () => { const { min, max } = sizeLimits(); resizeAround(min * Math.pow(max / min, range.value / 1000)); });
-  area.addEventListener('wheel', (e) => { e.preventDefault(); resizeAround(cs.f.s * Math.exp(e.deltaY * 0.0015)); }, { passive: false });
+  area.addEventListener('wheel', (e) => { e.preventDefault(); resizeAround(cs.fSq.s * Math.exp(e.deltaY * 0.0015)); }, { passive: false });
   for (const key of ['light', 'dark']) {
     document.getElementById('edit-' + key).addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); openCrop(key); });
   }
@@ -916,7 +1125,7 @@
   for (const key of ['light', 'dark']) {
     document.getElementById('clear-' + key).addEventListener('click', async (e) => {
       e.preventDefault(); e.stopPropagation();
-      for (const k of [key, key + 'Square', key + 'Crop']) { state[k] = null; await dbSet(k, null); }
+      for (const k of LOGO_KEYS(key)) { state[k] = null; await dbSet(k, null); }
       render();
     });
   }
@@ -925,6 +1134,7 @@
   document.getElementById('reset').addEventListener('click', async () => {
     for (const k of IMG_KEYS) { state[k] = null; await dbSet(k, null); }
     state.name = ''; nameInput.value = ''; lsSet('ctrader-preview-name', '');
+    state.sq = false; lsSet('ctrader-preview-sq', '');
     render();
   });
 
@@ -991,6 +1201,13 @@
       const dx = pos.startsWith('left') ? bx : pos.startsWith('right') ? bx + bw - dw : bx + (bw - dw) / 2;
       const dy = by + (bh - dh) / 2;
       const dpx = px * k;
+      if (slot.k === 'icon' && pk.full) {
+        const t = slot.w / 0.72, tx = slot.x - (t - slot.w) / 2, ty = slot.y - (t - slot.h) / 2;
+        const cw = r >= 1 ? t * r : t, ch = r >= 1 ? t : t / r;
+        g.save(); g.beginPath(); g.roundRect(tx, ty, t, t, t * 0.225); g.clip();
+        g.drawImage(img, tx - (cw - t) / 2, ty - (ch - t) / 2, cw, ch); g.restore();
+        continue;
+      }
       if (pk.sil) g.drawImage(tinted(img, dw, dh, '#fff', dpx), dx, dy, dw, dh);
       else if (pk.outline) {
         const wt = tinted(img, dw, dh, '#fff', dpx);
@@ -1127,6 +1344,7 @@
   (async () => {
     for (const k of IMG_KEYS) state[k] = await dbGet(k);
     state.name = lsGet('ctrader-preview-name') || '';
+    state.sq = lsGet('ctrader-preview-sq') === '1';
     nameInput.value = state.name;
     render();
   })();
