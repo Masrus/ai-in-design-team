@@ -135,6 +135,8 @@
   .reset:hover { background: var(--surface-2); color: var(--ink); }
   .primary { background: #fff; color: #000; }
   .primary:hover { background: #E2E2DE; }
+  #pdf-2 { background: var(--surface); color: var(--ink); }
+  #pdf-2:hover { background: var(--surface-2); }
   .pdf { min-width: 168px; }
   .pdf:disabled { cursor: progress; opacity: .7; }
   .note { font-size: 14px; color: var(--ink-3); margin: 16px 0 0; }
@@ -217,9 +219,9 @@
   .close h2 .l2 { display: block; background: linear-gradient(180deg, #F5F5F7, #6E6E73); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .close .row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
   .foot { margin-top: 160px; padding: 32px 0 48px; background: var(--surface); border-radius: var(--r-lg) var(--r-lg) 0 0; text-align: left; }
-  .foot-in { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center; justify-content: space-between; width: 100%; }
+  .foot-in { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center; justify-content: center; width: 100%; text-align: center; }
   .foot img { height: 28px; display: block; }
-  .contacts { display: flex; flex-wrap: wrap; gap: 8px 32px; font-size: 14px; color: var(--ink-2); }
+  .contacts { display: flex; flex-wrap: wrap; gap: 8px 32px; font-size: 14px; color: var(--ink-2); justify-content: center; text-align: center; }
   .contacts a { text-decoration: none; }
   .contacts a:hover { color: var(--ink); }
 
@@ -398,14 +400,13 @@
     <div class="wrap">
       <h2 class="reveal">Let’s put your brand<span class="l2">on cTrader.</span></h2>
       <div class="row">
-        <a class="btn primary" href="mailto:sales@spotware.com">Contact sales</a>
+        <a class="btn primary" href="https://www.spotware.com/get-in-touch/" target="_blank" rel="noopener">Contact sales</a>
         <button class="btn reset" type="button" id="pdf-2">Download PDF</button>
       </div>
     </div>
     <div class="wrap">
       <footer class="foot">
         <div class="foot-in wrap">
-          <img src="assets/spotware-logo.svg" alt="Spotware">
           <div class="contacts">
             <a href="https://www.spotware.com" target="_blank" rel="noopener">www.spotware.com</a>
             <a href="mailto:sales@spotware.com">sales@spotware.com</a>
