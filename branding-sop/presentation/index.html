@@ -308,8 +308,9 @@
   }
   .crop-area { position: relative; }
   .crop-own-view { position: absolute; inset: 0; display: grid; place-items: center; padding: 32px; background: inherit; border-radius: inherit; }
+  .crop-own-view { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
   .crop-own-view[hidden] { display: none; }
-  .crop-own-view img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .crop-area .crop-own-view img { position: static; max-width: 100%; max-height: 100%; min-width: 0; min-height: 0; object-fit: contain; }
   .crop-own { display: flex; gap: 8px; margin-right: auto; }
   .crop-own-btnrow { display: contents; }
   .crop-area.tall { height: 408px; }
@@ -319,6 +320,28 @@
   .own-btn[hidden] { display: none; }
   .crop-frame.rect { border-radius: 6px; }
   .crop-frame[hidden], .crop-prev[hidden], .crop-size[hidden] { display: none; }
+  .crop-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .scard { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 12px 12px 12px 12px; border-radius: 24px; background: var(--surface-2); cursor: pointer; text-align: left; outline: none; }
+  .scard:hover { background: #1d1d1c; }
+  .scard[aria-selected="true"] { box-shadow: 0 0 0 2px #fff; }
+  .scard:focus-visible { box-shadow: 0 0 0 2px rgba(255,255,255,.55); }
+  .scard .th { position: relative; width: 48px; height: 48px; flex: none; border-radius: 12px; overflow: hidden; display: grid; place-items: center; background: var(--surface-3); }
+  .scard .th img { width: 100%; height: 100%; object-fit: contain; }
+  #tab-icon .th, #tab-wide .th { background: #ECECEA; }
+  #tab-icon .th .plus, #tab-wide .th .plus { color: #6E6E73; }
+  #tab-wide.empty .th { background: var(--surface-3); }
+  #tab-wide.empty .th .plus { color: var(--ink-2); }
+  #tab-dark .th { background: #000; }
+  .scard .th img[hidden], .scard .plus[hidden] { display: none; }
+  .scard .plus { position: absolute; inset: 0; display: grid; place-items: center; color: var(--ink-2); background: transparent; }
+  .scard .plus svg { width: 22px; height: 22px; }
+  .scard .tx { flex: 1; min-width: 0; display: grid; gap: 2px; }
+  .scard .tx b { font: 500 15px 'Geist', sans-serif; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .scard .tx i { font: 400 13px 'Geist', sans-serif; font-style: normal; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sc-act { flex: none; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); display: grid; place-items: center; cursor: pointer; }
+  .sc-act:hover { background: var(--surface-3); color: var(--ink); }
+  .sc-act svg { width: 20px; height: 20px; }
+  .sc-act[hidden], .scard[hidden] { display: none; }
   .crop-tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--surface-2); margin-bottom: 20px; }
   .crop-tabs button { height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: var(--ink-2); font: 500 14px 'Geist', sans-serif; cursor: pointer; }
   .crop-tabs button[aria-selected="true"] { background: #fff; color: #000; }
@@ -365,6 +388,7 @@
   @media (max-width: 720px) {
     .crop-in { padding: 20px; gap: 20px; }
     .crop-grid { grid-template-columns: 1fr; }
+    .crop-cards { grid-template-columns: 1fr; gap: 8px; }
     .crop-area { height: 300px; }
     .crop-area.tall { height: 348px; }
     .crop-prev { grid-template-columns: 1fr 1fr; align-items: start; }
@@ -414,7 +438,7 @@
     <label class="drop" id="drop-dark">
       <span class="thumb dark"><img id="thumb-dark" alt=""></span>
       <span class="txt">
-        <span class="t">Logo for dark backgrounds</span>
+        <span class="t">Logo for dark</span>
         <span class="s" id="hint-dark">Optional</span>
       </span>
       <button class="edit" id="edit-dark" type="button" hidden aria-label="Edit logo" title="Edit logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 7.5l3 3"/></svg></button>
@@ -470,9 +494,10 @@
 <dialog class="crop" id="crop" aria-labelledby="crop-title">
   <div class="crop-in">
     <div>
-      <div class="crop-tabs" role="tablist">
-        <button type="button" role="tab" id="tab-icon" aria-selected="true" autofocus>App icon</button>
-        <button type="button" role="tab" id="tab-wide" aria-selected="false">Full logo</button>
+      <div class="crop-cards" role="tablist">
+        <div class="scard" role="tab" id="tab-icon" tabindex="0" aria-selected="false" autofocus><span class="th"><img alt=""><span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></span><span class="tx"><b>App icon</b><i></i></span><button type="button" class="sc-act" hidden></button></div>
+        <div class="scard" role="tab" id="tab-wide" tabindex="0" aria-selected="false"><span class="th"><img alt=""><span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></span><span class="tx"><b>Full logo</b><i></i></span><button type="button" class="sc-act" hidden></button></div>
+        <div class="scard" role="tab" id="tab-dark" tabindex="0" aria-selected="false"><span class="th"><img alt=""><span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></span><span class="tx"><b>Logo for dark</b><i></i></span><button type="button" class="sc-act" hidden></button></div>
       </div>
       <h3 id="crop-title">Choose your app icon</h3>
       <p class="sub" id="crop-sub">Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.</p>
@@ -495,16 +520,10 @@
           <div><div class="wp light"><img id="wp-light" alt=""></div><div class="lbl"><span>On light</span></div></div>
           <div><div class="wp dark"><img id="wp-dark" alt=""></div><div class="lbl"><span>On dark</span></div></div>
         </div>
-        <button type="button" class="own-btn" id="crop-dark">Logo for dark</button>
-        <input type="file" id="crop-dark-file" accept="image/svg+xml,image/png,image/webp,image/jpeg" hidden>
       </div>
     </div>
     <div class="crop-actions">
-      <div class="crop-own">
-        <button type="button" class="own-btn" id="crop-own">Upload a square icon</button>
-        <button type="button" class="own-btn quiet icon" id="crop-own-rm" hidden aria-label="Remove icon" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button>
-        <input type="file" id="crop-own-file" accept="image/*" hidden>
-      </div>
+      <input type="file" id="crop-own-file" accept="image/svg+xml,image/png,image/webp,image/jpeg" hidden>
       <button class="btn primary" type="button" id="crop-done">Done</button>
     </div>
   </div>
@@ -529,7 +548,7 @@
   const IDENT = [
     { cap: 'App icon', note: 'Cropped from your logo.', w: 640, h: 480, fill: '#FFFFFF', slots: [
       { k: 'tile', x: 200, y: 120, w: 240, h: 240, r: 54 },
-      { k: 'icon', x: 233.6, y: 153.6, w: 172.8, h: 172.8 },
+      { k: 'icon', bgKey: 'light', x: 233.6, y: 153.6, w: 172.8, h: 172.8 },
     ]},
     { cap: 'Logo on light', note: 'Emails and light themes.', w: 640, h: 480, fill: '#FFFFFF', slots: [
       { k: 'wide', bg: 'light', x: 120, y: 165, w: 400, h: 150 },
@@ -627,10 +646,10 @@
       if (dark) return out({ src: dark });
       if (square && opaqueOf(light) === true) return out({ src: light });
       // no dark version: check the contrast against the dark plate and lighten the logo only if it is needed
-      const ad = autoDark(light);
+      const ad = autoDark(light, slot.k === 'icon' ? iconBg[slot.bgKey || 'dark'] : '#181818');
       if (ad && !ad.low) return out({ src: light });
       const fl = flatness(light);
-      if (ad && ad.low && fl === false && ad.canvas) return { src: ad.url() };
+      if (ad && ad.low && ad.canvas) return { src: ad.url() };   // dark parts → white, other colours stay
       if (fl === false) return out({ src: light });
       return { src: light, sil: ad && ad.low ? true : !!slot.sil, outline: !!slot.outline };
     }
@@ -684,8 +703,8 @@
     if (!icon) return null;
     const ad = dk && !own ? autoDark(icon) : null;
     const fl = flatness(icon) !== false;
-    const tint = dk && !own && opaqueOf(icon) !== true && (ad ? ad.low && fl : fl);
-    const recol = dk && !own && ad && ad.low && !fl && ad.canvas;
+    const recol = dk && !own && ad && ad.low && ad.canvas;
+    const tint = !recol && dk && !own && opaqueOf(icon) !== true && (ad ? false : fl);
     const nm = brokerName();
     const key = [theme, nm, icon.length, icon.slice(-48), tint, !!recol].join('|');
     if (compCache.has(key)) return compCache.get(key);
@@ -712,11 +731,17 @@
   // Colourful logos get their dark pixels repainted white (canvas); flat ones are painted as a white silhouette elsewhere.
   const darkCache = new Map();
   const lumOf = (r, g, b) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
-  function autoDark(src) {
+  const lumHex = (h) => { const n = parseInt(String(h).replace('#', ''), 16) || 0; return lumOf(n >> 16 & 255, n >> 8 & 255, n & 255); };
+  // bgHex = the plate the logo sits on (dark app plate by default, or the app-tile colour for icons)
+  function autoDark(src, bgHex = '#181818') {
     if (!src) return null;
+    const Lb = lumHex(bgHex);
+    if (Lb >= 0.18) return { low: false, canvas: null, url: () => src };   // light plate: nothing to lighten
+    const thr = 3 * (Lb + 0.05) - 0.05;                                       // pixels below this are under 3:1 against the plate
+    const key = src + '|' + Lb.toFixed(3);
     if (darkCache.size > 40) darkCache.clear();
-    if (darkCache.has(src)) { const v = darkCache.get(src); return v === 'wait' ? undefined : v; }
-    darkCache.set(src, 'wait');
+    if (darkCache.has(key)) { const v = darkCache.get(key); return v === 'wait' ? undefined : v; }
+    darkCache.set(key, 'wait');
     loadImg(src).then((img) => {
       let res = { low: false, canvas: null, url: () => src };
       try {
@@ -726,19 +751,19 @@
         const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, w, h);
         const im = g.getImageData(0, 0, w, h), d = im.data;
         let total = 0, low = 0;
-        for (let i = 0; i < d.length; i += 4) if (d[i + 3] >= 200) { total++; if (lumOf(d[i], d[i + 1], d[i + 2]) < 0.127) low++; }
+        for (let i = 0; i < d.length; i += 4) if (d[i + 3] >= 200) { total++; if (lumOf(d[i], d[i + 1], d[i + 2]) < thr) low++; }
         const isLow = total > 0 && low / total >= 0.15 && opaqueOf(src) !== true;
         if (isLow) {
-          for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 0 && lumOf(d[i], d[i + 1], d[i + 2]) < 0.127) { d[i] = d[i + 1] = d[i + 2] = 255; }
+          for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 0 && lumOf(d[i], d[i + 1], d[i + 2]) < thr) { d[i] = d[i + 1] = d[i + 2] = 255; }
           g.putImageData(im, 0, 0);
         }
         let url = null;
         res = { low: isLow, canvas: isLow ? c : null, url: () => url || (url = c.toDataURL('image/png')) };
       } catch {}
-      darkCache.set(src, res);
+      darkCache.set(key, res);
       render();
       const dlg = document.getElementById('crop'); if (dlg && dlg.open && typeof updatePreview === 'function') updatePreview();
-    }).catch(() => darkCache.set(src, { low: false, canvas: null, url: () => src }));
+    }).catch(() => darkCache.set(key, { low: false, canvas: null, url: () => src }));
     return undefined;
   }
 
@@ -1026,24 +1051,23 @@
   const prevSmall = document.getElementById('crop-prev-small');
   const prevIcon = document.getElementById('prev-icon'), prevWide = document.getElementById('prev-wide');
   const wpLight = document.getElementById('wp-light'), wpDark = document.getElementById('wp-dark');
-  const ownBtn = document.getElementById('crop-own'), ownRm = document.getElementById('crop-own-rm'), ownFile = document.getElementById('crop-own-file');
-  const darkBtn = document.getElementById('crop-dark'), darkFile = document.getElementById('crop-dark-file');
+  const ownFile = document.getElementById('crop-own-file');
   function applyBg() {
     dlg.querySelectorAll('#prev-icon .tile').forEach((t) => { t.style.background = iconBg[t.closest('.wp').classList.contains('dark') ? 'dark' : 'light']; });
     dlg.querySelectorAll('.bgpick').forEach((el) => { el.value = iconBg[el.dataset.t]; });
   }
   dlg.querySelectorAll('.bgpick').forEach((el) => el.addEventListener('input', () => {
-    iconBg[el.dataset.t] = el.value; lsSet('ctrader-preview-iconbg', JSON.stringify(iconBg)); applyBg(); render();
+    iconBg[el.dataset.t] = el.value; lsSet('ctrader-preview-iconbg', JSON.stringify(iconBg)); applyBg(); render(); if (dlg.open) updatePreview();
   }));
-  function darkBtnState() { darkBtn.hidden = cs.key !== 'light'; darkBtn.textContent = state.dark ? 'Replace dark logo' : 'Logo for dark'; }
   const ownView = document.getElementById('crop-own-view'), ownImg = document.getElementById('crop-own-img');
-  const tabIcon = document.getElementById('tab-icon'), tabWide = document.getElementById('tab-wide');
+  const tabIcon = document.getElementById('tab-icon'), tabWide = document.getElementById('tab-wide'), tabDark = document.getElementById('tab-dark');
   const cTitle = document.getElementById('crop-title'), cSub = document.getElementById('crop-sub');
-  const cs = { ownIcon: null, ownWide: null, key: null, src: null, img: null, w: 0, h: 0, tab: 'icon', sq: false, fSq: null, fWide: null, bbox: null, view: null, prevTimer: 0 };
+  const cs = { ownIcon: null, ownWide: null, key: null, src: null, img: null, w: 0, h: 0, tab: 'icon', sq: false, sq0: false, fSq: null, fWide: null, bbox: null, view: null, prevTimer: 0 };
   const OUT = 1024;
   const TXT = {
     icon: ['Choose your app icon', 'Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.'],
     iconSq: ['Your app icon', 'Your logo is used as the app icon as it is. Where a wide logo is needed we show it next to your broker name. Have a wide logo? Open the Full logo tab.'],
+    dark: ['Logo for dark', 'Used on dark screens. We make the dark parts of your logo white; upload your own version if you prefer.'],
     wide: ['Trim your full logo', 'Used in emails, installers and login screens. We cut the empty space around it; drag the corners if something is missing.'],
   };
 
@@ -1095,19 +1119,19 @@
     drawFrame();
   }
   function drawFrame() {
-    const wide = cs.tab === 'wide';
-    // no Size row on this state → the logo area takes its place, so the dialog keeps the same height on both tabs
-    const noRange = wide || iconAsIs() || !!cs.ownIcon;
+    const wide = cs.tab === 'wide', dk = cs.tab === 'dark';
+    // no Size row on this state → the logo area takes its place, so the dialog keeps the same height on every tab
+    const noRange = wide || dk || iconAsIs() || !!cs.ownIcon;
     if (area.classList.contains('tall') !== noRange) { area.classList.toggle('tall', noRange); return layout(); }
     const { k, ox, oy } = cs.view;
-    const own = wide ? cs.ownWide : cs.ownIcon;
+    const own = dk ? (state.dark || darkAutoUrl()) : wide ? cs.ownWide : cs.ownIcon;
     ownView.hidden = !own; if (own) ownImg.src = own;
-    ownBtn.textContent = own ? (wide ? 'Replace logo' : 'Replace icon') : (wide ? 'Upload a full logo' : 'Upload a square icon');
-    ownRm.hidden = !own;
+    area.classList.toggle('dark', dk || cs.key === 'dark');
     frameEl.hidden = !!own || (!wide && iconAsIs());
     frameEl.classList.toggle('rect', wide);
-    rangeBox.hidden = wide || iconAsIs() || !!cs.ownIcon;
-    if (wide) {
+    rangeBox.hidden = wide || dk || iconAsIs() || !!cs.ownIcon;
+    if (dk) { /* nothing to drag: it is a plain preview */ }
+    else if (wide) {
       const f = cs.fWide;
       Object.assign(frameEl.style, { left: ox + f.x * k + 'px', top: oy + f.y * k + 'px', width: f.w * k + 'px', height: f.h * k + 'px' });
     } else {
@@ -1142,7 +1166,12 @@
       let u, full;
       if (cs.ownIcon) { u = cs.ownIcon; full = opaqueOf(u) === true; setTimeout(() => { const f = opaqueOf(u) === true; prevBig.parentElement.classList.toggle('full', f); prevSmall.parentElement.classList.toggle('full', f); }, 120); }
       else { const c = iconCanvas(256); u = c.toDataURL(); full = opaqueCanvas(c); }
-      prevBig.src = u; prevSmall.src = u;
+      const setTile = (el, bgHex) => {
+        const ad = full ? null : autoDark(u, bgHex), fl = flatness(u) !== false;
+        el.style.filter = '';
+        el.src = ad && ad.low && ad.canvas ? ad.url() : u;
+      };
+      setTile(prevBig, iconBg.light); setTile(prevSmall, iconBg.dark);
       prevBig.parentElement.classList.toggle('full', full); prevSmall.parentElement.classList.toggle('full', full);
       prevIcon.querySelectorAll('.bgpick').forEach((el) => { el.hidden = !!full; });
     } else {
@@ -1151,22 +1180,45 @@
       // dark plate: with enough contrast keep colours; otherwise white silhouette (flat) or dark parts made white (colourful)
       const ad = autoDark(u);
       const fl = flatness(u) !== false;
-      wpDark.style.filter = ad ? (ad.low && fl ? 'brightness(0) invert(1)' : '') : (fl ? 'brightness(0) invert(1)' : '');
-      if (ad && ad.low && !fl && ad.canvas) wpDark.src = ad.url();
+      wpDark.style.filter = ad ? '' : (fl ? 'brightness(0) invert(1)' : '');
+      if (ad && ad.low && ad.canvas) wpDark.src = ad.url();
       if (cs.key === 'light' && state.dark) { wpDark.src = state.dark; wpDark.style.filter = ''; }
     }
+    renderCards();
   }
   function setTab(t) {
     cs.tab = t;
-    tabIcon.setAttribute('aria-selected', t === 'icon'); tabWide.setAttribute('aria-selected', t === 'wide');
-    let [h, sub] = t === 'wide' ? TXT.wide : (iconAsIs() ? TXT.iconSq : TXT.icon);
+    tabIcon.setAttribute('aria-selected', t === 'icon'); tabWide.setAttribute('aria-selected', t === 'wide'); tabDark.setAttribute('aria-selected', t === 'dark');
+    let [h, sub] = t === 'dark' ? TXT.dark : t === 'wide' ? TXT.wide : (iconAsIs() ? TXT.iconSq : TXT.icon);
+    if (t === 'dark' && state.dark) sub = 'Using the dark logo you uploaded for dark screens, installers and login.';
     if (t === 'wide' && cs.ownWide) sub = 'Using the full logo you uploaded. It is used in emails, installers and login screens.';
     if (t === 'icon' && cs.ownIcon) sub = 'Using the square icon you uploaded for app icons, splash screens and notifications.';
     cTitle.textContent = h; cSub.textContent = sub;
-    prevIcon.hidden = t === 'wide'; prevWide.hidden = t !== 'wide';
-    applyBg(); darkBtnState();
+    prevIcon.hidden = t !== 'icon'; prevWide.hidden = t === 'icon';
+    applyBg();
     if (cs.view) drawFrame();
   }
+  const darkAutoUrl = () => { const ad = autoDark(cs.src); return ad && ad.low && ad.canvas ? ad.url() : cs.src; };
+  const hasWide = () => !cs.sq || !!cs.ownWide;
+  const CARD_ICON = { trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>', up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M7 10l5-5 5 5M5 19h14"/></svg>' };
+  function paintCard(el, o) {
+    const img = el.querySelector('img'), plus = el.querySelector('.plus'), act = el.querySelector('.sc-act');
+    el.hidden = !!o.hidden; if (o.hidden) return;
+    if (o.thumb) { if (img.getAttribute('src') !== o.thumb) img.src = o.thumb; img.hidden = false; } else { img.removeAttribute('src'); img.hidden = true; }
+    plus.hidden = !o.empty; el.classList.toggle('empty', !!o.empty);
+    el.querySelector('i').textContent = o.sub;
+    act.hidden = !o.act; if (o.act) { act.innerHTML = CARD_ICON[o.act]; act.title = o.actTitle; act.setAttribute('aria-label', o.actTitle); }
+    el.querySelector('.th').style.borderRadius = o.round ? '22.5%' : '';
+  }
+  function renderCards() {
+    if (!cs.src) return;
+    const full = cs.opq && !cs.ownIcon;
+    paintCard(tabIcon, { thumb: cs.ownIcon || (iconAsIs() ? cs.src : iconCanvas(96).toDataURL()), sub: cs.ownIcon ? 'Your file' : (iconAsIs() ? 'Your logo as it is' : 'Cropped from your logo'), act: cs.ownIcon ? 'trash' : 'up', actTitle: cs.ownIcon ? 'Remove your icon' : 'Upload a square icon', round: true });
+    const hw = hasWide();
+    paintCard(tabWide, { thumb: hw ? (cs.ownWide || wideCanvas(160).toDataURL()) : null, empty: !hw, sub: hw ? (cs.ownWide ? 'Your file' : 'Trimmed from your logo') : 'Optional', act: hw ? (cs.ownWide ? 'trash' : 'up') : null, actTitle: cs.ownWide ? 'Remove your logo' : 'Upload a full logo' });
+    paintCard(tabDark, { hidden: cs.key !== 'light', thumb: state.dark || darkAutoUrl(), sub: state.dark ? 'Your file' : 'Made from your logo', act: state.dark ? 'trash' : 'up', actTitle: state.dark ? 'Remove your logo' : 'Upload a logo for dark backgrounds' });
+  }
+  let ownTarget = 'icon';
   function setSq(v) {
     cs.sq = v; setTab(cs.tab);
   }
@@ -1184,7 +1236,8 @@
     cs.fWide = clampRect(state[key + 'WideCrop'] ? { ...state[key + 'WideCrop'] } : { ...cs.bbox });
     cs.ownIcon = state[key + 'OwnIcon'] || null; cs.ownWide = state[key + 'OwnWide'] || null;
     cs.view = null; cs.tab = 'icon';
-    setSq(state.sq && !cs.ownWide);
+    cs.sq0 = !!state.sq && !cs.ownWide;
+    setSq(cs.sq0);
     if (!dlg.open) dlg.showModal();
     layout();
   }
@@ -1211,21 +1264,28 @@
   }
   document.getElementById('crop-done').addEventListener('click', closeCrop);
   dlg.addEventListener('cancel', (e) => { e.preventDefault(); closeCrop(); });
-  tabIcon.addEventListener('click', () => setTab('icon'));
-  darkBtn.addEventListener('click', () => darkFile.click());
-  darkFile.addEventListener('change', async () => {
-    const f = darkFile.files[0]; darkFile.value = ''; if (!f) return;
-    await setLogo('dark', f, true); darkBtnState(); updatePreview();
-  });
-  ownBtn.addEventListener('click', () => ownFile.click());
+  // cards work as tabs; an empty card uploads, the button on a card uploads your own file or removes it
+  const pickFile = (target) => { ownTarget = target; ownFile.click(); };
+  const cards = { icon: tabIcon, wide: tabWide, dark: tabDark };
+  for (const [name, el] of Object.entries(cards)) {
+    const act = el.querySelector('.sc-act');
+    el.addEventListener('click', () => { if (name === 'wide' && !hasWide()) pickFile('wide'); else setTab(name); });
+    el.addEventListener('keydown', (e) => { if (e.target === el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); el.click(); } });
+    act.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if (name === 'icon') { if (cs.ownIcon) { cs.ownIcon = null; setTab('icon'); } else pickFile('icon'); }
+      else if (name === 'wide') { if (cs.ownWide) { cs.ownWide = null; cs.sq = cs.sq0; setTab(hasWide() ? 'wide' : 'icon'); } else pickFile('wide'); }
+      else if (state.dark) { for (const k of LOGO_KEYS('dark')) { state[k] = null; await dbSet(k, null); } render(); setTab('dark'); }
+      else pickFile('dark');
+    });
+  }
   ownFile.addEventListener('change', async () => {
     const f = ownFile.files[0]; ownFile.value = ''; if (!f) return;
+    if (ownTarget === 'dark') { await setLogo('dark', f, true); setTab('dark'); return; }
     let u; try { u = await normalise(f); } catch { return; }
-    if (cs.tab === 'wide') { cs.ownWide = u; cs.sq = false; } else cs.ownIcon = u;
-    setTab(cs.tab);
+    if (ownTarget === 'wide') { cs.ownWide = u; cs.sq = false; } else cs.ownIcon = u;
+    setTab(ownTarget);
   });
-  ownRm.addEventListener('click', () => { if (cs.tab === 'wide') cs.ownWide = null; else cs.ownIcon = null; setTab(cs.tab); });
-  tabWide.addEventListener('click', () => { if (cs.sq) cs.sq = false; setTab('wide'); });   // opening Full logo = there is a wide logo
   window.addEventListener('resize', () => dlg.open && layout());
 
   // drag to move, corner handles to resize (icon: square, opposite corner fixed; full logo: free shape)
