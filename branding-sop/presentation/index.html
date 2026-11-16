@@ -471,7 +471,6 @@
       </div>
     </div>
     <div class="crop-actions">
-      <label class="crop-sq"><input type="checkbox" id="crop-sq"><span>My logo is already square<small>Where a wide logo is needed we show it next to your broker name.</small></span></label>
       <button class="btn primary" type="button" id="crop-done">Done</button>
     </div>
   </div>
@@ -919,13 +918,12 @@
   const prevIcon = document.getElementById('prev-icon'), prevWide = document.getElementById('prev-wide');
   const wpLight = document.getElementById('wp-light'), wpDark = document.getElementById('wp-dark');
   const tabIcon = document.getElementById('tab-icon'), tabWide = document.getElementById('tab-wide');
-  const sqBox = document.getElementById('crop-sq');
   const cTitle = document.getElementById('crop-title'), cSub = document.getElementById('crop-sub');
   const cs = { key: null, src: null, img: null, w: 0, h: 0, tab: 'icon', sq: false, fSq: null, fWide: null, bbox: null, view: null, prevTimer: 0 };
   const OUT = 1024;
   const TXT = {
     icon: ['Choose your app icon', 'Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.'],
-    iconSq: ['Your app icon', 'Your logo is used as the app icon as it is.'],
+    iconSq: ['Your app icon', 'Your logo is used as the app icon as it is. Where a wide logo is needed we show it next to your broker name. Have a wide logo? Open the Full logo tab.'],
     wide: ['Trim your full logo', 'Used in emails, installers and login screens. We cut the empty space around it; drag the corners if something is missing.'],
   };
 
@@ -1030,8 +1028,7 @@
     if (cs.view) drawFrame();
   }
   function setSq(v) {
-    cs.sq = v; sqBox.checked = v; tabWide.disabled = v;
-    setTab(v && cs.tab === 'wide' ? 'icon' : cs.tab);
+    cs.sq = v; setTab(cs.tab);
   }
 
   async function openCrop(key) {
@@ -1067,8 +1064,7 @@
   document.getElementById('crop-done').addEventListener('click', closeCrop);
   dlg.addEventListener('cancel', (e) => { e.preventDefault(); closeCrop(); });
   tabIcon.addEventListener('click', () => setTab('icon'));
-  tabWide.addEventListener('click', () => { if (!tabWide.disabled) setTab('wide'); });
-  sqBox.addEventListener('change', () => setSq(sqBox.checked));
+  tabWide.addEventListener('click', () => { if (cs.sq) cs.sq = false; setTab('wide'); });   // opening Full logo = there is a wide logo
   window.addEventListener('resize', () => dlg.open && layout());
 
   // drag to move, corner handles to resize (icon: square, opposite corner fixed; full logo: free shape)
