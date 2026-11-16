@@ -638,10 +638,10 @@ window.SHOTS = {
    {
     "k": "wide",
     "bg": "light",
-    "x": 475.5,
-    "y": 81,
-    "w": 200.5,
-    "h": 30,
+    "x": 456,
+    "y": 71,
+    "w": 220,
+    "h": 50,
     "pos": "right center"
    },
    {
@@ -662,10 +662,10 @@ window.SHOTS = {
     "k": "wide",
     "bg": "dark",
     "outline": true,
-    "x": 1037.5,
-    "y": 217,
-    "w": 200.5,
-    "h": 30,
+    "x": 1018,
+    "y": 207,
+    "w": 220,
+    "h": 50,
     "pos": "right center"
    },
    {

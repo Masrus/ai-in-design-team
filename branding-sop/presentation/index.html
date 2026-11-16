@@ -112,6 +112,7 @@
   .thumb { width: 48px; height: 48px; border-radius: 10px; flex: none; display: grid; place-items: center; overflow: hidden; background: #fff; }
   .thumb.dark { background: #000; }
   .thumb img { max-width: 78%; max-height: 78%; object-fit: contain; }
+  .thumb.full img { max-width: none; max-height: none; width: 100%; height: 100%; object-fit: cover; }
   .drop .txt { min-width: 0; display: flex; flex-direction: column; }
   .drop .t { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .drop .s { font-size: 14px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -141,6 +142,7 @@
     display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
   }
   .btn[hidden] { display: none; }
+  .btn.reset { border-radius: var(--r-md); }
   .reset { background: var(--surface-2); color: var(--ink-2); }
   .reset:hover { background: var(--surface-3); color: var(--ink); }
   /* main action depends on whether a logo is uploaded: light = primary, dark = secondary */
@@ -1043,6 +1045,7 @@
     const t = document.getElementById('thumb-' + key);
     const src = val || fallback || state.light;
     if (src) { t.src = src; t.style.visibility = ''; } else t.style.visibility = 'hidden';
+    t.parentElement.classList.toggle('full', !!src && opaqueOf(src) === true);   // a logo with its own background fills the tile, no frame around it
     document.getElementById('clear-' + key).hidden = !val;
     document.getElementById('drop-' + key).classList.toggle('filled', !!val);
     document.getElementById('edit-' + key).hidden = key === 'dark' ? !state.dark : !val;
