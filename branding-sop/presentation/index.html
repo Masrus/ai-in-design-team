@@ -349,6 +349,13 @@
   .sc-act:hover { background: var(--surface-3); color: var(--ink); }
   .sc-act svg { width: 20px; height: 20px; }
   .sc-act[hidden], .scard[hidden] { display: none; }
+  .sc-btns { display: flex; flex: none; }
+  .dblk { cursor: pointer; outline: none; }
+  .dblk .wp { position: relative; }
+  .dblk.sel .wp { box-shadow: 0 0 0 2px #fff; }
+  .dblk:focus-visible .wp { box-shadow: 0 0 0 2px rgba(255,255,255,.55); }
+  .dblk .bb { position: absolute; top: 4px; right: 4px; display: flex; }
+  .dblk .lbl span { color: var(--ink-2); } .dblk.sel .lbl span { color: var(--ink); }
   .crop-tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--surface-2); margin-bottom: 20px; }
   .crop-tabs button { height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: var(--ink-2); font: 500 14px 'Geist', sans-serif; cursor: pointer; }
   .crop-tabs button[aria-selected="true"] { background: #fff; color: #000; }
@@ -504,9 +511,9 @@
   <div class="crop-in">
     <div>
       <div class="crop-cards" role="tablist">
-        <div class="scard" role="tab" id="tab-icon" tabindex="0" aria-selected="false" autofocus><span class="th"><img alt=""><span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></span><span class="tx"><b>App icon</b><i></i></span><button type="button" class="sc-act" hidden></button></div>
-        <div class="scard" role="tab" id="tab-wide" tabindex="0" aria-selected="false"><span class="th"><img alt=""><span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></span><span class="tx"><b>Full logo</b><i></i></span><button type="button" class="sc-act" hidden></button></div>
-        <div class="scard" role="tab" id="tab-dark" tabindex="0" aria-selected="false"><span class="th"><img alt=""><span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></span><span class="tx"><b>Logo for dark</b><i></i></span><button type="button" class="sc-act" hidden></button></div>
+        <div class="scard" role="tab" id="tab-icon" tabindex="0" aria-selected="false" autofocus><span class="th"><img alt=""><span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></span><span class="tx"><b>App icon</b><i></i></span><span class="sc-btns"><button type="button" class="sc-act up" hidden></button><button type="button" class="sc-act rm" hidden></button></span></div>
+        <div class="scard" role="tab" id="tab-wide" tabindex="0" aria-selected="false"><span class="th"><img alt=""><span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></span><span class="tx"><b>Full logo</b><i></i></span><span class="sc-btns"><button type="button" class="sc-act up" hidden></button><button type="button" class="sc-act rm" hidden></button></span></div>
+        <div class="scard" role="tab" id="tab-dark" tabindex="0" aria-selected="false"><span class="th"><img alt=""><span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></span><span class="tx"><b>Dark theme</b><i></i></span><span class="sc-btns"><button type="button" class="sc-act up" hidden></button><button type="button" class="sc-act rm" hidden></button></span></div>
       </div>
       <h3 id="crop-title">Choose your app icon</h3>
       <p class="sub" id="crop-sub">Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.</p>
@@ -524,6 +531,10 @@
         <div class="crop-prev" id="prev-icon">
           <div><div class="wp light"><div class="tile"><img id="crop-prev-big" alt=""></div></div><div class="lbl"><span>On light</span><input type="color" class="bgpick" data-t="light" value="#000000" title="Icon background on light" aria-label="Icon background on light"></div></div>
           <div><div class="wp dark"><div class="tile"><img id="crop-prev-small" alt=""></div></div><div class="lbl"><span>On dark</span><input type="color" class="bgpick" data-t="dark" value="#000000" title="Icon background on dark" aria-label="Icon background on dark"></div></div>
+        </div>
+        <div class="crop-prev" id="prev-dark" hidden>
+          <div class="dblk" id="blk-wide" tabindex="0"><div class="wp dark"><img id="dk-wide-img" alt=""><span class="bb"><button type="button" class="sc-act rm" hidden title="Remove your file" aria-label="Remove your full logo for dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button><button type="button" class="sc-act up" title="Upload a full logo for dark" aria-label="Upload a full logo for dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M7 10l5-5 5 5M5 19h14"/></svg></button></span></div><div class="lbl"><span>Full logo for dark</span></div></div>
+          <div class="dblk" id="blk-icon" tabindex="0"><div class="wp dark"><div class="tile"><img id="dk-icon-img" alt=""></div><span class="bb"><button type="button" class="sc-act rm" hidden title="Remove your file" aria-label="Remove your app icon for dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button><button type="button" class="sc-act up" title="Upload an app icon for dark" aria-label="Upload an app icon for dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M7 10l5-5 5 5M5 19h14"/></svg></button></span></div><div class="lbl"><span>App icon for dark</span><input type="color" class="bgpick" data-t="dark" value="#000000" title="Icon background on dark" aria-label="Icon background on dark"></div></div>
         </div>
         <div class="crop-prev" id="prev-wide" hidden>
           <div><div class="wp light"><img id="wp-light" alt=""></div><div class="lbl"><span>On light</span></div></div>
@@ -638,6 +649,7 @@
   function pick(slot) {
     const square = slot.k === 'icon' || slot.k === 'mark';
     const wide = slot.k === 'wide';
+    if (wide && slot.bg === 'dark' && state.darkWide) return { src: state.darkWide };   // your own full logo for dark
     if (wide && state.sq && (state.light || state.dark)) {
       const c = composeSync(slot.bg === 'dark' ? 'dark' : 'light');
       if (c) return { src: c };
@@ -984,11 +996,12 @@
     SECTIONS.forEach((s) => sio.observe(document.getElementById(s.id)));
   })();
 
+  const hasDark = () => !!(state.dark || state.darkWide || state.darkSquare);
   function render() {
     const nm = brokerName();
     { const cn = document.getElementById('clear-name'); if (cn) cn.hidden = !state.name; }
     { const hd = document.getElementById('hint-dark');
-      if (hd && !state.dark) { const a = state.light ? autoDark(state.light) : null; hd.textContent = a && a.low ? 'Optional · dark parts turn white automatically' : 'Optional'; } }
+      if (hd && !hasDark()) { const a = state.light ? autoDark(state.light) : null; hd.textContent = a && a.low ? 'Optional · dark parts turn white automatically' : 'Optional'; } }
     for (const r of refs) {
       if (r.slot.k === 'name') { r.el.textContent = nm; continue; }
       const p = pick(r.slot);
@@ -1022,7 +1035,7 @@
     document.getElementById('hero-name').textContent = heroName();
     document.title = (state.name.trim() ? state.name.trim() + ' on cTrader' : 'cTrader Branding Preview');
     setThumb('light', state.light, DEF.wideBlack, 'SVG or PNG, transparent');
-    setThumb('dark', state.dark, state.light ? null : DEF.wideWhite, 'Optional');
+    setThumb('dark', state.darkWide || state.darkSquare || state.dark, state.light ? null : DEF.wideWhite, 'Optional');
   }
   function setThumb(key, val, fallback, hint) {
     const t = document.getElementById('thumb-' + key);
@@ -1030,7 +1043,7 @@
     if (src) { t.src = src; t.style.visibility = ''; } else t.style.visibility = 'hidden';
     document.getElementById('clear-' + key).hidden = !val;
     document.getElementById('drop-' + key).classList.toggle('filled', !!val);
-    document.getElementById('edit-' + key).hidden = !val;
+    document.getElementById('edit-' + key).hidden = key === 'dark' ? !state.dark : !val;
     const ad = key === 'dark' && !val && state.light ? autoDark(state.light) : null;
     document.getElementById('hint-' + key).textContent = val ? 'Uploaded' : (ad && ad.low ? 'Optional · dark parts turn white automatically' : hint);
   }
@@ -1060,11 +1073,12 @@
   const rangeBox = document.getElementById('crop-size');
   const prevBig = document.getElementById('crop-prev-big');
   const prevSmall = document.getElementById('crop-prev-small');
-  const prevIcon = document.getElementById('prev-icon'), prevWide = document.getElementById('prev-wide');
+  const prevIcon = document.getElementById('prev-icon'), prevWide = document.getElementById('prev-wide'), prevDark = document.getElementById('prev-dark');
+  const dkWideImg = document.getElementById('dk-wide-img'), dkIconImg = document.getElementById('dk-icon-img'), blkWide = document.getElementById('blk-wide'), blkIcon = document.getElementById('blk-icon');
   const wpLight = document.getElementById('wp-light'), wpDark = document.getElementById('wp-dark');
   const ownFile = document.getElementById('crop-own-file');
   function applyBg() {
-    dlg.querySelectorAll('#prev-icon .tile').forEach((t) => { t.style.background = iconBg[t.closest('.wp').classList.contains('dark') ? 'dark' : 'light']; });
+    dlg.querySelectorAll('#prev-icon .tile, #prev-dark .tile').forEach((t) => { t.style.background = iconBg[t.closest('.wp').classList.contains('dark') ? 'dark' : 'light']; });
     dlg.querySelectorAll('.bgpick').forEach((el) => { el.value = iconBg[el.dataset.t]; });
   }
   dlg.querySelectorAll('.bgpick').forEach((el) => el.addEventListener('input', () => {
@@ -1073,12 +1087,12 @@
   const ownView = document.getElementById('crop-own-view'), ownImg = document.getElementById('crop-own-img');
   const tabIcon = document.getElementById('tab-icon'), tabWide = document.getElementById('tab-wide'), tabDark = document.getElementById('tab-dark');
   const cTitle = document.getElementById('crop-title'), cSub = document.getElementById('crop-sub');
-  const cs = { ownIcon: null, ownWide: null, key: null, src: null, img: null, w: 0, h: 0, tab: 'icon', sq: false, sq0: false, fSq: null, fWide: null, bbox: null, view: null, prevTimer: 0 };
+  const cs = { ownIcon: null, ownWide: null, key: null, src: null, img: null, w: 0, h: 0, tab: 'icon', dsub: 'wide', sq: false, sq0: false, fSq: null, fWide: null, bbox: null, view: null, prevTimer: 0 };
   const OUT = 1024;
   const TXT = {
     icon: ['Choose your app icon', 'Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.'],
     iconSq: ['Your app icon', 'Your logo is used as the app icon as it is. Where a wide logo is needed we show it next to your broker name. Have a wide logo? Open the Full logo tab.'],
-    dark: ['Logo for dark', 'Used on dark screens. We make the dark parts of your logo white; upload your own version if you prefer.'],
+    dark: ['Dark theme', 'Used on dark screens. We make the dark parts of your logo white. Upload your own full logo or app icon if you prefer.'],
     wide: ['Trim your full logo', 'Used in emails, installers and login screens. We cut the empty space around it; drag the corners if something is missing.'],
   };
 
@@ -1135,8 +1149,10 @@
     const noRange = wide || dk || iconAsIs() || !!cs.ownIcon;
     if (area.classList.contains('tall') !== noRange) { area.classList.toggle('tall', noRange); return layout(); }
     const { k, ox, oy } = cs.view;
-    const own = dk ? (state.dark || darkAutoUrl()) : wide ? cs.ownWide : cs.ownIcon;
+    const dd = dk ? darkAuto(cs.dsub) : null;
+    const own = dk ? dd.src : wide ? cs.ownWide : cs.ownIcon;
     ownView.hidden = !own; if (own) ownImg.src = own;
+    ownImg.style.filter = dd ? dd.filter : '';
     area.classList.toggle('dark', dk || cs.key === 'dark');
     frameEl.hidden = !!own || (!wide && iconAsIs());
     frameEl.classList.toggle('rect', wide);
@@ -1185,6 +1201,15 @@
       setTile(prevBig, iconBg.light); setTile(prevSmall, iconBg.dark);
       prevBig.parentElement.classList.toggle('full', full); prevSmall.parentElement.classList.toggle('full', full);
       prevIcon.querySelectorAll('.bgpick').forEach((el) => { el.hidden = !!full; });
+    } else if (cs.tab === 'dark') {
+      const w = darkAuto('wide'), ic = darkAuto('icon');
+      dkWideImg.src = w.src; dkWideImg.style.filter = w.filter;
+      dkIconImg.src = ic.src; dkIconImg.style.filter = ic.filter;
+      const full = ic.own && opaqueOf(ic.src) === true;
+      dkIconImg.parentElement.classList.toggle('full', full);
+      blkIcon.querySelector('.bgpick').hidden = full;
+      blkWide.classList.toggle('sel', cs.dsub === 'wide'); blkIcon.classList.toggle('sel', cs.dsub === 'icon');
+      blkWide.querySelector('.rm').hidden = !w.own; blkIcon.querySelector('.rm').hidden = !ic.own;
     } else {
       const u = cs.ownWide || wideCanvas(480).toDataURL();
       wpLight.src = u; wpDark.src = u;
@@ -1193,7 +1218,7 @@
       const fl = flatness(u) !== false;
       wpDark.style.filter = ad ? '' : (fl ? 'brightness(0) invert(1)' : '');
       if (ad && ad.low && ad.canvas) wpDark.src = ad.url();
-      if (cs.key === 'light' && state.dark) { wpDark.src = state.dark; wpDark.style.filter = ''; }
+      if (cs.key === 'light') { const d = darkAuto('wide'); wpDark.src = d.src; wpDark.style.filter = d.filter; }   // the full logo on dark: your file or made from the logo
     }
     renderCards();
   }
@@ -1201,33 +1226,43 @@
     cs.tab = t;
     tabIcon.setAttribute('aria-selected', t === 'icon'); tabWide.setAttribute('aria-selected', t === 'wide'); tabDark.setAttribute('aria-selected', t === 'dark');
     let [h, sub] = t === 'dark' ? TXT.dark : t === 'wide' ? TXT.wide : (iconAsIs() ? TXT.iconSq : TXT.icon);
-    if (t === 'dark' && state.dark) sub = 'Using the dark logo you uploaded for dark screens, installers and login.';
     if (t === 'wide' && cs.ownWide) sub = 'Using the full logo you uploaded. It is used in emails, installers and login screens.';
     if (t === 'icon' && cs.ownIcon) sub = 'Using the square icon you uploaded for app icons, splash screens and notifications.';
     cTitle.textContent = h; cSub.textContent = sub;
-    prevIcon.hidden = t !== 'icon'; prevWide.hidden = t === 'icon';
+    prevIcon.hidden = t !== 'icon'; prevWide.hidden = t !== 'wide'; prevDark.hidden = t !== 'dark';
     applyBg();
     if (cs.view) drawFrame();
   }
-  const darkAutoUrl = () => { const ad = autoDark(cs.src); return ad && ad.low && ad.canvas ? ad.url() : cs.src; };
+  // what goes on dark screens: your own file if there is one, otherwise made from the logo (dark parts white)
+  function darkAuto(kind) {
+    const wide = kind === 'wide';
+    const own = wide ? (state.darkWide || state.dark) : (state.darkSquare || state.dark);
+    if (own) return { src: own, own: true, filter: '' };
+    const base = wide ? ((cs.sq && !cs.ownWide) ? iconCanvas(512).toDataURL() : (cs.ownWide || wideCanvas(640).toDataURL())) : (cs.ownIcon || iconCanvas(256).toDataURL());
+    const ad = autoDark(base, wide ? '#181818' : iconBg.dark);
+    if (ad && ad.low && ad.canvas) return { src: ad.url(), own: false, filter: '' };
+    return { src: base, own: false, filter: !ad && opaqueOf(base) !== true && flatness(base) !== false ? 'brightness(0) invert(1)' : '' };
+  }
   const hasWide = () => !cs.sq || !!cs.ownWide;
   const CARD_ICON = { trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>', up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M7 10l5-5 5 5M5 19h14"/></svg>' };
   function paintCard(el, o) {
-    const img = el.querySelector('img'), plus = el.querySelector('.plus'), act = el.querySelector('.sc-act');
+    const img = el.querySelector('img'), plus = el.querySelector('.plus'), up = el.querySelector('.sc-act.up'), rm = el.querySelector('.sc-act.rm');
     el.hidden = !!o.hidden; if (o.hidden) return;
     if (o.thumb) { if (img.getAttribute('src') !== o.thumb) img.src = o.thumb; img.hidden = false; } else { img.removeAttribute('src'); img.hidden = true; }
+    img.style.filter = o.filter || '';
     plus.hidden = !o.empty; el.classList.toggle('empty', !!o.empty);
     el.querySelector('i').textContent = o.sub;
-    act.hidden = !o.act; if (o.act) { act.innerHTML = CARD_ICON[o.act]; act.title = o.actTitle; act.setAttribute('aria-label', o.actTitle); }
+    const set = (b, on, t, ic) => { b.hidden = !on; if (on) { b.innerHTML = CARD_ICON[ic]; b.title = t; b.setAttribute('aria-label', t); } };
+    set(up, o.up, o.upTitle, 'up'); set(rm, o.rm, o.rmTitle, 'trash');
     el.querySelector('.th').style.borderRadius = o.round ? '22.5%' : '';
   }
   function renderCards() {
     if (!cs.src) return;
-    const full = cs.opq && !cs.ownIcon;
-    paintCard(tabIcon, { thumb: cs.ownIcon || (iconAsIs() ? cs.src : iconCanvas(96).toDataURL()), sub: cs.ownIcon ? 'Your file' : (iconAsIs() ? 'Your logo as it is' : 'Cropped from your logo'), act: cs.ownIcon ? 'trash' : 'up', actTitle: cs.ownIcon ? 'Remove your icon' : 'Upload a square icon', round: true });
+    paintCard(tabIcon, { thumb: cs.ownIcon || iconCanvas(96).toDataURL(), sub: cs.ownIcon ? 'Your file' : 'Cropped from your logo', up: true, upTitle: cs.ownIcon ? 'Replace icon' : 'Upload a square icon', rm: !!cs.ownIcon, rmTitle: 'Remove your icon', round: true });
     const hw = hasWide();
-    paintCard(tabWide, { thumb: hw ? (cs.ownWide || wideCanvas(160).toDataURL()) : null, empty: !hw, sub: hw ? (cs.ownWide ? 'Your file' : 'Trimmed from your logo') : 'Optional', act: hw ? (cs.ownWide ? 'trash' : 'up') : null, actTitle: cs.ownWide ? 'Remove your logo' : 'Upload a full logo' });
-    paintCard(tabDark, { hidden: cs.key !== 'light', thumb: state.dark || darkAutoUrl(), sub: state.dark ? 'Your file' : 'Made from your logo', act: state.dark ? 'trash' : 'up', actTitle: state.dark ? 'Remove your logo' : 'Upload a logo for dark backgrounds' });
+    paintCard(tabWide, { thumb: hw ? (cs.ownWide || wideCanvas(160).toDataURL()) : null, empty: !hw, sub: hw ? (cs.ownWide ? 'Your file' : 'Trimmed from your logo') : 'Optional', up: true, upTitle: cs.ownWide ? 'Replace logo' : 'Upload a full logo', rm: !!cs.ownWide, rmTitle: 'Remove your logo' });
+    const di = darkAuto('icon'), n = (state.darkWide || state.dark ? 1 : 0) + (state.darkSquare || state.dark ? 1 : 0);
+    paintCard(tabDark, { hidden: cs.key !== 'light', thumb: di.src, filter: di.filter, round: true, sub: n === 2 ? 'Your files' : n === 1 ? 'One file uploaded' : 'Made from your logo', rm: n > 0, rmTitle: 'Remove your files for dark' });
   }
   let ownTarget = 'icon';
   function setSq(v) {
@@ -1246,7 +1281,7 @@
     cs.fSq = clampFrame(state[key + 'Crop'] ? { ...state[key + 'Crop'] } : defaultFrame());
     cs.fWide = clampRect(state[key + 'WideCrop'] ? { ...state[key + 'WideCrop'] } : { ...cs.bbox });
     cs.ownIcon = state[key + 'OwnIcon'] || null; cs.ownWide = state[key + 'OwnWide'] || null;
-    cs.view = null; cs.tab = 'icon';
+    cs.view = null; cs.tab = 'icon'; cs.dsub = 'wide';
     cs.sq0 = !!state.sq && !cs.ownWide;
     setSq(cs.sq0);
     if (!dlg.open) dlg.showModal();
@@ -1278,22 +1313,44 @@
   // cards work as tabs; an empty card uploads, the button on a card uploads your own file or removes it
   const pickFile = (target) => { ownTarget = target; ownFile.click(); };
   const cards = { icon: tabIcon, wide: tabWide, dark: tabDark };
+  async function clearDark(which) {   // which: 'wide' | 'icon' | 'all'
+    if (which === 'all') { for (const k of LOGO_KEYS('dark')) { state[k] = null; await dbSet(k, null); } }
+    else {
+      if (state.dark) {   // the single dark file used to serve both places: keep it for the other one
+        const other = which === 'wide' ? 'darkSquare' : 'darkWide';
+        if (!state[other]) { state[other] = state.dark; await dbSet(other, state[other]); }
+        state.dark = null; await dbSet('dark', null);
+      }
+      const k = which === 'wide' ? 'darkWide' : 'darkSquare'; state[k] = null; await dbSet(k, null);
+    }
+    render(); setTab('dark');
+  }
   for (const [name, el] of Object.entries(cards)) {
-    const act = el.querySelector('.sc-act');
+    const up = el.querySelector('.sc-act.up'), rm = el.querySelector('.sc-act.rm');
     el.addEventListener('click', () => { if (name === 'wide' && !hasWide()) pickFile('wide'); else setTab(name); });
     el.addEventListener('keydown', (e) => { if (e.target === el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); el.click(); } });
-    act.addEventListener('click', async (e) => {
+    up.addEventListener('click', (e) => { e.stopPropagation(); pickFile(name); });
+    rm.addEventListener('click', async (e) => {
       e.stopPropagation();
-      if (name === 'icon') { if (cs.ownIcon) { cs.ownIcon = null; setTab('icon'); } else pickFile('icon'); }
-      else if (name === 'wide') { if (cs.ownWide) { cs.ownWide = null; cs.sq = cs.sq0; setTab(hasWide() ? 'wide' : 'icon'); } else pickFile('wide'); }
-      else if (state.dark) { for (const k of LOGO_KEYS('dark')) { state[k] = null; await dbSet(k, null); } render(); setTab('dark'); }
-      else pickFile('dark');
+      if (name === 'icon') { cs.ownIcon = null; setTab('icon'); }
+      else if (name === 'wide') { cs.ownWide = null; cs.sq = cs.sq0; setTab(hasWide() ? 'wide' : 'icon'); }
+      else await clearDark('all');
     });
   }
+  // dark tab: two blocks, each takes its own file; the big view shows the selected one
+  for (const [sub, el] of [['wide', blkWide], ['icon', blkIcon]]) {
+    el.addEventListener('click', () => { cs.dsub = sub; drawFrame(); });
+    el.addEventListener('keydown', (e) => { if (e.target === el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); el.click(); } });
+    el.querySelector('.up').addEventListener('click', (e) => { e.stopPropagation(); cs.dsub = sub; pickFile('dark-' + sub); });
+    el.querySelector('.rm').addEventListener('click', (e) => { e.stopPropagation(); cs.dsub = sub; clearDark(sub); });
+  }
   ownFile.addEventListener('change', async () => {
-    const f = ownFile.files[0]; ownFile.value = ''; if (!f) return;
-    if (ownTarget === 'dark') { await setLogo('dark', f, true); setTab('dark'); return; }
+    const f = ownFile.files[0]; ownFile.value = ''; if (!f || !/^image\//.test(f.type)) return;
     let u; try { u = await normalise(f); } catch { return; }
+    if (ownTarget.startsWith('dark-')) {
+      const k = ownTarget === 'dark-wide' ? 'darkWide' : 'darkSquare';
+      state[k] = u; await dbSet(k, u); render(); setTab('dark'); return;
+    }
     if (ownTarget === 'wide') { cs.ownWide = u; cs.sq = false; } else cs.ownIcon = u;
     setTab(ownTarget);
   });
