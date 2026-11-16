@@ -594,6 +594,13 @@
     return out({ src: light || dark });
   }
 
+  // where the app tile of an icon slot really is (measured on the screenshot), with a hair of bleed to hide the old edge
+  function tileOf(sl) {
+    const B = 0.4;
+    if (sl.tile) { const t = sl.tile; return { x: t.x - B, y: t.y - B, w: t.w + 2 * B, h: t.h + 2 * B, r: t.r + B }; }
+    const t = sl.w / 0.72, h = t * sl.h / sl.w;
+    return { x: sl.x - (t - sl.w) / 2, y: sl.y - (t - sl.h) / 2, w: t, h, r: t * 0.225 };
+  }
   // Logo with its own background (no transparency) → it should fill the whole app tile.
   const opqCache = new Map();
   function opaqueCanvas(c) {
@@ -865,9 +872,9 @@
       const p = pick(r.slot);
       if (r.img.getAttribute('src') !== p.src) r.img.src = p.src;
       if (r.slot.k === 'icon') {
-        const sl = r.slot, t = sl.w / 0.72, f = !!p.full;
+        const sl = r.slot, f = !!p.full, T = tileOf(sl);
         Object.assign(r.el.style, f
-          ? { left: sl.x - (t - sl.w) / 2 + 'px', top: sl.y - (t - sl.h) / 2 + 'px', width: t + 'px', height: t * sl.h / sl.w + 'px', borderRadius: t * 0.225 + 'px', overflow: 'hidden' }
+          ? { left: T.x + 'px', top: T.y + 'px', width: T.w + 'px', height: T.h + 'px', borderRadius: T.r + 'px', overflow: 'hidden' }
           : { left: sl.x + 'px', top: sl.y + 'px', width: sl.w + 'px', height: sl.h + 'px', borderRadius: '', overflow: '' });
         r.img.style.objectFit = f ? 'cover' : '';
       }
@@ -1198,10 +1205,10 @@
       const dy = by + (bh - dh) / 2;
       const dpx = px * k;
       if (slot.k === 'icon' && pk.full) {
-        const t = slot.w / 0.72, tx = slot.x - (t - slot.w) / 2, ty = slot.y - (t - slot.h) / 2;
+        const T = tileOf(slot), t = T.w;
         const cw = r >= 1 ? t * r : t, ch = r >= 1 ? t : t / r;
-        g.save(); g.beginPath(); g.roundRect(tx, ty, t, t, t * 0.225); g.clip();
-        g.drawImage(img, tx - (cw - t) / 2, ty - (ch - t) / 2, cw, ch); g.restore();
+        g.save(); g.beginPath(); g.roundRect(T.x, T.y, T.w, T.h, T.r); g.clip();
+        g.drawImage(img, T.x - (cw - t) / 2, T.y - (ch - t) / 2, cw, ch); g.restore();
         continue;
       }
       if (pk.sil) g.drawImage(tinted(img, dw, dh, '#fff', dpx), dx, dy, dw, dh);
