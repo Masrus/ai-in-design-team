@@ -912,7 +912,10 @@
     for (const k of LOGO_KEYS(key).slice(1)) state[k] = null;
     for (const k of LOGO_KEYS(key)) await dbSet(k, state[k]);
     if (key === 'light') {
-      try { const im = await loadImg(state.light); const q = ratioOf(im, state.light); state.sq = q >= 0.85 && q <= 1.18; lsSet('ctrader-preview-sq', state.sq ? '1' : ''); } catch {}
+      try { const im = await loadImg(state.light); const q = ratioOf(im, state.light);
+        // square logo, or a picture with its own background: there is no wide logo, so we use icon + broker name
+        let opq = false; try { const c = document.createElement('canvas'); c.width = c.height = 64; c.getContext('2d').drawImage(im, 0, 0, 64, 64); opq = opaqueCanvas(c); } catch {}
+        state.sq = (q >= 0.85 && q <= 1.18) || opq; lsSet('ctrader-preview-sq', state.sq ? '1' : ''); } catch {}
     }
     render();
     openCrop(key);
@@ -939,6 +942,8 @@
     wide: ['Trim your full logo', 'Used in emails, installers and login screens. We cut the empty space around it; drag the corners if something is missing.'],
   };
 
+  const nearSq = () => { const q = cs.w / cs.h; return q >= 0.85 && q <= 1.18; };
+  const iconAsIs = () => cs.sq && nearSq();   // the whole logo is the icon (no frame to move)
   function sizeLimits() { const m = Math.max(cs.w, cs.h); return { min: Math.max(8, Math.min(cs.w, cs.h) * 0.15), max: m * 1.6 }; }
   function clampFrame(f) {
     const { min, max } = sizeLimits();
@@ -960,7 +965,8 @@
     const r = cs.w / cs.h;
     if (r > 1.5) return { x: 0, y: 0, s: cs.h };                       // wide logo: the mark is usually on the left
     if (r < 1 / 1.5) return { x: 0, y: 0, s: cs.w };                   // tall logo: the mark is usually on top
-    const s = Math.max(cs.w, cs.h); return { x: (cs.w - s) / 2, y: (cs.h - s) / 2, s };
+    const s = cs.opq ? Math.min(cs.w, cs.h) : Math.max(cs.w, cs.h);     // a picture with its own background: fill the icon, don't leave transparent bars
+    return { x: (cs.w - s) / 2, y: (cs.h - s) / 2, s };
   }
   // box around the visible (non-transparent) pixels
   function bboxOf(img, w, h) {
@@ -986,9 +992,9 @@
   function drawFrame() {
     const { k, ox, oy } = cs.view;
     const wide = cs.tab === 'wide';
-    frameEl.hidden = !wide && cs.sq;
+    frameEl.hidden = !wide && iconAsIs();
     frameEl.classList.toggle('rect', wide);
-    rangeBox.hidden = wide || cs.sq;
+    rangeBox.hidden = wide || iconAsIs();
     if (wide) {
       const f = cs.fWide;
       Object.assign(frameEl.style, { left: ox + f.x * k + 'px', top: oy + f.y * k + 'px', width: f.w * k + 'px', height: f.h * k + 'px' });
@@ -1003,7 +1009,7 @@
   function iconCanvas(size) {
     const c = document.createElement('canvas'); c.width = c.height = size;
     const g = c.getContext('2d'); g.imageSmoothingQuality = 'high';
-    if (cs.sq) {                                                       // the whole logo is the icon
+    if (iconAsIs()) {                                                  // the whole logo is the icon
       const k = size / Math.max(cs.w, cs.h);
       g.drawImage(cs.img, (size - cs.w * k) / 2, (size - cs.h * k) / 2, cs.w * k, cs.h * k);
     } else {
@@ -1034,7 +1040,7 @@
   function setTab(t) {
     cs.tab = t;
     tabIcon.setAttribute('aria-selected', t === 'icon'); tabWide.setAttribute('aria-selected', t === 'wide');
-    const [h, sub] = t === 'wide' ? TXT.wide : (cs.sq ? TXT.iconSq : TXT.icon);
+    const [h, sub] = t === 'wide' ? TXT.wide : (iconAsIs() ? TXT.iconSq : TXT.icon);
     cTitle.textContent = h; cSub.textContent = sub;
     prevIcon.hidden = t === 'wide'; prevWide.hidden = t !== 'wide';
     if (cs.view) drawFrame();
@@ -1051,6 +1057,7 @@
     cImg.src = src;
     area.classList.toggle('dark', key === 'dark');
     cs.bbox = bboxOf(cs.img, cs.w, cs.h);
+    try { const c = document.createElement('canvas'); c.width = c.height = 64; c.getContext('2d').drawImage(cs.img, 0, 0, 64, 64); cs.opq = opaqueCanvas(c); } catch { cs.opq = false; }
     cs.fSq = clampFrame(state[key + 'Crop'] ? { ...state[key + 'Crop'] } : defaultFrame());
     cs.fWide = clampRect(state[key + 'WideCrop'] ? { ...state[key + 'WideCrop'] } : { ...cs.bbox });
     cs.view = null; cs.tab = 'icon';
@@ -1061,10 +1068,13 @@
   async function closeCrop() {
     const key = cs.key;
     state.sq = cs.sq; lsSet('ctrader-preview-sq', cs.sq ? '1' : '');
-    if (cs.sq) {
+    if (iconAsIs()) {
       for (const k of LOGO_KEYS(key).slice(1)) state[k] = null;
     } else {
+      if (cs.sq) { state[key + 'Wide'] = null; state[key + 'WideCrop'] = null; }
       state[key + 'Square'] = iconCanvas(OUT).toDataURL(); state[key + 'Crop'] = { ...cs.fSq };
+    }
+    if (!cs.sq) {
       const f = cs.fWide, full = f.x < 1 && f.y < 1 && Math.abs(f.w - cs.w) < 1 && Math.abs(f.h - cs.h) < 1;
       if (full) { state[key + 'Wide'] = null; state[key + 'WideCrop'] = null; }
       else { state[key + 'Wide'] = wideCanvas(1600).toDataURL(); state[key + 'WideCrop'] = { ...f }; }
@@ -1113,7 +1123,7 @@
   frameEl.addEventListener('pointerup', endDrag); frameEl.addEventListener('pointercancel', endDrag);
   // size slider and mouse wheel zoom around the frame centre (icon frame only)
   function resizeAround(sz) {
-    if (cs.tab !== 'icon' || cs.sq) return;
+    if (cs.tab !== 'icon' || iconAsIs()) return;
     const cx = cs.fSq.x + cs.fSq.s / 2, cy = cs.fSq.y + cs.fSq.s / 2;
     const { min, max } = sizeLimits(); sz = Math.min(max, Math.max(min, sz));
     cs.fSq = clampFrame({ x: cx - sz / 2, y: cy - sz / 2, s: sz }); drawFrame();
