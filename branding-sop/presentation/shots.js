@@ -638,54 +638,107 @@ window.SHOTS = {
    {
     "k": "wide",
     "bg": "light",
-    "x": 456,
-    "y": 71,
-    "w": 220,
-    "h": 50,
+    "x": 319.2,
+    "y": 210.9,
+    "w": 174.7,
+    "h": 39.6,
     "pos": "right center"
    },
    {
     "k": "name",
-    "x": 114,
-    "y": 226,
-    "w": 340,
-    "h": 44,
+    "x": 74.6,
+    "y": 324.5,
+    "w": 410.1,
+    "h": 29.8,
     "f": {
      "family": "'Inter', sans-serif",
      "weight": 700
     },
-    "size": 36,
-    "color": "#060606",
+    "size": 23.3,
+    "color": "#1D1D1F",
+    "align": "left"
+   },
+   {
+    "k": "name",
+    "x": 90.9,
+    "y": 136.4,
+    "w": 174.7,
+    "h": 18.6,
+    "f": {
+     "family": "'Inter', sans-serif",
+     "weight": 600
+    },
+    "size": 15.1,
+    "color": "#1D1D1F",
     "align": "left"
    },
    {
     "k": "wide",
     "bg": "dark",
     "outline": true,
-    "x": 1018,
-    "y": 207,
-    "w": 220,
-    "h": 50,
+    "x": 799.1,
+    "y": 325.0,
+    "w": 174.7,
+    "h": 39.6,
     "pos": "right center"
    },
    {
     "k": "name",
-    "x": 676,
-    "y": 362,
-    "w": 340,
-    "h": 44,
+    "x": 568.5,
+    "y": 438.7,
+    "w": 377.4,
+    "h": 29.8,
     "f": {
      "family": "'Inter', sans-serif",
      "weight": 700
     },
-    "size": 36,
-    "color": "#E3E3E3",
+    "size": 23.3,
+    "color": "#F2F2F2",
+    "align": "left"
+   },
+   {
+    "k": "name",
+    "x": 584.8,
+    "y": 250.6,
+    "w": 174.7,
+    "h": 18.6,
+    "f": {
+     "family": "'Inter', sans-serif",
+     "weight": 600
+    },
+    "size": 15.1,
+    "color": "#F2F2F2",
+    "align": "left"
+   },
+   {
+    "k": "wide",
+    "bg": "dark",
+    "outline": true,
+    "x": 1147.3,
+    "y": 141.4,
+    "w": 161.2,
+    "h": 35.9,
+    "pos": "right center"
+   },
+   {
+    "k": "name",
+    "x": 1052.2,
+    "y": 245.6,
+    "w": 238.3,
+    "h": 37.5,
+    "f": {
+     "family": "'Inter', sans-serif",
+     "weight": 700
+    },
+    "size": 30.8,
+    "color": "#F2F2F2",
     "align": "left"
    }
   ],
   "caption": [
    "Light theme",
-   "Dark theme"
+   "Dark theme",
+   "Mobile"
   ]
  }
 };
