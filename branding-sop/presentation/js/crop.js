@@ -20,11 +20,11 @@ dlg.querySelectorAll('.bgpick').forEach((el) => el.addEventListener('input', () 
 }));
 const ownView = document.getElementById('crop-own-view'), ownImg = document.getElementById('crop-own-img');
 const tabIcon = document.getElementById('tab-icon'), tabWide = document.getElementById('tab-wide'), tabDark = document.getElementById('tab-dark');
-const cTitle = document.getElementById('crop-title'), cSub = document.getElementById('crop-sub');
+const cSub = document.getElementById('crop-sub');
 const TXT = {
-  icon: ['Choose your app icon', 'Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.'],
-  dark: ['Dark theme', 'Used on dark screens. We make the dark parts of your logo white. If you have a logo made for dark themes and you’re not happy with our version, feel free to upload it.'],
-  wide: ['Trim your full logo', 'Used in emails, installers and login screens. We cut the empty space around it; drag the corners if something is missing.'],
+  icon: ['', 'Move and resize the frame over the part of your logo that should appear in app icons, splash screens and notifications.'],
+  dark: ['', 'Used on dark screens. We make the dark parts of your logo white. If you have a logo made for dark themes and you’re not happy with our version, feel free to upload it.'],
+  wide: ['', 'Trim your full logo. Used in emails, installers and login screens. We cut the empty space around it; drag the corners if something is missing.'],
 };
 
 const ownDarkIcon = () => !!(state.darkSquare || state.dark);
@@ -100,10 +100,10 @@ function updatePreview() {
 function setTab(t) {
   cs.tab = t;
   tabIcon.setAttribute('aria-selected', t === 'icon'); tabWide.setAttribute('aria-selected', t === 'wide'); tabDark.setAttribute('aria-selected', t === 'dark');
-  let [h, sub] = t === 'dark' ? TXT.dark : t === 'wide' ? TXT.wide : TXT.icon;
+  let [, sub] = t === 'dark' ? TXT.dark : t === 'wide' ? TXT.wide : TXT.icon;
   if (t === 'wide' && cs.ownWide) sub = 'Using the full logo you uploaded. It is used in emails, installers and login screens.';
   if (t === 'icon' && cs.ownIcon) sub = 'Using the square icon you uploaded for app icons, splash screens and notifications.';
-  cTitle.textContent = h; cSub.textContent = sub;
+  cSub.textContent = sub;
   prevIcon.hidden = t !== 'icon'; prevWide.hidden = t !== 'wide'; prevDark.hidden = t !== 'dark';
   applyBg();
   if (cs.view) drawFrame();
@@ -137,7 +137,7 @@ function renderCards() {
   const hw = hasWide();
   paintCard(tabWide, { thumb: hw ? (cs.ownWide || wideCanvas(160).toDataURL()) : null, empty: !hw, sub: hw ? (cs.ownWide ? 'Your file' : 'Trimmed from your logo') : 'Optional', up: true, upTitle: cs.ownWide ? 'Replace logo' : 'Upload a full logo', rm: !!cs.ownWide, rmTitle: 'Remove your logo' });
   const di = darkAuto('icon'), n = (state.darkWide || state.dark ? 1 : 0) + (state.darkSquare || state.dark ? 1 : 0);
-  paintCard(tabDark, { hidden: cs.key !== 'light', thumb: di.src, filter: di.filter, round: true, sub: n === 2 ? 'Your files' : n === 1 ? 'One file uploaded' : 'Made from your logo', rm: true, rmOff: !(n > 0 || cs.fSqD || state.darkIconSrc), rmTitle: 'Reset to the version we made' });
+  paintCard(tabDark, { hidden: cs.key !== 'light', thumb: di.src, filter: di.filter, round: true, sub: n === 2 ? 'Your files' : n === 1 ? 'One file uploaded' : 'Made from your logo', up: true, upTitle: 'Upload a logo for dark theme', rm: !!(n > 0 || cs.fSqD || state.darkIconSrc), rmTitle: 'Reset to the version we made' });
 }
 let ownTarget = 'icon';
 
@@ -223,6 +223,7 @@ for (const [sub, el] of [['wide', blkWide], ['icon', blkIcon]]) {
 ownFile.addEventListener('change', async () => {
   const f = ownFile.files[0]; ownFile.value = ''; if (!f || !/^image\//.test(f.type)) return;
   let u; try { u = await normalise(f); } catch { return; }
+  if (ownTarget === 'dark') { state.dark = u; await dbSet('dark', u); render(); setTab('dark'); return; }
   if (ownTarget.startsWith('dark-')) {
     const k = ownTarget === 'dark-wide' ? 'darkWide' : 'darkSquare';
     state[k] = u; await dbSet(k, u); render(); setTab('dark'); return;
