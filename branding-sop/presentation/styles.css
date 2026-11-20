@@ -110,8 +110,9 @@
     position: relative; z-index: 2; width: 40px; height: 40px; margin-left: auto; flex: none;
     display: grid; place-items: center; border: 0; border-radius: 10px; background: none; color: var(--ink-3); cursor: pointer;
   }
-  .drop .up { position: absolute; right: 20px; top: 50%; width: 24px; height: 24px; margin-top: -12px; color: var(--ink-3); opacity: 0; transition: opacity .15s; pointer-events: none; }
-  .drop:not(.filled):hover .up, .drop.over .up { opacity: 1; }
+  .drop .up { position: absolute; right: 20px; top: 50%; width: 24px; height: 24px; margin-top: -12px; color: var(--ink-3); opacity: 0; transition: opacity .15s, color .15s; pointer-events: none; }
+  .drop:not(.filled) .up { opacity: 1; }
+  .drop:not(.filled):hover .up, .drop.over .up { color: var(--ink); }
   .drop .clear:hover { color: var(--ink); background: rgba(255,255,255,.08); }
   .drop .clear[hidden] { display: none; }
   .drop .clear svg { width: 20px; height: 20px; }
