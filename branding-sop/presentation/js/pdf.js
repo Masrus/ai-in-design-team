@@ -163,7 +163,7 @@ function loadScript(src) {
     document.head.appendChild(t);
   });
 }
-const pdfBtns = [document.getElementById('pdf-2'), document.getElementById('pdf-nav')];
+const pdfBtns = [document.getElementById('pdf'), document.getElementById('pdf-2'), document.getElementById('pdf-nav')];
 let busy = false;
 async function downloadPdf(btn) {
   if (busy) return; busy = true;

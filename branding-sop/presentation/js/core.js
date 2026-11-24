@@ -1,9 +1,9 @@
-const DEFAULT_NAME = 'cTrader';          // name inside app screens before the broker types theirs
-const DEFAULT_HERO = 'Your brand';       // headline before the broker types their name
+const DEFAULT_NAME = 'Best Broker';      // placeholder broker shown before the visitor adds their own
+const DEFAULT_HERO = DEFAULT_NAME;       // PDF cover title before the visitor types a name
 const DEF = {
-  markWhite: 'assets/ctrader-mark-white.svg',
-  wideWhite: 'assets/ctrader-wide-white.svg',
-  wideBlack: 'assets/ctrader-wide-black.svg',
+  markWhite: 'assets/bestbroker-icon.svg',      // square slots: app icon, splash, notifications
+  wideWhite: 'assets/bestbroker-wide-white.svg',
+  wideBlack: 'assets/bestbroker-wide-black.svg',
 };
 const state = { light: null, dark: null, lightSquare: null, darkSquare: null, lightCrop: null, darkCrop: null, lightWide: null, darkWide: null, lightWideCrop: null, darkWideCrop: null, lightOwnIcon: null, darkOwnIcon: null, lightOwnWide: null, darkOwnWide: null, darkIconCrop: null, darkIconSrc: null, sq: false, name: '' };
 const IMG_KEYS = ['light', 'dark', 'lightSquare', 'darkSquare', 'lightCrop', 'darkCrop', 'lightWide', 'darkWide', 'lightWideCrop', 'darkWideCrop', 'lightOwnIcon', 'darkOwnIcon', 'lightOwnWide', 'darkOwnWide', 'darkIconCrop', 'darkIconSrc'];
@@ -25,11 +25,11 @@ const IDENT = [
 ];
 const S = window.SHOTS;
 const SECTIONS = [
-  { id: 'identity', title: 'Identity', h: ['Your icon.', 'On every screen.'], card: ['Your icon.', 'Cropped from your logo, used everywhere.'], lead: 'One logo, every surface. Your logo replaces cTrader on app icons, splash screens, installers, notifications and emails.', ident: true },
-  { id: 'desktop', title: 'cTrader Web & Desktop', nav: 'Desktop', h: ['Web & Desktop.', 'Your brand from the first click.'], card: ['Web & Desktop.', 'From the browser tab to the dock.'], lead: 'From the browser tab and the dock to the installer, notifications and login screen, traders see your brand first.', shots: ['05', '06', '07'] },
+  { id: 'identity', title: 'Identity', h: ['Your icon.', 'On every screen.'], card: ['Your icon.', 'Cropped from your logo, used everywhere.'], lead: 'One logo, every surface. Your mark replaces the cTrader logo on app icons, splash screens, installers, notifications and emails.', ident: true },
+  { id: 'desktop', title: 'cTrader Web & Desktop', nav: 'Desktop', h: ['Web and Desktop.', 'Your brand from the first click.'], card: ['Web and Desktop.', 'From the browser tab to the dock.'], lead: 'From the browser tab and the dock to the installer, notifications and login screen, traders see your brand first.', shots: ['05', '06', '07'] },
   { id: 'mobile', title: 'cTrader Mobile', nav: 'Mobile', h: ['iOS and Android.', 'In your traders’ pockets.'], card: ['iOS and Android.', 'Icon, splash, login and menu.'], lead: 'Android and iOS apps with your icon, splash screen, login and in-app menu.', shots: ['10', '09'] },
-  { id: 'stores', title: 'App Store & Google Play', nav: 'Stores', h: ['Listed under', 'your name.'], card: ['App Store and Google Play.', 'Listed under your name.'], lead: 'Your listing in both stores, with your name and your icon.', shots: ['11'] },
-  { id: 'admin', title: 'cTrader Admin', nav: 'Admin', h: ['Your back office.', 'Your brand.'], card: ['cTrader Admin.', 'Your back office, your brand.'], lead: 'Your back office carries your brand in the splash screen, notifications, dialogs and app header.', shots: ['13', '14'] },
+  { id: 'stores', title: 'App Store & Google Play', nav: 'Stores', h: ['Listed under your name', 'in App Store and Google Play'], card: ['App Store and Google Play.', 'Listed under your name.'], lead: 'Your listing in both stores, with your name and your icon.', shots: ['11'] },
+  { id: 'admin', title: 'cTrader Admin', nav: 'Admin', h: ['Your back office.', 'Your brand.'], card: ['cTrader Admin.', 'Your back office, your brand.'], lead: 'Your back office on cTrader Admin carries your brand in the splash screen, notifications, dialogs and app header.', shots: ['13', '14'] },
   { id: 'email', title: 'Email', h: ['Every email.', 'Signed by you.'], card: ['Email.', 'Light and dark themes, signed by you.'], lead: 'Transactional emails in light and dark themes, signed with your logo.', shots: ['15'] },
 ];
 

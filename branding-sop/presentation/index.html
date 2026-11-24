@@ -13,35 +13,35 @@
 
 <header class="lnav">
   <div class="lnav-in">
-    <a class="spw" href="https://www.spotware.com" target="_blank" rel="noopener" aria-label="Spotware"><img src="assets/spotware-logo-header.svg" alt="Spotware" width="160" height="18"></a>
-    <nav id="lnav-links" aria-label="Sections"></nav>
-    <button class="cta" id="pdf-nav" type="button">Download PDF</button>
+    <a class="logo" href="#top" aria-label="cTrader"><img src="assets/ctrader-header.svg" alt="cTrader" width="131" height="32"></a>
+    <div class="lnav-actions">
+      <a class="cta" id="contact-nav" href="https://www.spotware.com/get-in-touch/" target="_blank" rel="noopener">Contact sales</a>
+      <button class="cta" id="pdf-nav" type="button">Download PDF</button>
+    </div>
   </div>
 </header>
 
 <main id="top">
   <section class="hero" id="hero">
     <div class="wrap hero-in">
-      <p class="eyebrow">Brand preview</p>
-      <h1><span id="hero-name">Your brand</span><span class="l2">on cTrader.</span></h1>
-      <p class="lead">See how your brand appears across cTrader Web, Desktop, Mobile, Admin and email communications.</p>
+      <p class="eyebrow">For brokers and prop firms</p>
+      <h1>White-label branded forex trading platform</h1>
+      <p class="lead">Your trading platform built on cTrader for Web, Mobile, Admin and Email. Your name and logo on every screen your traders and team see.</p>
     </div>
   </section>
 
   <section class="studio" id="studio">
     <div class="wrap">
       <div class="studio-card reveal">
-        <h2>Make cTrader yours.</h2>
-        <p class="sub">Add your logo and name. Updates instantly.</p>
       <div class="controls">
     <div class="name-field">
-      <input id="name" type="text" maxlength="30" placeholder="Broker or brand name" aria-label="Broker or brand name" autocomplete="organization">
+      <input id="name" type="text" maxlength="30" placeholder="Add your broker or brand name" aria-label="Broker or brand name" autocomplete="organization">
       <button class="clear" id="clear-name" type="button" hidden aria-label="Clear name" title="Clear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
     <label class="drop" id="drop-light">
       <span class="thumb"><img id="thumb-light" alt=""></span>
       <span class="txt">
-        <span class="t">Logo for light theme</span>
+        <span class="t" id="title-light">Add logo for light theme</span>
         <span class="s" id="hint-light">SVG or PNG, transparent</span>
       </span>
       <svg class="up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5M7 10l5-5 5 5M5 19h14"/></svg>
@@ -53,7 +53,7 @@
     <label class="drop" id="drop-dark">
       <span class="thumb dark"><img id="thumb-dark" alt=""></span>
       <span class="txt">
-        <span class="t">Logo for dark theme</span>
+        <span class="t" id="title-dark">Add logo for dark theme</span>
         <span class="s" id="hint-dark">Optional</span>
       </span>
       <svg class="up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5M7 10l5-5 5 5M5 19h14"/></svg>
@@ -64,6 +64,7 @@
 
 
     <button class="btn reset" id="reset" type="button" hidden>Reset</button>
+    <button class="btn pdf" id="pdf" type="button">Download PDF</button>
       </div>
       </div>
     </div>
@@ -81,19 +82,43 @@
         <button class="btn primary" type="button" id="pdf-2">Download PDF</button>
       </div>
     </div>
+  </section>
+
+  <section class="clients" aria-labelledby="clients-text">
+    <div class="wrap"><p id="clients-text" class="reveal">Founded in 2010 and headquartered in Limassol, Cyprus, Spotware Systems is a fintech company trusted by 300+ brokers and prop firms.</p></div>
+    <div class="marquee"><ul class="roll"><li><img src="assets/clients/icm.svg" alt="IC Markets" width="87" height="40" loading="lazy"></li><li><img src="assets/clients/topfx.svg" alt="TopFX" width="95" height="40" loading="lazy"></li><li><img src="assets/clients/blackbull.svg" alt="BlackBull Markets" width="172" height="40" loading="lazy"></li><li><img src="assets/clients/deriv.svg" alt="Deriv" width="94" height="40" loading="lazy"></li><li><img src="assets/clients/pepperstone.svg" alt="Pepperstone" width="207" height="40" loading="lazy"></li><li><img src="assets/clients/ftmo.svg" alt="FTMO" width="155" height="40" loading="lazy"></li><li><img src="assets/clients/fundingpips.svg" alt="Funding Pips" width="144" height="40" loading="lazy"></li><li><img src="assets/clients/fxpro.svg" alt="FxPro" width="142" height="40" loading="lazy"></li><li aria-hidden="true"><img src="assets/clients/icm.svg" alt="" width="87" height="40" loading="lazy"></li><li aria-hidden="true"><img src="assets/clients/topfx.svg" alt="" width="95" height="40" loading="lazy"></li><li aria-hidden="true"><img src="assets/clients/blackbull.svg" alt="" width="172" height="40" loading="lazy"></li><li aria-hidden="true"><img src="assets/clients/deriv.svg" alt="" width="94" height="40" loading="lazy"></li><li aria-hidden="true"><img src="assets/clients/pepperstone.svg" alt="" width="207" height="40" loading="lazy"></li><li aria-hidden="true"><img src="assets/clients/ftmo.svg" alt="" width="155" height="40" loading="lazy"></li><li aria-hidden="true"><img src="assets/clients/fundingpips.svg" alt="" width="144" height="40" loading="lazy"></li><li aria-hidden="true"><img src="assets/clients/fxpro.svg" alt="" width="142" height="40" loading="lazy"></li></ul></div>
+  </section>
+
+  <section class="faq" id="faq">
     <div class="wrap">
-      <footer class="foot">
-        <div class="foot-in wrap">
-          <div class="contacts">
-            <a href="https://www.spotware.com" target="_blank" rel="noopener">www.spotware.com</a>
-            <a href="mailto:sales@spotware.com">sales@spotware.com</a>
-            <a href="tel:+35725344902">+357 25 344 902</a>
-            <span>3rd Floor, Stratigou Gianni Timagia 19, Limassol 3107</span>
-          </div>
-        </div>
-      </footer>
+      <h2 class="reveal">FAQ</h2>
+      <div class="qa-list">
+        <details class="qa reveal"><summary>What is a white-label trading platform?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><p>A white-label trading platform is ready-made trading software that a broker or prop firm launches under its own brand. With cTrader, your name and logo replace the cTrader brand across web, desktop and mobile apps, the admin back office and client emails.</p></details>
+        <details class="qa reveal"><summary>Which apps and screens carry my brand?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><p>Favicon, desktop and dock icons, installer, notifications and login screens on Web and Desktop; app icon, splash screen, login and menu on iOS and Android; your App Store and Google Play listings; cTrader Admin; and transactional emails in light and dark themes.</p></details>
+        <details class="qa reveal"><summary>Is the white-label platform suitable for prop firms?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><p>Yes. Prop firms get the same branded web, desktop and mobile apps, admin tools and emails as brokers, all under their own name.</p></details>
+        <details class="qa reveal"><summary>Will my mobile apps be published under my company name?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><p>Yes. Your iOS and Android apps are listed in the App Store and Google Play under your name and with your icon.</p></details>
+        <details class="qa reveal"><summary>What logo files do I need?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><p>An SVG or PNG logo with a transparent background. You can add a separate version for dark backgrounds. Your app icon is cropped from the logo.</p></details>
+        <details class="qa reveal"><summary>Do I need to migrate my existing clients?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><p>No. You can add cTrader as a branded trading platform without migrating your existing client base.</p></details>
+        <details class="qa reveal"><summary>How do I get started?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><p>Contact the Spotware sales team at <a href="mailto:sales@spotware.com">sales@spotware.com</a> or download the PDF overview to share with your team.</p></details>
+      </div>
     </div>
   </section>
+
+  <div class="wrap">
+    <footer class="foot">
+      <div class="foot-row">
+        <img src="assets/spotware-logo.svg" alt="Spotware" height="24">
+        <span>3rd Floor, Stratigou Gianni Timagia 19, Limassol 3107</span>
+      </div>
+      <nav class="legal" aria-label="Legal">
+        <span>© Spotware Systems Ltd.</span>
+        <a href="https://www.spotware.com/eula/" target="_blank" rel="noopener">EULA</a>
+        <a href="https://www.spotware.com/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a>
+        <a href="https://www.spotware.com/terms-of-service/" target="_blank" rel="noopener">Terms of Service</a>
+      </nav>
+      <p class="about">Spotware Systems is a leading fintech company founded in 2010, based in Limassol, Cyprus, with a global team of 200+ professionals. It designs and delivers innovative trading technology and custom solutions for brokers worldwide, supporting long-term growth and scalability. Spotware’s solutions include cTrader, the flagship trading platform, and cBridge, a standalone, fixed-price liquidity bridge for all platforms. Spotware’s expertise is consistently recognised with multiple international industry awards, including Best Trading Platform, Best Services for Partners and Best Mobile Trading App.</p>
+    </footer>
+  </div>
 </main>
 
 <dialog class="crop" id="crop" aria-label="Logo settings">

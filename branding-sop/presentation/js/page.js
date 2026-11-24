@@ -59,7 +59,7 @@ function zoomFig(panel, caps) {
   return f;
 }
 SECTIONS.forEach((sec) => {
-  navLinks.insertAdjacentHTML('beforeend', `<a href="#${sec.id}" data-sec="${sec.id}">${(sec.nav || sec.title).replace('&', '&amp;')}</a>`);
+  if (navLinks) navLinks.insertAdjacentHTML('beforeend', `<a href="#${sec.id}" data-sec="${sec.id}">${(sec.nav || sec.title).replace('&', '&amp;')}</a>`);
   // section
   const el = document.createElement('section');
   el.className = 'sec'; el.id = sec.id;
@@ -126,9 +126,52 @@ document.querySelectorAll('.reveal').forEach((n) => io ? io.observe(n) : n.class
   addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll); frame();
 })();
 
+// pin the logo block to the top once the page scrolls past it; its slot keeps the height so nothing jumps
+(() => {
+  const card = document.querySelector('.studio-card');
+  const slot = card.parentElement;
+  let pinned = false;
+  const set = (on) => {
+    pinned = on;
+    if (on) { slot.style.minHeight = card.offsetHeight + 'px'; card.classList.add('in', 'pinned'); }
+    else { card.classList.remove('pinned'); slot.style.minHeight = ''; }
+  };
+  const check = () => { const should = slot.getBoundingClientRect().top <= 0; if (should !== pinned) set(should); };
+  addEventListener('scroll', check, { passive: true });
+  addEventListener('resize', () => { if (pinned) set(false); check(); });
+  check();
+})();
+
+// glint: while the fields are empty, a light runs around them one after another (step 1, 2, 3),
+// first when they come into view, then quietly again every ~9 s; it stops for good once anything is filled in
+(() => {
+  const c = document.querySelector('.controls');
+  if (!c || !('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const FIRST = 1100, EVERY = 9000, RUN = 4000;          // first run after the block has faded in; one run lasts ~3.6 s
+  const filled = () => !!(state.light || state.dark || (state.name || '').trim());
+  let inView = false, busy = false, timer = 0, done = false;
+  function play() {
+    timer = 0;
+    if (done || filled()) { done = true; return; }
+    if (!inView || document.hidden || busy || c.matches(':focus-within')) { schedule(EVERY); return; }
+    busy = true;
+    const rays = ['.name-field', '#drop-light', '#drop-dark'].map((sel, i) => {
+      const r = document.createElement('span'); r.className = 'glint-ray'; r.style.animationDelay = i + 's';
+      c.querySelector(sel).appendChild(r); return r;
+    });
+    setTimeout(() => { rays.forEach((r) => r.remove()); busy = false; }, RUN);
+    schedule(EVERY);
+  }
+  function schedule(ms) { if (!timer && !done) timer = setTimeout(play, ms); }
+  new IntersectionObserver((es) => {
+    inView = es.some((e) => e.isIntersecting);
+    if (inView && !timer && !busy) schedule(FIRST);
+  }, { threshold: 0.6 }).observe(c);
+})();
+
 // local nav: mark the section in view
 (() => {
-  if (!('IntersectionObserver' in window)) return;
+  if (!navLinks || !('IntersectionObserver' in window)) return;
   const links = [...navLinks.querySelectorAll('a')];
   const sio = new IntersectionObserver((es) => {
     for (const e of es) if (e.isIntersecting) links.forEach((a) => a.classList.toggle('on', a.dataset.sec === e.target.id));
@@ -172,13 +215,15 @@ function render() {
   const has = !!(state.light || state.dark);
   document.body.classList.toggle('has-logo', has);
   document.getElementById('reset').hidden = !has;
-  document.getElementById('hero-name').textContent = heroName();
+  { const hn = document.getElementById('hero-name'); if (hn) hn.textContent = heroName(); }
   document.title = (state.name.trim() ? state.name.trim() + ' on cTrader' : 'cTrader Branding Preview');
   setThumb('light', state.light, DEF.wideBlack, 'SVG or PNG, transparent');
   setThumb('dark', state.darkWide || state.darkSquare || state.dark, state.light ? null : DEF.wideWhite, 'Optional');
 }
 function setThumb(key, val, fallback, hint) {
   const t = document.getElementById('thumb-' + key);
+  { const tt = document.getElementById('title-' + key); const nm = key === 'light' ? 'logo for light theme' : 'logo for dark theme';
+    if (tt) tt.textContent = val ? nm.charAt(0).toUpperCase() + nm.slice(1) : 'Add ' + nm; }
   const src = val || fallback || state.light;
   if (src) { t.src = src; t.style.visibility = ''; } else t.style.visibility = 'hidden';
   t.parentElement.classList.toggle('full', !!src && opaqueOf(src) === true);   // a logo with its own background fills the tile, no frame around it
