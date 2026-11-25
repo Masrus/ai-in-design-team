@@ -638,11 +638,11 @@ window.SHOTS = {
    {
     "k": "wide",
     "bg": "light",
-    "x": 319.2,
+    "x": 51.0,
     "y": 210.9,
     "w": 174.7,
     "h": 39.6,
-    "pos": "right center"
+    "pos": "left center"
    },
    {
     "k": "name",
@@ -676,11 +676,11 @@ window.SHOTS = {
     "k": "wide",
     "bg": "dark",
     "outline": true,
-    "x": 799.1,
+    "x": 544.0,
     "y": 325.0,
     "w": 174.7,
     "h": 39.6,
-    "pos": "right center"
+    "pos": "left center"
    },
    {
     "k": "name",
@@ -714,11 +714,11 @@ window.SHOTS = {
     "k": "wide",
     "bg": "dark",
     "outline": true,
-    "x": 1147.3,
+    "x": 1037.5,
     "y": 141.4,
     "w": 161.2,
     "h": 35.9,
-    "pos": "right center"
+    "pos": "left center"
    },
    {
     "k": "name",
